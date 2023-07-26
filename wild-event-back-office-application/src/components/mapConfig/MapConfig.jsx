@@ -1,0 +1,1 @@
+// This component will be responsible for configuring the map. 2 btns will appear (edit and upload map)

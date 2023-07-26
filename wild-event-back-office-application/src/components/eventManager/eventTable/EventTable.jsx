@@ -1,0 +1,1 @@
+//This component will be responsible for displaying a table with events 
