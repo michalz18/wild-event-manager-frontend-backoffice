@@ -30,16 +30,6 @@ export default function Navigation() {
 		setDarkMode(!darkMode);
 	}
 
-	// const theme = createTheme({
-	// 	palette: {
-	// 		primary: {
-	// 			main: "#1976D2",
-	// 		},
-	// 		background: {
-	// 			default: darkMode ? "#303030" : "#F5F5F5",
-	// 		},
-	// 	},
-	// })
 	const theme = createTheme({
 		palette:{
 			mode: darkMode ? "dark" : "light",
