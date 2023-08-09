@@ -17,7 +17,7 @@ import backgroundImage from '../../assets/logo.png';
 
 const defaultTheme = createTheme();
 
-export default function SignInSide() {
+const LoginForm = () => {
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
@@ -108,3 +108,5 @@ export default function SignInSide() {
     </ThemeProvider>
   );
 }
+
+export default LoginForm;

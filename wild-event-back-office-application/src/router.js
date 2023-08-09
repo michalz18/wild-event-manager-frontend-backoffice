@@ -2,7 +2,8 @@ import { createBrowserRouter } from "react-router-dom";
 import Test from "./test";
 import ErrorPage from "./pages/ErrorPage";
 import Layout from "./pages/layout/Layout";
-import LoginForm from "./components/loginForm/LoginForm"
+import LoginForm from "./components/loginForm/LoginForm";
+
 
 const router = createBrowserRouter([
   {
@@ -10,6 +11,11 @@ const router = createBrowserRouter([
     element: <Layout />,
     errorElement: <ErrorPage />,
     children: [
+      {
+        path: "/signup",
+        element: <LoginForm />,
+        errorElement: <ErrorPage />,
+      },
       {
         path: "/my-events/event",
         element: <Test />,
@@ -32,36 +38,6 @@ const router = createBrowserRouter([
       },
       {
         path: "/event-management/event/waiting",
-        element: <Test />,
-        errorElement: <ErrorPage />,
-      },
-      {
-        path: "/my-notifications/notification",
-        element: <Test />,
-        errorElement: <ErrorPage />,
-      },
-      {
-        path: "/my-notifications/notification/id",
-        element: <Test />,
-        errorElement: <ErrorPage />,
-      },
-      {
-        path: "/notification-management/notification",
-        element: <Test />,
-        errorElement: <ErrorPage />,
-      },
-      {
-        path: "/notification-management/notification/id",
-        element: <Test />,
-        errorElement: <ErrorPage />,
-      },
-      {
-        path: "/notification-management/notification/archive",
-        element: <Test />,
-        errorElement: <ErrorPage />,
-      },
-      {
-        path: "/notification-management/notification/archive/id",
         element: <Test />,
         errorElement: <ErrorPage />,
       },
