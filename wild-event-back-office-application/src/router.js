@@ -3,12 +3,13 @@ import Test from "./test";
 import ErrorPage from "./pages/ErrorPage";
 import Layout from "./pages/layout/Layout";
 import LoginForm from "./components/loginForm/LoginForm";
+import EmployeeTable from "./components/employeeManager/emplyeeTable/EmployeeTable"
 
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <Layout />,
+    element: <EmployeeTable />,
     errorElement: <ErrorPage />,
     children: [
       {
