@@ -1,4 +1,5 @@
 import * as React from 'react';
+import FilterMenu from './FilterMenu';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -10,9 +11,7 @@ import EditButton from '../../buttons/EditButton';
 import RemoveButton from '../../buttons/RemoveButton';
 import TextField from '@mui/material/TextField';
 import { useState } from 'react';
-import TablePagination from '@mui/material/TablePagination';
-import { Box, IconButton, Menu, Select, MenuItem, FormControl, InputLabel } from '@mui/material';
-import FilterListIcon from '@mui/icons-material/FilterList';
+import TablePagination from '@mui/material/TablePagination';;
 
 
 
@@ -37,7 +36,7 @@ const rows = [
 ];
 
 
-export default function BasicTable() {
+export default function EmployeeTable() {
     const [locationFilter, setLocationFilter] = useState('All');
     const [search, setSearch] = useState('');
     const [roleFilter, setRoleFilter] = useState('All');
@@ -45,13 +44,19 @@ export default function BasicTable() {
     const [rowsPerPage, setRowsPerPage] = useState(5);
     const [anchorEl, setAnchorEl] = useState(null);
 
-    
-
     const filteredRows = rows.filter(row => {
         return row.name.toLowerCase().includes(search.toLowerCase()) &&
-                (roleFilter === 'All' || row.role === roleFilter) &&
-                (locationFilter === 'All' || row.locations.includes(locationFilter));
+            (roleFilter === 'All' || row.role === roleFilter) &&
+            (locationFilter === 'All' || row.locations.includes(locationFilter));
     })
+
+    const handleClick = (event) => {
+        setAnchorEl(event.currentTarget);
+    };
+
+    const handleClose = () => {
+        setAnchorEl(null);
+    };
 
     const handleLocationFilterChange = (e) => {
         setLocationFilter(e.target.value);
@@ -65,21 +70,13 @@ export default function BasicTable() {
         setPage(newPage);
     };
 
-     const handleRoleFilterChange = (e) => {
+    const handleRoleFilterChange = (e) => {
         setRoleFilter(e.target.value);
     };
 
     const handleChangeRowsPerPage = (event) => {
         setRowsPerPage(parseInt(event.target.value, 10));
         setPage(0);
-    };
-
-     const handleClick = (event) => {
-        setAnchorEl(event.currentTarget);
-    };
-
-    const handleClose = () => {
-        setAnchorEl(null);
     };
 
     const displayedRows = filteredRows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
@@ -96,50 +93,16 @@ export default function BasicTable() {
                 onChange={handleSearchChange}
                 sx={{ marginBottom: 1, width: '20%' }}
             />
-              <IconButton
-                aria-controls="filter-menu"
-                aria-haspopup="true"
-                onClick={handleClick}
-            >
-                <FilterListIcon />
-            </IconButton>
-            <Menu
-                id="filter-menu"
+            <FilterMenu
+                roleFilter={roleFilter}
+                locationFilter={locationFilter}
+                handleRoleFilterChange={handleRoleFilterChange}
+                handleLocationFilterChange={handleLocationFilterChange}
+                handleClick={handleClick}
+                uniqueLocations={uniqueLocations}
                 anchorEl={anchorEl}
-                keepMounted
-                open={Boolean(anchorEl)}
-                onClose={handleClose}
-            >
-                <FormControl sx={{ marginBottom: 1, minWidth: 120 }}>
-                    <InputLabel id="role-filter-label">Filter by Role</InputLabel>
-                    <Select
-                        labelId="role-filter-label"
-                        id="role-filter"
-                        value={roleFilter}
-                        onChange={handleRoleFilterChange}
-                    >
-                        <MenuItem value="All">All</MenuItem>
-                        <MenuItem value="Manager">Manager</MenuItem>
-                        <MenuItem value="Employee">Employee</MenuItem>
-                        <MenuItem value="Director">Director</MenuItem>
-                    </Select>
-                </FormControl>
-                <FormControl sx={{ marginBottom: 1, minWidth: 120 }}>
-                    <InputLabel id="location-filter-label">Filter by Location</InputLabel>
-                    <Select
-                        labelId="location-filter-label"
-                        id="location-filter"
-                        value={locationFilter}
-                        onChange={handleLocationFilterChange}
-                    >
-                        <MenuItem value="All">All</MenuItem>
-                        {uniqueLocations.map((location) => (
-                            <MenuItem key={location} value={location}>{location}</MenuItem>
-                        ))}
-                    </Select>
-                </FormControl>
-            </Menu>
-
+                handleClose={handleClose}
+            />
             <TableContainer component={Paper}>
                 <Table sx={{ minWidth: 250 }} aria-label="simple table">
                     <TableHead>
