@@ -5,13 +5,7 @@ import timeGridPlugin from '@fullcalendar/timegrid';
 import listPlugin from '@fullcalendar/list';
 import interactionPlugin from "@fullcalendar/interaction";
 import { v4 as uuidv4 } from 'uuid';
-import {
-    Box,
-    List,
-    ListItem,
-    ListItemText,
-    Typography,
-} from "@mui/material";
+import {  Box } from "@mui/material";
 
 
 const Calendar = () => {
@@ -21,7 +15,6 @@ const Calendar = () => {
     const handleDateClick = (selected) => {
         const title = prompt("Plese enter a new tittle!");
         const callendarApi = selected.view.calendar;
-        
         callendarApi.unselect();
 
         if (title) {
@@ -42,32 +35,8 @@ const Calendar = () => {
     };
 
     return <Box m="20px">
-        <Box display="flex" justifyContent="space-berween" ></Box>
-        {/* {EVENTS TO BE ACCEPTED} */}
-        {/* <Box flex="1 1 20%" p="15px" borderRadius="4px">
-            <Typography variant="h5">Events</Typography>
-            <List>
-                {currentEvents.map((event) => (
-                    <ListItem key={event.id} sx={{ margin: "10px 0", borderRadius: "2px" }} >
-                        <ListItemText primary={event.title}
-                        // secondary={
-                        //     <Typography>
-                        //         {formatDate(event.start, {
-                        //             year: "numeric",
-                        //             month: "short",
-                        //             day: "numeric"
-                        //         })}
-                        //     </Typography>
-                        // }
-                        >
-
-                        </ListItemText>
-                    </ListItem>
-                ))}
-            </List>
-        </Box> */}
-        {/* {calendar } */}
-        <Box>
+    
+        <Box >
             <FullCallendar 
                 height="70vh"
                 plugins={[
@@ -76,7 +45,7 @@ const Calendar = () => {
                     interactionPlugin,
                     listPlugin
                 ]}
-                headerToolbar={{
+                headerToolbar={{ 
                     left: "prev,next",
                     center: "title",
                     right: "dayGridMonth,timeGridWeek,timeGridDay,listMonth"
@@ -97,8 +66,6 @@ const Calendar = () => {
                     {id: uuidv4, title: "Time of event " , date: "2023-08-11"},
                     {id: uuidv4, title: "Day of event " , date: "2023-08-09"}
                 ]}
-
-
             >
 
             </FullCallendar>
