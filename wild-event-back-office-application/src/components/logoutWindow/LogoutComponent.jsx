@@ -34,7 +34,7 @@ export const LogoutComponent = () => {
 						<Button variant='outlined' color='primary' onClick={handleCancelClick}>
 							Cancel
 						</Button>
-						<Button variant='contained' color='primary' onClick={handleLogoutClick}>
+						<Button variant='contained' color='primary' onClick={handleLogoutClick} sx={{ marginLeft: "10px"}}>
 							Logout
 						</Button>
 				</Box>

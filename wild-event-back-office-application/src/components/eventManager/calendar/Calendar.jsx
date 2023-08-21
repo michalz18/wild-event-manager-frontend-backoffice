@@ -34,7 +34,8 @@ const Calendar = () => {
         }
     };
 
-    return <Box m="20px">
+    return (
+    <Box margin="100px 100px 0 350px">
     
         <Box >
             <FullCallendar 
@@ -71,6 +72,7 @@ const Calendar = () => {
             </FullCallendar>
         </Box>
     </Box>
+    )
 }
 
 export default Calendar;

@@ -20,9 +20,14 @@ export const DashboardComponent = () => {
 
   const navigate = useNavigate() ;
 
+	const handleMyEventsClick = () =>{
+		navigate("/my-events/event")
+	}
+
   const handleLogoutClick = () => {
     navigate("/logout");
   };
+
 
  	return (
 		<Drawer
@@ -40,7 +45,7 @@ export const DashboardComponent = () => {
 				<List>
 					{itemList.map((item, index) => (
 						<ListItem key={item.text} disablePadding>
-							<ListItemButton>
+							<ListItemButton onClick={handleMyEventsClick}>
 								<ListItemIcon>{item.icon}</ListItemIcon>
 								<ListItemText primary={item.text} />
 							</ListItemButton>

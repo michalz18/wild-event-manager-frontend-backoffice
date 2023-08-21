@@ -7,6 +7,7 @@ import LoginForm from "./components/loginForm/LoginForm"
 import { LogoutPage } from "./pages/LogoutPage"
 import { MainPage } from "./pages/MainPage"
 import { DarkModeProvider } from "./components/darkMode/DarkModeProvider"
+import { MyEventList } from "./pages/MyEventList"
 
 const router = createBrowserRouter([
 	{
@@ -30,7 +31,7 @@ const router = createBrowserRouter([
 			},
 			{
 				path: "/my-events/event",
-				element: <Test />,
+				element: <MyEventList />,
 				errorElement: <ErrorPage />,
 			},
 			{
