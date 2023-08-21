@@ -28,8 +28,10 @@ const Calendar = () => {
         }
     };
 
-    return <Box m="20px">
 
+    return (
+    <Box margin="100px 100px 0 350px">
+    
         <Box >
             <FullCallendar
             timeZone="local"
@@ -66,6 +68,7 @@ const Calendar = () => {
 
         </Box>
     </Box>
+    )
 }
 
 export default Calendar;
