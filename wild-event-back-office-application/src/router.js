@@ -3,6 +3,8 @@ import Test from "./test";
 import ErrorPage from "./pages/ErrorPage";
 import Layout from "./pages/layout/Layout";
 import LoginForm from "./components/loginForm/LoginForm";
+import Calendar from "./components/eventManager/calendar/Calendar";
+import EventForm from "./components/eventManager/newEventForm/EventForm";
 
 
 const router = createBrowserRouter([
@@ -11,6 +13,16 @@ const router = createBrowserRouter([
     element: <Layout />,
     errorElement: <ErrorPage />,
     children: [
+      {
+        path: "/calendar",
+        element: <Calendar isAdmin={true} />,
+        errorElement: <ErrorPage />,
+      },
+      {
+        path: "/add-event",
+        element: <EventForm />,
+        errorElement: <ErrorPage />,
+      },
       {
         path: "/signup",
         element: <LoginForm />,

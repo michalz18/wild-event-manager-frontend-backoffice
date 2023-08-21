@@ -9,12 +9,14 @@ import dayjs from 'dayjs';
 
 
 
-const EventForm = (props) => {
+const EventForm = () => {
     const START_AT = 'start';
     const ENDS_AT = 'end';
+
    
     const navigate = useNavigate();
-
+  
+    
     const locationDB = [
         "Location1",
         "Location2",
@@ -52,9 +54,8 @@ const EventForm = (props) => {
             start: eventData.start,
             end: eventData.end
         })
-        navigate("/calendar", {selected:{selected:newEvent}});
+        navigate("/calendar", {selected:newEvent});
     };
-
 
     return (
         <Box>
