@@ -72,6 +72,7 @@ const Calendar = ({ isAdmin }) => {
             </FullCallendar>
         </Box>
     </Box>
+    )
 }
 
 export default Calendar;
