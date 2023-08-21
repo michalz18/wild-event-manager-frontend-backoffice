@@ -63,7 +63,7 @@ const Calendar = () => {
                 ]}
             >
             </FullCallendar>
-      
+
         </Box>
     </Box>
 }
