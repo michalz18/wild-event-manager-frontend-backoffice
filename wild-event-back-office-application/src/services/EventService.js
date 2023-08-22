@@ -9,5 +9,20 @@ const getAllEvents = async () => {
         console.error("Events cannot be downloaded!")
     }
 }
-const addEvent = async () => {}
-export { getAllEvents,addEvent };
+const addEvent = async (eventData) => {
+    try {
+        const response = await fetch(`http://localhost:8080/event-management/event`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(eventData)
+        });
+        if (!response.ok) {
+            throw new Error("Problem occurred while adding an event!");
+        }
+    } catch (error) {
+        console.error("Event could not be added:", error);
+    }
+}
+export { getAllEvents, addEvent };

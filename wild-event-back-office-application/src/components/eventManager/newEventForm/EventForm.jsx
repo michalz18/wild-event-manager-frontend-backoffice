@@ -1,28 +1,41 @@
 import React from "react";
-import { FormGroup, FormControl, InputLabel, Input, Button, Autocomplete, TextField, Select, MenuItem } from '@mui/material';
+import { FormGroup, FormControl, InputLabel, Input, Button, Autocomplete, TextField, Select, MenuItem, Checkbox, FormControlLabel } from '@mui/material';
 import { Box } from '@mui/system';
 import { useNavigate, useLocation } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { LocalizationProvider, DateTimePicker } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import dayjs from 'dayjs';
+import { addEvent } from "../../../services/EventService"
+import { getLocations } from "../../../services/LocationService"
 
 
 
 const EventForm = () => {
     const START_AT = 'start';
     const ENDS_AT = 'end';
-
-
     const navigate = useNavigate();
 
+    const [locationDB, setLocationDB] = useState([]);
+    const getAllLocations = async () => {
+        try {
+            const data = await getLocations();
+            setLocationDB(
+                data.map(locationDataFromDB => ({
+                    id: locationDataFromDB.id,
+                    title: locationDataFromDB.title,
+                })));
+        } catch (error) {
+            console.error("Error fetching events", error);
+            setLocationDB([]);
+        }
+    }
+    console.log(locationDB)
+    useEffect(() => {
+        getAllLocations();
+    }, []);
 
-    const locationDB = [
-        "Location1",
-        "Location2",
-        "L3",
-        "The ",
-    ];
+
     const userOptions = [
         "User1",
         "User2",
@@ -35,7 +48,8 @@ const EventForm = () => {
         start: dayjs().format('YYYY-MM-DDTHH:mm:ssZ[Z]'),
         end: dayjs().format('YYYY-MM-DDTHH:mm:ssZ[Z]'),
         location: "",
-        organizer: []
+        organizer: [],
+        avaiable: false
     });
 
     const handleDateChange = (newValue, flag) => {
@@ -49,19 +63,20 @@ const EventForm = () => {
     console.log(eventData)
     const handleSubmit = (event) => {
         event.preventDefault();
-        if (new Date(eventData.start) < new Date(eventData.end)) {
-            const newEvent = ({
+
+        if (eventData.start < eventData.end) {
+            const newEvent = {
                 title: eventData.title,
                 start: eventData.start,
                 end: eventData.end
-            })
-            console.log(newEvent);
-            navigate("/calendar", { selected: newEvent });
-        } else{
-            alert("Start date must be earlier than end date.");
-        }
+            };
+            addEvent(eventData);
 
-    };
+            navigate("/calendar", { selected: newEvent });
+        } else {
+            alert("Invalid dates. Make sure the start date is earlier than the end date.");
+        }
+    }
 
     return (
         <Box>
@@ -114,10 +129,11 @@ const EventForm = () => {
                     <Autocomplete
                         disablePortal
                         options={locationDB}
+                        getOptionLabel={(option) => option.title}
                         renderInput={(params) => <TextField {...params} label="Locations" />}
                         onChange={(event, value) => setEventData((prevData) => ({
                             ...prevData,
-                            location: value
+                            location: value.id
                         }))}
                     />
                 </FormControl>
@@ -138,6 +154,12 @@ const EventForm = () => {
                             </MenuItem>
                         ))}
                     </Select>
+                </FormControl>
+                <FormControl >
+                    <FormControlLabel control={<Checkbox onChange={(event) => setEventData((prevData) => ({
+                        ...prevData,
+                        avaiable: !eventData.avaiable
+                    }))} />} label="available for everyone " />
                 </FormControl>
                 <Button variant="contained" color="primary" onClick={handleSubmit} type="submit">
                     Submit
