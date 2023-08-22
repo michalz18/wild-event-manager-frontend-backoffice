@@ -8,6 +8,9 @@ import { LogoutPage } from "./pages/LogoutPage"
 import { MainPage } from "./pages/MainPage"
 import { DarkModeProvider } from "./components/darkMode/DarkModeProvider"
 import { MyEventList } from "./pages/MyEventList"
+import Calendar from "./components/eventManager/calendar/Calendar";
+import EventForm from "./components/eventManager/newEventForm/EventForm";
+
 
 const router = createBrowserRouter([
 	{
@@ -19,6 +22,16 @@ const router = createBrowserRouter([
 		),
 		errorElement: <ErrorPage />,
 		children: [
+      {
+        path: "/calendar",
+        element: <Calendar isAdmin={true} />,
+        errorElement: <ErrorPage />,
+      },
+      {
+        path: "/add-event",
+        element: <EventForm />,
+        errorElement: <ErrorPage />,
+      },
 			{
 				path: "/signup",
 				element: <LoginForm />,
