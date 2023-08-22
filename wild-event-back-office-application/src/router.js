@@ -1,6 +1,5 @@
 import { createBrowserRouter } from "react-router-dom"
 import Test from "./test"
-import EventList from "./pages/EventList"
 import ErrorPage from "./pages/ErrorPage"
 import Layout from "./pages/layout/Layout"
 import LoginForm from "./components/loginForm/LoginForm"
@@ -22,16 +21,16 @@ const router = createBrowserRouter([
 		),
 		errorElement: <ErrorPage />,
 		children: [
-      {
-        path: "/calendar",
-        element: <Calendar isAdmin={true} />,
-        errorElement: <ErrorPage />,
-      },
-      {
-        path: "/add-event",
-        element: <EventForm />,
-        errorElement: <ErrorPage />,
-      },
+			{
+				path: "/calendar",
+				element: <Calendar isAdmin={true} />,
+				errorElement: <ErrorPage />,
+			},
+			{
+				path: "/add-event",
+				element: <EventForm />,
+				errorElement: <ErrorPage />,
+			},
 			{
 				path: "/signup",
 				element: <LoginForm />,
@@ -54,7 +53,7 @@ const router = createBrowserRouter([
 			},
 			{
 				path: "/event-management/event",
-				element: <EventList />,
+				element: <EventForm />,
 				errorElement: <ErrorPage />,
 			},
 			{

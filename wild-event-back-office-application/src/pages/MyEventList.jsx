@@ -7,7 +7,8 @@ export const MyEventList = () =>{
     <>
     <HeaderComponent />
     <DashboardComponent />
-    <Calendar />
+    <Calendar isAdmin={true} />
+
     </>
   )
 }

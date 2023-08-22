@@ -13,10 +13,10 @@ const EventForm = () => {
     const START_AT = 'start';
     const ENDS_AT = 'end';
 
-   
+
     const navigate = useNavigate();
-  
-    
+
+
     const locationDB = [
         "Location1",
         "Location2",
@@ -37,24 +37,30 @@ const EventForm = () => {
         location: "",
         organizer: []
     });
-  
+
     const handleDateChange = (newValue, flag) => {
         const formattedValue = newValue.format("YYYY-MM-DDTHH:mm:ssZ[Z]");
         setEventData((prevData) => ({
             ...prevData,
-            [flag === START_AT ? "startAt" : "endsAt"]: formattedValue,
+            [flag === START_AT ? "start" : "end"]: formattedValue,
         }));
     };
 
-
+    console.log(eventData)
     const handleSubmit = (event) => {
         event.preventDefault();
-        const newEvent = ({
-            title: eventData.title,
-            start: eventData.start,
-            end: eventData.end
-        })
-        navigate("/calendar", {selected:newEvent});
+        if (new Date(eventData.start) < new Date(eventData.end)) {
+            const newEvent = ({
+                title: eventData.title,
+                start: eventData.start,
+                end: eventData.end
+            })
+            console.log(newEvent);
+            navigate("/calendar", { selected: newEvent });
+        } else{
+            alert("Start date must be earlier than end date.");
+        }
+
     };
 
     return (
