@@ -1,61 +1,90 @@
 import React from "react";
-import { FormGroup, FormControl, InputLabel, Input, Button, Autocomplete, TextField, Select, MenuItem } from '@mui/material';
+import { FormGroup, FormControl, InputLabel, Input, Button, Autocomplete, TextField, Select, MenuItem, Checkbox, FormControlLabel } from '@mui/material';
 import { Box } from '@mui/system';
 import { useNavigate, useLocation } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { LocalizationProvider, DateTimePicker } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import dayjs from 'dayjs';
-
+import { addEvent } from "../../../services/EventService"
+import { getLocations } from "../../../services/LocationService"
+import { getUsers } from "../../../services/UserService"
 
 
 const EventForm = () => {
     const START_AT = 'start';
     const ENDS_AT = 'end';
-
-   
     const navigate = useNavigate();
-  
-    
-    const locationDB = [
-        "Location1",
-        "Location2",
-        "L3",
-        "The ",
-    ];
-    const userOptions = [
-        "User1",
-        "User2",
-        "User3",
-        "User4",
-    ];
+    const [locationDB, setLocationDB] = useState([]);
+    const [userDB, setUserDB] = useState([]);
+
+    const getAllUsers = async () => {
+        try {
+            const data = await getUsers();
+            setUserDB(
+                data.map(userData => ({
+                    id: userData.id,
+                    name: userData.name,
+                })));
+        } catch (error) {
+            console.error("Error fetching users", error);
+            setUserDB([]);
+        }
+    }
+
+    const getAllLocations = async () => {
+        try {
+            const data = await getLocations();
+            setLocationDB(
+                data.map(locationDataFromDB => ({
+                    id: locationDataFromDB.id,
+                    title: locationDataFromDB.title,
+                })));
+        } catch (error) {
+            console.error("Error fetching locations", error);
+            setLocationDB([]);
+        }
+    }
+
+    useEffect(() => {
+        getAllLocations();
+        getAllUsers();
+    }, []);
+
     const [eventData, setEventData] = useState({
         title: "",
         description: "",
-        start: dayjs().format('YYYY-MM-DDTHH:mm:ssZ[Z]'),
-        end: dayjs().format('YYYY-MM-DDTHH:mm:ssZ[Z]'),
-        location: "",
-        organizer: []
+        dateRange:{
+            startsAt: dayjs().format('YYYY-MM-DDTHH:mm:ssZ[Z]'),
+            endsAt: dayjs().format('YYYY-MM-DDTHH:mm:ssZ[Z]'),
+        },
+        locationId: "",
+        organizers: [],
+        openToPublic: false
     });
-  
+
     const handleDateChange = (newValue, flag) => {
-        const formattedValue = newValue.format("YYYY-MM-DDTHH:mm:ssZ[Z]");
+        const formattedValue = newValue.format("YYYY-MM-DDTHH:mm:ss");
         setEventData((prevData) => ({
             ...prevData,
-            [flag === START_AT ? "startAt" : "endsAt"]: formattedValue,
+            dateRange: {
+                ...prevData.dateRange,
+                [flag === START_AT ? "startsAt" : "endsAt"]: formattedValue,
+            }
         }));
     };
 
-
+    console.log(eventData)
     const handleSubmit = (event) => {
         event.preventDefault();
-        const newEvent = ({
-            title: eventData.title,
-            start: eventData.start,
-            end: eventData.end
-        })
-        navigate("/calendar", {selected:newEvent});
-    };
+
+        if (new Date(eventData.dateRange.startsAt) < new Date(eventData.dateRange.endsAt)) {
+            addEvent(eventData);
+            navigate("/calendar");
+        } else {
+            alert("Invalid dates. Make sure the start date is earlier than the end date.");
+        }
+    }
 
     return (
         <Box>
@@ -92,7 +121,7 @@ const EventForm = () => {
                     <LocalizationProvider dateAdapter={AdapterDayjs}>
                         <DateTimePicker
                             label="Start at"
-                            value={eventData.start}
+                            value={eventData.dateRange.startAt}
                             onChange={(newValue) => handleDateChange(newValue, START_AT)} />
                     </LocalizationProvider>
                 </FormControl>
@@ -100,7 +129,7 @@ const EventForm = () => {
                     <LocalizationProvider dateAdapter={AdapterDayjs}>
                         <DateTimePicker
                             label="Ends at"
-                            value={eventData.end}
+                            value={eventData.dateRange.endAt}
                             onChange={(newValue) => handleDateChange(newValue, ENDS_AT)} />
                     </LocalizationProvider>
                 </FormControl>
@@ -108,10 +137,11 @@ const EventForm = () => {
                     <Autocomplete
                         disablePortal
                         options={locationDB}
+                        getOptionLabel={(option) => option.title}
                         renderInput={(params) => <TextField {...params} label="Locations" />}
                         onChange={(event, value) => setEventData((prevData) => ({
                             ...prevData,
-                            location: value
+                            locationId: value.id
                         }))}
                     />
                 </FormControl>
@@ -119,19 +149,31 @@ const EventForm = () => {
                     <InputLabel>Select Users</InputLabel>
                     <Select
                         multiple
-                        value={eventData.organizer}
+                        value={eventData.organizers}
                         onChange={(event) => setEventData((prevData) => ({
                             ...prevData,
-                            organizer: event.target.value
+                            organizers: event.target.value
                         }))}
-                        renderValue={(selected) => selected.join(", ")}
+                        renderValue={(selected) => {
+                            const selectedNames = selected.map(id => {
+                                const user = userDB.find(user => user.id === id);
+                                return user ? user.name : "";
+                            });
+                            return selectedNames.join(", ");
+                        }}
                     >
-                        {userOptions.map((user, index) => (
-                            <MenuItem key={index} value={user}>
-                                {user}
+                        {userDB.map((user, index) => (
+                            <MenuItem key={index} value={user.id}>
+                                {user.name}
                             </MenuItem>
                         ))}
                     </Select>
+                </FormControl>
+                <FormControl >
+                    <FormControlLabel control={<Checkbox onChange={(event) => setEventData((prevData) => ({
+                        ...prevData,
+                        openToPublic: !eventData.openToPublic
+                    }))} />} label="available for everyone " />
                 </FormControl>
                 <Button variant="contained" color="primary" onClick={handleSubmit} type="submit">
                     Submit

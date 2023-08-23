@@ -68,11 +68,15 @@ const Calendar = ({ isAdmin }) => {
                 events={events}
                 selectMirror={isAdmin}
                 dayMaxEvents={isAdmin}
+                eventAdd={() => ""} //Post new event
+                datesSet={data => ""} // PATCH new date
+
+            //    eventsSet={getEvents} 
+
             >
             </FullCallendar>
         </Box>
     </Box>
-    )
 }
 
 export default Calendar;
