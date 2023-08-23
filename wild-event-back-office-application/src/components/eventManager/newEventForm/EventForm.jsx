@@ -32,7 +32,6 @@ const EventForm = () => {
         }
     }
 
-
     const getAllLocations = async () => {
         try {
             const data = await getLocations();
@@ -46,36 +45,32 @@ const EventForm = () => {
             setLocationDB([]);
         }
     }
-    console.log(locationDB)
-    console.log(userDB)
 
     useEffect(() => {
         getAllLocations();
         getAllUsers();
     }, []);
 
-
-    const userOptions = [
-        "User1",
-        "User2",
-        "User3",
-        "User4",
-    ];
     const [eventData, setEventData] = useState({
         title: "",
         description: "",
-        start: dayjs().format('YYYY-MM-DDTHH:mm:ssZ[Z]'),
-        end: dayjs().format('YYYY-MM-DDTHH:mm:ssZ[Z]'),
-        location: "",
-        organizer: [],
-        avaiable: false
+        dateRange:{
+            startsAt: dayjs().format('YYYY-MM-DDTHH:mm:ssZ[Z]'),
+            endsAt: dayjs().format('YYYY-MM-DDTHH:mm:ssZ[Z]'),
+        },
+        locationId: "",
+        organizers: [],
+        openToPublic: false
     });
 
     const handleDateChange = (newValue, flag) => {
-        const formattedValue = newValue.format("YYYY-MM-DDTHH:mm:ssZ[Z]");
+        const formattedValue = newValue.format("YYYY-MM-DDTHH:mm:ss");
         setEventData((prevData) => ({
             ...prevData,
-            [flag === START_AT ? "start" : "end"]: formattedValue,
+            dateRange: {
+                ...prevData.dateRange,
+                [flag === START_AT ? "startsAt" : "endsAt"]: formattedValue,
+            }
         }));
     };
 
@@ -83,15 +78,9 @@ const EventForm = () => {
     const handleSubmit = (event) => {
         event.preventDefault();
 
-        if (eventData.start < eventData.end) {
-            const newEvent = {
-                title: eventData.title,
-                start: eventData.start,
-                end: eventData.end
-            };
+        if (new Date(eventData.dateRange.startsAt) < new Date(eventData.dateRange.endsAt)) {
             addEvent(eventData);
-
-            navigate("/calendar", { selected: newEvent });
+            navigate("/calendar");
         } else {
             alert("Invalid dates. Make sure the start date is earlier than the end date.");
         }
@@ -132,7 +121,7 @@ const EventForm = () => {
                     <LocalizationProvider dateAdapter={AdapterDayjs}>
                         <DateTimePicker
                             label="Start at"
-                            value={eventData.start}
+                            value={eventData.dateRange.startAt}
                             onChange={(newValue) => handleDateChange(newValue, START_AT)} />
                     </LocalizationProvider>
                 </FormControl>
@@ -140,7 +129,7 @@ const EventForm = () => {
                     <LocalizationProvider dateAdapter={AdapterDayjs}>
                         <DateTimePicker
                             label="Ends at"
-                            value={eventData.end}
+                            value={eventData.dateRange.endAt}
                             onChange={(newValue) => handleDateChange(newValue, ENDS_AT)} />
                     </LocalizationProvider>
                 </FormControl>
@@ -152,7 +141,7 @@ const EventForm = () => {
                         renderInput={(params) => <TextField {...params} label="Locations" />}
                         onChange={(event, value) => setEventData((prevData) => ({
                             ...prevData,
-                            location: value.id
+                            locationId: value.id
                         }))}
                     />
                 </FormControl>
@@ -160,10 +149,10 @@ const EventForm = () => {
                     <InputLabel>Select Users</InputLabel>
                     <Select
                         multiple
-                        value={eventData.organizer}
+                        value={eventData.organizers}
                         onChange={(event) => setEventData((prevData) => ({
                             ...prevData,
-                            organizer: event.target.value
+                            organizers: event.target.value
                         }))}
                         renderValue={(selected) => {
                             const selectedNames = selected.map(id => {
@@ -183,7 +172,7 @@ const EventForm = () => {
                 <FormControl >
                     <FormControlLabel control={<Checkbox onChange={(event) => setEventData((prevData) => ({
                         ...prevData,
-                        avaiable: !eventData.avaiable
+                        openToPublic: !eventData.openToPublic
                     }))} />} label="available for everyone " />
                 </FormControl>
                 <Button variant="contained" color="primary" onClick={handleSubmit} type="submit">
