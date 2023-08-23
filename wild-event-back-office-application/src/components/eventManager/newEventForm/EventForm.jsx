@@ -8,15 +8,31 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import dayjs from 'dayjs';
 import { addEvent } from "../../../services/EventService"
 import { getLocations } from "../../../services/LocationService"
-
+import { getUsers } from "../../../services/UserService"
 
 
 const EventForm = () => {
     const START_AT = 'start';
     const ENDS_AT = 'end';
     const navigate = useNavigate();
-
     const [locationDB, setLocationDB] = useState([]);
+    const [userDB, setUserDB] = useState([]);
+
+    const getAllUsers = async () => {
+        try {
+            const data = await getUsers();
+            setUserDB(
+                data.map(userData => ({
+                    id: userData.id,
+                    name: userData.name,
+                })));
+        } catch (error) {
+            console.error("Error fetching users", error);
+            setUserDB([]);
+        }
+    }
+
+
     const getAllLocations = async () => {
         try {
             const data = await getLocations();
@@ -26,13 +42,16 @@ const EventForm = () => {
                     title: locationDataFromDB.title,
                 })));
         } catch (error) {
-            console.error("Error fetching events", error);
+            console.error("Error fetching locations", error);
             setLocationDB([]);
         }
     }
     console.log(locationDB)
+    console.log(userDB)
+
     useEffect(() => {
         getAllLocations();
+        getAllUsers();
     }, []);
 
 
@@ -146,11 +165,17 @@ const EventForm = () => {
                             ...prevData,
                             organizer: event.target.value
                         }))}
-                        renderValue={(selected) => selected.join(", ")}
+                        renderValue={(selected) => {
+                            const selectedNames = selected.map(id => {
+                                const user = userDB.find(user => user.id === id);
+                                return user ? user.name : "";
+                            });
+                            return selectedNames.join(", ");
+                        }}
                     >
-                        {userOptions.map((user, index) => (
-                            <MenuItem key={index} value={user}>
-                                {user}
+                        {userDB.map((user, index) => (
+                            <MenuItem key={index} value={user.id}>
+                                {user.name}
                             </MenuItem>
                         ))}
                     </Select>
