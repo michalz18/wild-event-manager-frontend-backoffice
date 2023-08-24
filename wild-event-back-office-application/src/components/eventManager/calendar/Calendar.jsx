@@ -6,7 +6,7 @@ import listPlugin from '@fullcalendar/list';
 import interactionPlugin from "@fullcalendar/interaction";
 import { Box } from "@mui/material";
 import { useNavigate, } from "react-router-dom";
-import { getAllEvents } from "../../../services/EventService"
+import { getAllEvents, deleteEvent } from "../../../services/EventService"
 
 
 
@@ -22,6 +22,7 @@ const Calendar = ({ isAdmin }) => {
                     title: eventDataFromDB.title,
                     start: eventDataFromDB.startsAt,
                     end: eventDataFromDB.endsAt,
+                    id: eventDataFromDB.id
 
                 })));
         } catch (error) {
@@ -37,9 +38,17 @@ const Calendar = ({ isAdmin }) => {
     const handleDateClick = (selected) => {
         navigate("/add-event");
     }
+    const getIdFromEventTitle = (title) => {
+        const find = events.find(event => event.title === title)
+        console.log(find)
+        return find ? find.id : "";
+    }
 
     const handleEventClick = (selected) => {
         if (window.confirm(`Are you sure you want to delete the event? ${selected.event.title}`)) {
+           console.log(`${getIdFromEventTitle(selected.event._def.title)}`)
+
+            deleteEvent(getIdFromEventTitle(selected.event._def.title))
             selected.event.remove();
         }
     };
@@ -68,10 +77,7 @@ const Calendar = ({ isAdmin }) => {
                 events={events}
                 selectMirror={isAdmin}
                 dayMaxEvents={isAdmin}
-                eventAdd={() => ""} //Post new event
                 datesSet={data => ""} // PATCH new date
-
-            //    eventsSet={getEvents} 
 
             >
             </FullCallendar>
