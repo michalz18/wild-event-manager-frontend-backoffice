@@ -1,11 +1,13 @@
-
 const getLocations = async () => {
-    const url = `${'http://localhost:8080/auth/locations'}`;
-    const response = await fetch(url);
-    if (!response.ok) {
-        throw Error('Failed to deleated todo item!')
+    try {
+        const response = await fetch(`${process.env.REACT_APP_GET_LOCATIONS}`);
+        if (!response.ok) {
+            throw new Error("Problem occured with fetching locations!")
+        }
+        return await response.json();
+    } catch (error) {
+        console.error("Locations cannot be downloaded!")
     }
-    return await response.json()
-  }
+}
 
-  export {getLocations};
+export { getLocations };

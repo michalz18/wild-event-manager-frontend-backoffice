@@ -54,7 +54,7 @@ const EventForm = () => {
     const [eventData, setEventData] = useState({
         title: "",
         description: "",
-        dateRange:{
+        dateRange: {
             startsAt: dayjs().format('YYYY-MM-DDTHH:mm:ssZ[Z]'),
             endsAt: dayjs().format('YYYY-MM-DDTHH:mm:ssZ[Z]'),
         },
@@ -74,10 +74,8 @@ const EventForm = () => {
         }));
     };
 
-    console.log(eventData)
     const handleSubmit = (event) => {
         event.preventDefault();
-
         if (new Date(eventData.dateRange.startsAt) < new Date(eventData.dateRange.endsAt)) {
             addEvent(eventData);
             navigate("/calendar");
