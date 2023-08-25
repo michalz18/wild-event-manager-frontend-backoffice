@@ -28,7 +28,6 @@ export const DashboardComponent = () => {
     navigate("/logout");
   };
 
-
  	return (
 		<Drawer
 			variant='permanent'

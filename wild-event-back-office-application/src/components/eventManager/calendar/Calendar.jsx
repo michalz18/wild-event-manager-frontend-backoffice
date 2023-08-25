@@ -53,7 +53,7 @@ const Calendar = ({ isAdmin }) => {
         }
     };
 
-    return <Box m="20px">
+    return <Box marginTop={10} width={1000} marginLeft={60}>
         <Box >
             <FullCallendar
                 timeZone="local"
