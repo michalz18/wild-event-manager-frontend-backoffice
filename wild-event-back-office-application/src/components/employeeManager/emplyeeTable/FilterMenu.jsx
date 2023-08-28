@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Box, IconButton, Menu, Select, MenuItem, FormControl, InputLabel } from '@mui/material';
 import FilterListIcon from '@mui/icons-material/FilterList'
 
-export default function FilterMenu({ roleFilter, locationFilter, handleRoleFilterChange, handleLocationFilterChange, handleClick, uniqueLocations, anchorEl, handleClose }) {
+export default function FilterMenu({ uniqueRoles, locationFilter, handleRoleFilterChange, handleLocationFilterChange, handleClick, uniqueLocations, anchorEl, handleClose }) {
 
     return (
         <>
@@ -28,7 +28,7 @@ export default function FilterMenu({ roleFilter, locationFilter, handleRoleFilte
                     <Select
                         labelId="role-filter-label"
                         id="role-filter"
-                        value={roleFilter}
+                        value={uniqueRoles}
                         onChange={handleRoleFilterChange}
                     >
                         <MenuItem value="All">All</MenuItem>
@@ -37,19 +37,19 @@ export default function FilterMenu({ roleFilter, locationFilter, handleRoleFilte
                     </Select>
                 </FormControl>
                 <FormControl sx={{ marginBottom: 1, minWidth: 120 }}>
-                    <InputLabel id="location-filter-label">Filter by Location</InputLabel>
-                    <Select
-                        labelId="location-filter-label"
-                        id="location-filter"
-                        value={locationFilter}
-                        onChange={handleLocationFilterChange}
-                    >
-                        <MenuItem value="All">All</MenuItem>
-                        {uniqueLocations.map((location) => (
-                            <MenuItem key={location} value={location}>{location}</MenuItem>
-                        ))}
-                    </Select>
-                </FormControl>
+            <InputLabel id="role-filter-label">Filter by Role</InputLabel>
+            <Select
+                labelId="role-filter-label"
+                id="role-filter"
+                value={uniqueRoles}
+                onChange={handleRoleFilterChange}
+            >
+                <MenuItem value="All">All</MenuItem>
+                {uniqueRoles.map((role) => (
+                    <MenuItem key={role} value={role}>{role}</MenuItem>
+                ))}
+            </Select>
+        </FormControl>
             </Menu>
         </>
     );

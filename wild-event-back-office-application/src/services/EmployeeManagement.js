@@ -1,6 +1,6 @@
 const getAllActiveUsers = async () => {
   try {
-    const response = await fetch(`${process.env.REACT_APP_GET_ACTIVE_USERS}`);
+    const response = await fetch('http://localhost:8080/staff-management/staff');
     if (!response.ok) {
       throw new Error("Failed to fetch active users!");
     }
@@ -12,7 +12,7 @@ const getAllActiveUsers = async () => {
 
 const addUser = async (userDTO) => {
   try {
-    const response = await fetch(`${process.env.REACT_APP_ADD_USER}`, {
+    const response = await fetch(`'http://localhost:8080/staff-management/staff'`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -31,7 +31,7 @@ const addUser = async (userDTO) => {
 const updateUser = async (userId, userDTO) => {
   try {
     const response = await fetch(
-      `${process.env.REACT_APP_UPDATE_USER}${userId}`,
+      `http://localhost:8080/staff-management/staff/${userId}`,
       {
         method: "PUT",
         headers: {
@@ -51,7 +51,7 @@ const updateUser = async (userId, userDTO) => {
 const deactivateUser = async (userId) => {
   try {
     const response = await fetch(
-      `${process.env.REACT_APP_DEACTIVATE_USER}${userId}`,
+      `http://localhost:8080/staff-management/staff/deactivate${userId}`,
       {
         method: "PUT",
         headers: {
