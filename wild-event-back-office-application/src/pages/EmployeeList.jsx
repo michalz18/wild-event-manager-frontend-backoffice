@@ -1,1 +1,11 @@
-//This page will be responsible for displaying the list of employees
+import { DashboardComponent } from "../components/dashboard/DashboardComponent"
+import { HeaderComponent } from "../components/header/HeaderComponent"
+
+export const EmployeeList = () =>{
+  return(
+    <>
+    <HeaderComponent />
+    <DashboardComponent />
+    </>
+  )
+}

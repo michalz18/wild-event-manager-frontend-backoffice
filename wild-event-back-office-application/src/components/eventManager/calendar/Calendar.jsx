@@ -4,7 +4,7 @@ import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import listPlugin from '@fullcalendar/list';
 import interactionPlugin from "@fullcalendar/interaction";
-import { Box } from "@mui/material";
+import { Box, Container } from "@mui/material";
 import { useNavigate, } from "react-router-dom";
 import { getAllEvents, deleteEvent } from "../../../services/EventService"
 
@@ -53,11 +53,12 @@ const Calendar = ({ isAdmin }) => {
         }
     };
 
-    return <Box marginTop={10} width={1000} marginLeft={60}>
+    return (
+    <Container maxWidth="lg" sx={{ mt: {xs: 2, sm: 3, md: 10 }}}>
         <Box >
             <FullCallendar
                 timeZone="local"
-                height="70vh"
+                height={window.innerWidth <= 600 ? '60vh' : '70vh'}
                 plugins={[
                     dayGridPlugin,
                     timeGridPlugin,
@@ -82,7 +83,8 @@ const Calendar = ({ isAdmin }) => {
             >
             </FullCallendar>
         </Box>
-    </Box>
+    </Container>
+    )
 }
 
 export default Calendar;

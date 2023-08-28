@@ -1,34 +1,34 @@
 import { useNavigate } from "react-router-dom";
+import itemList from "./DashboardElements";
 
-import { Drawer, Box, Toolbar, List, Divider, ListItem, ListItemButton, ListItemIcon, ListItemText } from "@mui/material";
+import {
+	Drawer,
+	Box,
+	Toolbar,
+	List,
+	Divider,
+	ListItem,
+	ListItemButton,
+	ListItemIcon,
+	ListItemText,
+} from "@mui/material"
 
-import LogoutIcon from "@mui/icons-material/Logout";
-import EventIcon from "@mui/icons-material/Event";
-import NotificationIcon from "@mui/icons-material/Notifications";
-import PersonIcon from "@mui/icons-material/Person";
-import MapIcon from "@mui/icons-material/Map";
+import LogoutIcon from "@mui/icons-material/Logout"
 
 export const DashboardComponent = () => {
 	const drawerWidth = 340
 
-	const itemList = [
-		{ text: "Event management", icon: <EventIcon /> },
-		{ text: "My events", icon: <NotificationIcon /> },
-		{ text: "Employee management", icon: <PersonIcon /> },
-		{ text: "Map configuration", icon: <MapIcon /> },
-	]
+	const navigate = useNavigate()
 
-  const navigate = useNavigate() ;
+	const handleItemClick = (path) => {
+    navigate(path);
+};
 
-	const handleMyEventsClick = () =>{
-		navigate("/my-events/event")
+	const handleLogoutClick = () => {
+		navigate("/logout")
 	}
 
-  const handleLogoutClick = () => {
-    navigate("/logout");
-  };
-
- 	return (
+	return (
 		<Drawer
 			variant='permanent'
 			sx={{
@@ -42,13 +42,13 @@ export const DashboardComponent = () => {
 			<Toolbar />
 			<Box sx={{ overflow: "auto" }}>
 				<List>
-					{itemList.map((item, index) => (
-						<ListItem key={item.text} disablePadding>
-							<ListItemButton onClick={handleMyEventsClick}>
-								<ListItemIcon>{item.icon}</ListItemIcon>
-								<ListItemText primary={item.text} />
-							</ListItemButton>
-						</ListItem>
+					{itemList.map((item) => (
+							<ListItem key={item.text} disablePadding>
+								<ListItemButton onClick={() => handleItemClick(item.path)}>
+									<ListItemIcon>{item.icon}</ListItemIcon>
+									<ListItemText primary={item.text} />
+								</ListItemButton>
+							</ListItem>
 					))}
 				</List>
 				<Divider />
