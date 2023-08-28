@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { getAllActiveUsers } from '../../../services/EmployeeManagement';
+import UserActionsMenu from './UserActionsMenu';
 import SearchBar from './SearchBar';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -10,7 +11,9 @@ import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import TableFooter from '@mui/material/TableFooter';
 import TablePagination from '@mui/material/TablePagination';
-
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
 
 export default function EmployeeTable() {
     const [users, setUsers] = useState([]);
@@ -18,6 +21,7 @@ export default function EmployeeTable() {
     const [rowsPerPage, setRowsPerPage] = useState(5);
     const [filteredUsers, setFilteredUsers] = useState([]);
     const [searchTerm, setSearchTerm] = useState("");
+    const [anchorEl, setAnchorEl] = useState(null);
 
     useEffect(() => {
         const fetchUsers = async () => {
@@ -49,6 +53,15 @@ export default function EmployeeTable() {
         setPage(0);
     };
 
+    const handleMenuOpen = (event) => {
+        setAnchorEl(event.currentTarget);
+    };
+
+    const handleMenuClose = () => {
+        setAnchorEl(null);
+    };
+
+
     return (
         <div>
             <SearchBar onSearch={handleSearch} />
@@ -61,8 +74,6 @@ export default function EmployeeTable() {
                             <TableCell align="center" sx={{ fontWeight: 'bold', fontSize: '1.1rem' }}>Phone</TableCell>
                             <TableCell align="center" sx={{ fontWeight: 'bold', fontSize: '1.1rem' }}>Locations</TableCell>
                             <TableCell align="center" sx={{ fontWeight: 'bold', fontSize: '1.1rem' }}>Role</TableCell>
-                            <TableCell align="center" sx={{ fontWeight: 'bold', fontSize: '1.1rem' }}>Edit</TableCell>
-                            <TableCell align="center" sx={{ fontWeight: 'bold', fontSize: '1.1rem' }}>Remove</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
@@ -82,8 +93,17 @@ export default function EmployeeTable() {
                                 <TableCell align="center">
                                     {Array.isArray(user.roles) ? user.roles.join(', ') : user.roles}
                                 </TableCell>
-                                <TableCell align="center">Edit</TableCell>
-                                <TableCell align="center">Remove</TableCell>
+                                <TableCell align="center">
+  <UserActionsMenu 
+    onEdit={() => {
+      // Kod do edycji użytkownika
+    }} 
+    onRemove={() => {
+      // Kod do usunięcia użytkownika
+    }} 
+  />
+</TableCell>
+
                             </TableRow>
                         ))}
                     </TableBody>
