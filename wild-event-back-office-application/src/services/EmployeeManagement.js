@@ -12,7 +12,7 @@ const getAllActiveUsers = async () => {
 
 const getAllLocations = async () => {
   try {
-    const response = await fetch(`http://localhost:8080/auth/locations`);
+    const response = await fetch('http://localhost:8080/auth/locations');
     if (!response.ok) {
         throw new Error("There is an issue with fetching locations!");
     }
