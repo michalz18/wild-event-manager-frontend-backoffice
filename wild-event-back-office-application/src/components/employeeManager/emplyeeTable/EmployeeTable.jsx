@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { getAllActiveUsers } from '../../../services/EmployeeManagement';
+import { getAllActiveUsers, getAllLocations } from '../../../services/EmployeeManagement';
+import { getAllRoles } from '../../../services/Roles';
+import { useNavigate } from 'react-router-dom';
+import AddEmployeeDialog from './AddEmployeeDialog';
 import UserActionsMenu from './UserActionsMenu';
+import RoleFilter from './RoleFilter';
 import SearchBar from './SearchBar';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -11,9 +15,9 @@ import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import TableFooter from '@mui/material/TableFooter';
 import TablePagination from '@mui/material/TablePagination';
-import Menu from '@mui/material/Menu';
-import MenuItem from '@mui/material/MenuItem';
-import MoreVertIcon from '@mui/icons-material/MoreVert';
+import { Button } from '@mui/material';
+
+
 
 export default function EmployeeTable() {
     const [users, setUsers] = useState([]);
@@ -22,6 +26,11 @@ export default function EmployeeTable() {
     const [filteredUsers, setFilteredUsers] = useState([]);
     const [searchTerm, setSearchTerm] = useState("");
     const [anchorEl, setAnchorEl] = useState(null);
+    const [allRoles, setAllRoles] = useState([]);
+    const [selectedRole, setSelectedRole] = useState("");
+    const [allLocations, setAllLocations] = useState([]);
+    const [open, setOpen] = useState(false);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchUsers = async () => {
@@ -34,15 +43,35 @@ export default function EmployeeTable() {
     }, []);
 
     useEffect(() => {
-        const filtered = users.filter(user =>
-            user.name.toLowerCase().includes(searchTerm.toLowerCase())
-        );
+        const filtered = users.filter(user => {
+            return user.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
+                (selectedRole === "" || user.roles.includes(selectedRole));
+        });
         setFilteredUsers(filtered);
-    }, [searchTerm, users]);
+    }, [searchTerm, users, selectedRole]);
+
 
     const handleSearch = (term) => {
         setSearchTerm(term);
     };
+
+    useEffect(() => {
+        const fetchRoles = async () => {
+            const roles = await getAllRoles();
+            setAllRoles(roles);
+        };
+
+        fetchRoles();
+    }, []);
+
+    useEffect(() => {
+        const fetchLocations = async () => {
+          const locations = await getAllLocations();
+          setAllLocations(locations);
+        };
+      
+        fetchLocations();
+      }, []);
 
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
@@ -61,6 +90,19 @@ export default function EmployeeTable() {
         setAnchorEl(null);
     };
 
+    const handleAddEmployeeForm = (event) => {
+        event.preventDefault()
+        navigate("/staff-management/staff/add-employee")
+    }
+
+    const handleClickOpen = () => {
+        setOpen(true);
+      };
+    
+      const handleClose = () => {
+        setOpen(false);
+      };
+
 
     return (
         <div>
@@ -72,8 +114,24 @@ export default function EmployeeTable() {
                             <TableCell sx={{ fontWeight: 'bold', fontSize: '1.1rem' }}>Employee</TableCell>
                             <TableCell align="center" sx={{ fontWeight: 'bold', fontSize: '1.1rem' }}>Email</TableCell>
                             <TableCell align="center" sx={{ fontWeight: 'bold', fontSize: '1.1rem' }}>Phone</TableCell>
-                            <TableCell align="center" sx={{ fontWeight: 'bold', fontSize: '1.1rem' }}>Locations</TableCell>
-                            <TableCell align="center" sx={{ fontWeight: 'bold', fontSize: '1.1rem' }}>Role</TableCell>
+                            <TableCell align="center" sx={{ fontWeight: 'bold', fontSize: '1.1rem' }}>
+                                Location
+                            </TableCell>
+                            <TableCell
+                                align="center"
+                                sx={{
+                                    fontWeight: 'bold',
+                                    fontSize: '1.1rem',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center'
+                                }}
+                            >
+                                <div style={{ display: 'flex', alignItems: 'center' }}>
+                                    <span style={{ marginRight: '8px' }}>Role</span>
+                                    <RoleFilter allRoles={allRoles} onRoleSelect={setSelectedRole} />
+                                </div>
+                            </TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
@@ -94,15 +152,15 @@ export default function EmployeeTable() {
                                     {Array.isArray(user.roles) ? user.roles.join(', ') : user.roles}
                                 </TableCell>
                                 <TableCell align="center">
-  <UserActionsMenu 
-    onEdit={() => {
-      // Kod do edycji użytkownika
-    }} 
-    onRemove={() => {
-      // Kod do usunięcia użytkownika
-    }} 
-  />
-</TableCell>
+                                    <UserActionsMenu
+                                        onEdit={() => {
+                                            // Kod do edycji użytkownika
+                                        }}
+                                        onRemove={() => {
+                                            // Kod do usunięcia użytkownika
+                                        }}
+                                    />
+                                </TableCell>
 
                             </TableRow>
                         ))}
@@ -126,6 +184,10 @@ export default function EmployeeTable() {
                     </TableFooter>
                 </Table>
             </TableContainer>
+            <Button variant="contained" color="primary" onClick={handleClickOpen}>
+        Add New Employee
+      </Button>
+      <AddEmployeeDialog open={open} handleClose={handleClose} allRoles={allRoles} allLocations={allLocations} />
         </div>
     );
 }

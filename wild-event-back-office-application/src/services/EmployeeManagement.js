@@ -10,9 +10,21 @@ const getAllActiveUsers = async () => {
   }
 };
 
+const getAllLocations = async () => {
+  try {
+    const response = await fetch(`http://localhost:8080/auth/locations`);
+    if (!response.ok) {
+        throw new Error("There is an issue with fetching locations!");
+    }
+    return await response.json();
+} catch (error) {
+    console.error("Cannot fetch locations:", error);
+}
+};
+
 const addUser = async (userDTO) => {
   try {
-    const response = await fetch(`'http://localhost:8080/staff-management/staff'`, {
+    const response = await fetch(`http://localhost:8080/staff-management/staff`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -67,4 +79,4 @@ const deactivateUser = async (userId) => {
   }
 };
 
-export { getAllActiveUsers, addUser, updateUser, deactivateUser };
+export { getAllActiveUsers, getAllLocations, addUser, updateUser, deactivateUser };

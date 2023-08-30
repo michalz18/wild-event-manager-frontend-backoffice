@@ -1,12 +1,12 @@
 const getAllRoles = async () => {
     try {
-        const response = await fetch(`${process.env.REACT_APP_GET_ROLES}`);
+        const response = await fetch(`http://localhost:8080/auth/roles`);
         if (!response.ok) {
-            throw new Error("Problem z pobieraniem ról!");
+            throw new Error("There is an issue with fetching roles!");
         }
         return await response.json();
     } catch (error) {
-        console.error("Nie można pobrać ról:", error);
+        console.error("Cannot fetch roles:", error);
     }
 };
 
