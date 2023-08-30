@@ -63,7 +63,7 @@ const updateUser = async (userId, userDTO) => {
 const deactivateUser = async (userId) => {
   try {
     const response = await fetch(
-      `http://localhost:8080/staff-management/staff/deactivate${userId}`,
+      `http://localhost:8080/staff-management/staff/deactivate/${userId}`,
       {
         method: "PUT",
         headers: {

@@ -6,7 +6,6 @@ export default function AddEmployeeDialog({ open, handleClose, allRoles, allLoca
   const [formData, setFormData] = useState({ name: '', email: '', phone: '', roles: [], locations: [] });
   const [errors, setErrors] = useState({});
 
-
   const handleInputChange = (event) => {
     const { name, value } = event.target;
     setFormData({
@@ -17,46 +16,46 @@ export default function AddEmployeeDialog({ open, handleClose, allRoles, allLoca
   };
 
   const validateField = (name, value) => {
-  let newErrors = {...errors}; 
+    let newErrors = { ...errors };
 
-  if (name === "name") {
-    if (!value || value.length < 3 || !/^[a-zA-Z\s]+$/.test(value)) {
-      newErrors.name = 'Name should be at least 3 characters long and contain only letters and spaces';
-    } else {
-      delete newErrors.name;
+    if (name === "name") {
+      if (!value || value.length < 3 || !/^[a-zA-Z\s]+$/.test(value)) {
+        newErrors.name = 'Name should be at least 3 characters long and contain only letters and spaces';
+      } else {
+        delete newErrors.name;
+      }
     }
-  }
 
-  if (name === "email") {
-    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-    if (!emailRegex.test(value)) {
-      newErrors.email = 'Invalid email format';
-    } else {
-      delete newErrors.email;
+    if (name === "email") {
+      const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+      if (!emailRegex.test(value)) {
+        newErrors.email = 'Invalid email format';
+      } else {
+        delete newErrors.email;
+      }
     }
-  }
 
-  if (name === "phone") {
-    if (!/^[\d]{9}$/.test(value)) {
-      newErrors.phone = 'Phone number must have exactly 9 digits';
-    } else {
-      delete newErrors.phone;
+    if (name === "phone") {
+      if (!/^[\d]{9}$/.test(value)) {
+        newErrors.phone = 'Phone number must have exactly 9 digits';
+      } else {
+        delete newErrors.phone;
+      }
     }
-  }
 
-  if (name === "roles") {
-    if (!value || value.length === 0) {
-      newErrors.roles = 'At least one role must be assigned';
-    } else {
-      delete newErrors.roles;
+    if (name === "roles") {
+      if (!value || value.length === 0) {
+        newErrors.roles = 'At least one role must be assigned';
+      } else {
+        delete newErrors.roles;
+      }
     }
-  }
 
-  setErrors(newErrors);
-};
+    setErrors(newErrors);
+  };
 
   const handleAdd = async () => {
-    if (!validateField()) return;
+    if (Object.keys(errors).length !== 0) return;
 
     const userDTO = {
       name: formData.name,
@@ -66,8 +65,11 @@ export default function AddEmployeeDialog({ open, handleClose, allRoles, allLoca
       locationIds: formData.locations,
     };
 
-    await addUser(userDTO)
+    await addUser(userDTO);
+    handleClose();
+
   };
+
 
   return (
     <Dialog open={open} onClose={handleClose}>

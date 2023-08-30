@@ -29,7 +29,7 @@ export default function UserActionsMenu({ onEdit, onRemove }) {
         <MenuItem onClick={() => {
           handleMenuClose();
           onRemove();
-        }}>Remove</MenuItem>
+        }}>Deactivate</MenuItem>
       </Menu>
     </div>
   );
