@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { getAllActiveUsers, getAllLocations, deactivateUser } from '../../../services/EmployeeManagement';
+import { getAllActiveUsers, getAllLocations, deactivateUser, updateUser } from '../../../services/EmployeeManagement';
 import { getAllRoles } from '../../../services/Roles';
 import { useNavigate } from 'react-router-dom';
 import AddEmployeeDialog from './AddEmployeeDialog';
+import EditEmployeeDialog from './EditEmployeeDialog';
 import UserActionsMenu from './UserActionsMenu';
 import RoleFilter from './RoleFilter';
 import LocationFilter from './LocationFilter';
@@ -29,7 +30,9 @@ export default function EmployeeTable() {
     const [allRoles, setAllRoles] = useState([]);
     const [selectedRole, setSelectedRole] = useState("");
     const [allLocations, setAllLocations] = useState([]);
-    const [open, setOpen] = useState(false);
+    const [userToEdit, setUserToEdit] = useState(null);
+    const [openAddDialog, setOpenAddDialog] = useState(false);
+    const [openEditDialog, setOpenEditDialog] = useState(false);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -85,6 +88,16 @@ export default function EmployeeTable() {
         }
     }
 
+    const handleEditUser = async (userId) => {
+        try {
+            const user = users.find(u => u.id === userId);
+            setUserToEdit(user);
+            setOpenEditDialog(true);
+          } catch (error) {
+            console.error("Could not update user:", error);
+          }
+    }
+
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
     };
@@ -108,13 +121,16 @@ export default function EmployeeTable() {
     }
 
     const handleClickOpen = () => {
-        setOpen(true);
+        setOpenAddDialog(true);
     };
 
-    const handleClose = () => {
-        setOpen(false);
+    const handleCloseAdd = () => {
+        setOpenAddDialog(false);
     };
 
+    const handleCloseEdit = () => {
+        setOpenEditDialog(false);
+    };
 
     return (
         <div>
@@ -167,9 +183,7 @@ export default function EmployeeTable() {
                                 </TableCell>
                                 <TableCell align="center">
                                     <UserActionsMenu
-                                        onEdit={() => {
-                                            // Kod do edycji użytkownika
-                                        }}
+                                        onEdit={() => handleEditUser(user.id)}
                                         onRemove={() => handleDeactivateUser(user.id)}
                                     />
                                 </TableCell>
@@ -199,7 +213,14 @@ export default function EmployeeTable() {
             <Button variant="contained" color="primary" onClick={handleClickOpen}>
                 Add New Employee
             </Button>
-            <AddEmployeeDialog open={open} handleClose={handleClose} allRoles={allRoles} allLocations={allLocations} />
+            <AddEmployeeDialog open={openAddDialog} handleClose={handleCloseAdd} allRoles={allRoles} allLocations={allLocations} />
+            <EditEmployeeDialog 
+      open={openEditDialog} 
+      handleClose={handleCloseEdit} 
+      allRoles={allRoles} 
+      allLocations={allLocations} 
+      userToEdit={userToEdit} 
+    />
         </div>
     );
 }
