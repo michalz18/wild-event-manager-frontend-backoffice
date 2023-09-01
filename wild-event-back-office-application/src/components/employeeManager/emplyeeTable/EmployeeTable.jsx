@@ -17,6 +17,8 @@ import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import TableFooter from '@mui/material/TableFooter';
 import TablePagination from '@mui/material/TablePagination';
+import Snackbar from '@mui/material/Snackbar';
+import MuiAlert from '@mui/material/Alert';
 import { Button } from '@mui/material';
 
 export default function EmployeeTable() {
@@ -34,6 +36,11 @@ export default function EmployeeTable() {
     const [openEditDialog, setOpenEditDialog] = useState(false);
     const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
     const [userIdToDeactivate, setUserIdToDeactivate] = useState(null);
+    const [snackbarInfo, setSnackbarInfo] = useState({
+        open: false,
+        message: '',
+        severity: 'success'
+    });
 
 
     useEffect(() => {
@@ -84,6 +91,11 @@ export default function EmployeeTable() {
             const fetchedUsers = await getAllActiveUsers();
             setUsers(fetchedUsers);
             setFilteredUsers(fetchedUsers);
+            setSnackbarInfo({
+                open: true,
+                message: 'User has been deactivated!',
+                severity: 'success'
+            });
         } catch (error) {
             console.error("Could not deactivate user:", error)
         }
@@ -114,21 +126,40 @@ export default function EmployeeTable() {
         setOpenAddDialog(true);
     };
 
-    const handleCloseAdd = async (newUser) => {
+    const handleCloseAdd = async (wasCancelled, newUser) => {
+        if (wasCancelled) {
+            setOpenAddDialog(false);
+            return;
+        }
         if (newUser) {
             const fetchedUsers = await getAllActiveUsers();
             setUsers(fetchedUsers);
             setFilteredUsers(fetchedUsers);
+            setSnackbarInfo({
+                open: true,
+                message: 'User has been added!',
+                severity: 'success'
+            });
         }
         setOpenAddDialog(false);
     };
 
 
-    const handleCloseEdit = async (updatedUser) => {
+    const handleCloseEdit = async (wasCancelled, updatedUser) => {
+        if (wasCancelled) {
+            setOpenEditDialog(false);
+            return;
+        }
+
         if (updatedUser) {
             const fetchedUsers = await getAllActiveUsers();
             setUsers(fetchedUsers);
             setFilteredUsers(fetchedUsers);
+            setSnackbarInfo({
+                open: true,
+                message: 'User has been edited!',
+                severity: 'info'
+            });
         }
 
         setOpenEditDialog(false);
@@ -142,6 +173,17 @@ export default function EmployeeTable() {
     const handleCloseDeactivateDialog = () => {
         setConfirmDialogOpen(false);
     };
+
+    const handleCloseSnackbar = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+        setSnackbarInfo(prev => ({
+            ...prev,
+            open: false
+        }));
+    };
+
 
     return (
         <div>
@@ -237,7 +279,11 @@ export default function EmployeeTable() {
                 handleClose={handleCloseDeactivateDialog}
                 handleConfirm={() => handleDeactivateUser(userIdToDeactivate)}
             />
-
+            <Snackbar open={snackbarInfo.open} autoHideDuration={3000} onClose={handleCloseSnackbar}>
+                <MuiAlert onClose={handleCloseSnackbar} severity={snackbarInfo.severity} elevation={6} variant="filled">
+                    {snackbarInfo.message}
+                </MuiAlert>
+            </Snackbar>
         </div>
     );
 }

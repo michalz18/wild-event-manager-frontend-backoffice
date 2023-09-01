@@ -1,17 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { updateUser} from '../../../services/EmployeeManagement';
+import { updateUser } from '../../../services/EmployeeManagement';
 import { TextField, Dialog, DialogTitle, DialogContent, DialogActions, Button, FormControl, InputLabel, Select, MenuItem, FormHelperText } from '@mui/material';
 
 export default function AddEmployeeDialog({ open, handleClose, allRoles, allLocations, userToEdit }) {
-    const [formData, setFormData] = useState(userToEdit || {roles: [], locations: []});
+    const [formData, setFormData] = useState(userToEdit || { roles: [], locations: [] });
     const [errors, setErrors] = useState({});
 
     useEffect(() => {
         if (userToEdit) {
-            const roleIds = userToEdit.roles.map(role => 
+            const roleIds = userToEdit.roles.map(role =>
                 allRoles.find(r => r.name === role)?.id || ''
             );
-            const locationIds = userToEdit.locations.map(location => 
+            const locationIds = userToEdit.locations.map(location =>
                 allLocations.find(l => l.title === location)?.id || ''
             );
             setFormData({
@@ -82,8 +82,8 @@ export default function AddEmployeeDialog({ open, handleClose, allRoles, allLoca
             locationIds: formData.locations,
         };
 
-        const updatedUser = await updateUser(userToEdit.id ,userDTO);
-        handleClose(userDTO);
+        await updateUser(userToEdit.id, userDTO);
+        handleClose(false, userDTO);
     };
 
 
@@ -160,7 +160,7 @@ export default function AddEmployeeDialog({ open, handleClose, allRoles, allLoca
                 </form>
             </DialogContent>
             <DialogActions>
-                <Button onClick={handleClose} color="primary">
+                <Button onClick={() => handleClose(true, null)} color="primary">
                     Cancel
                 </Button>
                 <Button onClick={handleEdit} color="primary">

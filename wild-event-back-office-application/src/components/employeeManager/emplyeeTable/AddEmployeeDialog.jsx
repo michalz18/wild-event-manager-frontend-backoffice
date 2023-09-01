@@ -66,7 +66,7 @@ export default function AddEmployeeDialog({ open, handleClose, allRoles, allLoca
     };
 
     await addUser(userDTO);
-    handleClose(userDTO);
+    handleClose(false, userDTO); 
   };
 
 
@@ -143,7 +143,7 @@ export default function AddEmployeeDialog({ open, handleClose, allRoles, allLoca
         </form>
       </DialogContent>
       <DialogActions>
-        <Button onClick={handleClose} color="primary">
+        <Button onClick={() => handleClose(true, null)} color="primary">
           Cancel
         </Button>
         <Button onClick={handleAdd} color="primary">
