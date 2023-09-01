@@ -7,6 +7,7 @@ import UserActionsMenu from './UserActionsMenu';
 import RoleFilter from './RoleFilter';
 import LocationFilter from './LocationFilter';
 import SearchBar from './SearchBar';
+import ConfirmationDialog from './ConfirmationDialog';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -31,6 +32,8 @@ export default function EmployeeTable() {
     const [userToEdit, setUserToEdit] = useState(null);
     const [openAddDialog, setOpenAddDialog] = useState(false);
     const [openEditDialog, setOpenEditDialog] = useState(false);
+    const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
+    const [userIdToDeactivate, setUserIdToDeactivate] = useState(null);
 
 
     useEffect(() => {
@@ -84,6 +87,8 @@ export default function EmployeeTable() {
         } catch (error) {
             console.error("Could not deactivate user:", error)
         }
+
+        handleCloseDeactivateDialog();
     }
 
     const handleEditUser = async (userId) => {
@@ -91,9 +96,9 @@ export default function EmployeeTable() {
             const user = users.find(u => u.id === userId);
             setUserToEdit(user);
             setOpenEditDialog(true);
-          } catch (error) {
+        } catch (error) {
             console.error("Could not update user:", error);
-          }
+        }
     }
 
     const handleChangePage = (event, newPage) => {
@@ -111,22 +116,31 @@ export default function EmployeeTable() {
 
     const handleCloseAdd = async (newUser) => {
         if (newUser) {
-          const fetchedUsers = await getAllActiveUsers();
-          setUsers(fetchedUsers);
-          setFilteredUsers(fetchedUsers);
+            const fetchedUsers = await getAllActiveUsers();
+            setUsers(fetchedUsers);
+            setFilteredUsers(fetchedUsers);
         }
         setOpenAddDialog(false);
-      };
-      
+    };
 
-      const handleCloseEdit = async (updatedUser) => {
+
+    const handleCloseEdit = async (updatedUser) => {
         if (updatedUser) {
             const fetchedUsers = await getAllActiveUsers();
             setUsers(fetchedUsers);
             setFilteredUsers(fetchedUsers);
-          }
+        }
 
         setOpenEditDialog(false);
+    };
+
+    const handleOpenDeactivateDialog = (userId) => {
+        setConfirmDialogOpen(true);
+        setUserIdToDeactivate(userId);
+    };
+
+    const handleCloseDeactivateDialog = () => {
+        setConfirmDialogOpen(false);
     };
 
     return (
@@ -181,7 +195,7 @@ export default function EmployeeTable() {
                                 <TableCell align="center">
                                     <UserActionsMenu
                                         onEdit={() => handleEditUser(user.id)}
-                                        onRemove={() => handleDeactivateUser(user.id)}
+                                        onDeactivate={() => handleOpenDeactivateDialog(user.id)}
                                     />
                                 </TableCell>
 
@@ -211,13 +225,19 @@ export default function EmployeeTable() {
                 Add New Employee
             </Button>
             <AddEmployeeDialog open={openAddDialog} handleClose={handleCloseAdd} allRoles={allRoles} allLocations={allLocations} />
-            <EditEmployeeDialog 
-      open={openEditDialog} 
-      handleClose={handleCloseEdit} 
-      allRoles={allRoles} 
-      allLocations={allLocations} 
-      userToEdit={userToEdit} 
-    />
+            <EditEmployeeDialog
+                open={openEditDialog}
+                handleClose={handleCloseEdit}
+                allRoles={allRoles}
+                allLocations={allLocations}
+                userToEdit={userToEdit}
+            />
+            <ConfirmationDialog
+                open={confirmDialogOpen}
+                handleClose={handleCloseDeactivateDialog}
+                handleConfirm={() => handleDeactivateUser(userIdToDeactivate)}
+            />
+
         </div>
     );
 }

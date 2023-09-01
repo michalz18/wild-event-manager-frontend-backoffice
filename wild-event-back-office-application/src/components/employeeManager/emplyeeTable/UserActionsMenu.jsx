@@ -3,7 +3,7 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 
-export default function UserActionsMenu({ onEdit, onRemove }) {
+export default function UserActionsMenu({ onEdit, onDeactivate }) { 
   const [anchorEl, setAnchorEl] = useState(null);
 
   const handleMenuOpen = (event) => {
@@ -28,7 +28,7 @@ export default function UserActionsMenu({ onEdit, onRemove }) {
         }}>Edit</MenuItem>
         <MenuItem onClick={() => {
           handleMenuClose();
-          onRemove();
+          onDeactivate();
         }}>Deactivate</MenuItem>
       </Menu>
     </div>
