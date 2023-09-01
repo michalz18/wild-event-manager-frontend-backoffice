@@ -1,9 +1,8 @@
-import { createBrowserRouter } from "react-router-dom"
+import { Outlet, createBrowserRouter } from "react-router-dom"
 import Test from "./test"
 import ErrorPage from "./pages/ErrorPage"
-import Layout from "./pages/layout/Layout"
 import LoginForm from "./components/loginForm/LoginForm"
-import { MainPage, LogoutPage, EventList, MyEventList, EmployeeList, MapConfiguration } from "./pages/index";
+import { MainPage, LogoutPage, EventPage, MyEventPage, EmployeePage, MapPage } from "./pages/index";
 
 import { DarkModeProvider } from "./components/darkMode/DarkModeProvider"
 import { CalendarPage} from "./pages/CalendarPage";
@@ -15,7 +14,7 @@ const router = createBrowserRouter([
 		path: "/",
 		element: (
 			<DarkModeProvider>
-				<Layout />
+				<Outlet />
 			</DarkModeProvider>
 		),
 		errorElement: <ErrorPage />,
@@ -42,7 +41,7 @@ const router = createBrowserRouter([
 			},
 			{
 				path: "/my-events/event",
-				element: <MyEventList />,
+				element: <MyEventPage />,
 				text: "My events",
 				errorElement: <ErrorPage />,
 			},
@@ -53,7 +52,7 @@ const router = createBrowserRouter([
 			},
 			{
 				path: "/event-management/event",
-				element: <EventList />,
+				element: <EventPage />,
 				text: "Event management", 
 				errorElement: <ErrorPage />,
 			},
@@ -69,7 +68,7 @@ const router = createBrowserRouter([
 			},
 			{
 				path: "/staff-management/staff",
-				element: <EmployeeList />,
+				element: <EmployeePage />,
 				text: "Employee management",
 				errorElement: <ErrorPage />,
 			},
@@ -90,7 +89,7 @@ const router = createBrowserRouter([
 			},
 			{
 				path: "/map-config/map",
-				element: <MapConfiguration />,
+				element: <MapPage />,
 				text: "Map configuration",
 				errorElement: <ErrorPage />,
 			},
