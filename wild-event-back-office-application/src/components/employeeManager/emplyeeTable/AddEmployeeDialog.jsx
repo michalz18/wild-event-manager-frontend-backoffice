@@ -66,8 +66,7 @@ export default function AddEmployeeDialog({ open, handleClose, allRoles, allLoca
     };
 
     await addUser(userDTO);
-    handleClose();
-
+    handleClose(userDTO);
   };
 
 

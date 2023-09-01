@@ -82,9 +82,8 @@ export default function AddEmployeeDialog({ open, handleClose, allRoles, allLoca
             locationIds: formData.locations,
         };
 
-        await updateUser(userToEdit.id ,userDTO);
-        handleClose();
-
+        const updatedUser = await updateUser(userToEdit.id ,userDTO);
+        handleClose(userDTO);
     };
 
 

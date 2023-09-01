@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { getAllActiveUsers, getAllLocations, deactivateUser, updateUser } from '../../../services/EmployeeManagement';
+import { getAllActiveUsers, getAllLocations, deactivateUser } from '../../../services/EmployeeManagement';
 import { getAllRoles } from '../../../services/Roles';
-import { useNavigate } from 'react-router-dom';
 import AddEmployeeDialog from './AddEmployeeDialog';
 import EditEmployeeDialog from './EditEmployeeDialog';
 import UserActionsMenu from './UserActionsMenu';
@@ -26,14 +25,13 @@ export default function EmployeeTable() {
     const [filteredUsers, setFilteredUsers] = useState([]);
     const [selectedLocation, setSelectedLocation] = useState("");
     const [searchTerm, setSearchTerm] = useState("");
-    const [anchorEl, setAnchorEl] = useState(null);
     const [allRoles, setAllRoles] = useState([]);
     const [selectedRole, setSelectedRole] = useState("");
     const [allLocations, setAllLocations] = useState([]);
     const [userToEdit, setUserToEdit] = useState(null);
     const [openAddDialog, setOpenAddDialog] = useState(false);
     const [openEditDialog, setOpenEditDialog] = useState(false);
-    const navigate = useNavigate();
+
 
     useEffect(() => {
         const fetchUsers = async () => {
@@ -107,28 +105,27 @@ export default function EmployeeTable() {
         setPage(0);
     };
 
-    const handleMenuOpen = (event) => {
-        setAnchorEl(event.currentTarget);
-    };
-
-    const handleMenuClose = () => {
-        setAnchorEl(null);
-    };
-
-    const handleAddEmployeeForm = (event) => {
-        event.preventDefault()
-        navigate("/staff-management/staff/add-employee")
-    }
-
     const handleClickOpen = () => {
         setOpenAddDialog(true);
     };
 
-    const handleCloseAdd = () => {
+    const handleCloseAdd = async (newUser) => {
+        if (newUser) {
+          const fetchedUsers = await getAllActiveUsers();
+          setUsers(fetchedUsers);
+          setFilteredUsers(fetchedUsers);
+        }
         setOpenAddDialog(false);
-    };
+      };
+      
 
-    const handleCloseEdit = () => {
+      const handleCloseEdit = async (updatedUser) => {
+        if (updatedUser) {
+            const fetchedUsers = await getAllActiveUsers();
+            setUsers(fetchedUsers);
+            setFilteredUsers(fetchedUsers);
+          }
+
         setOpenEditDialog(false);
     };
 
