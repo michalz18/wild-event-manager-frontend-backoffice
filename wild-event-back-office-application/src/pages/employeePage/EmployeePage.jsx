@@ -1,10 +1,12 @@
 import { ResponsiveLayout } from "../layout/ResponsiveLayout"
+import { EmployeePageDesktop } from "./EmployeePageDesktop"
+import { EmployeePagePhone } from "./EmployeePagePhone"
 
 export const EmployeePage = () => {
 	return (
-		<>
-			<ResponsiveLayout />
-			<div>Employee list</div>
-		</>
+		<ResponsiveLayout
+			phoneComponent={<EmployeePagePhone />}
+			desktopComponent={<EmployeePageDesktop />}
+		/>
 	)
 }

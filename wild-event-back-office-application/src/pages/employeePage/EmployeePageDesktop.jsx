@@ -1,9 +1,9 @@
 import { DesktopLayout } from "../layout/DesktopLayout"
 
-export const EmployePageDesktop = () => {
+export const EmployeePageDesktop = () => {
 	return (
 		<>
-			<DesktopLayout />
+			<DesktopLayout></DesktopLayout>
 		</>
 	)
 }

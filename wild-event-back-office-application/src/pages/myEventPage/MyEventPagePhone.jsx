@@ -1,11 +1,11 @@
-import MyEventList from "../../components/myEvent/MyEventsList"
 import { PhoneLayout } from "../layout/PhoneLayout"
 
 export const MyEventPagePhone = () => {
 	return (
 		<>
-			<PhoneLayout />
-			<MyEventList />
+			<PhoneLayout>
+				<div>My events list - phone view</div>
+			</PhoneLayout>
 		</>
 	)
 }

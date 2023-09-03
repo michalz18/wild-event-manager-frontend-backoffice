@@ -1,10 +1,14 @@
 import { ResponsiveLayout } from "../layout/ResponsiveLayout"
+import { EventPageDesktop } from "./EventPageDesktop"
+import { EventPagePhone } from "./EventPagePhone"
 
 export const EventPage = () => {
 	return (
 		<>
-			<ResponsiveLayout />
-			
+			<ResponsiveLayout
+				phoneComponent={<EventPagePhone />}
+				desktopComponent={<EventPageDesktop />}
+			/>
 		</>
 	)
 }

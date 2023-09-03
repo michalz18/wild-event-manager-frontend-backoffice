@@ -1,10 +1,12 @@
 import { ResponsiveLayout } from "../layout/ResponsiveLayout"
+import { MapPagePhone } from "./MapPagePhone"
+import { MapPageDesktop } from "./MapPageDesktop"
 
 export const MapPage = () => {
 	return (
-		<>
-			<ResponsiveLayout />
-			<div>Map configuration</div>
-		</>
+		<ResponsiveLayout
+			phoneComponent={<MapPagePhone />}
+			desktopComponent={<MapPageDesktop />}
+		/>
 	)
 }

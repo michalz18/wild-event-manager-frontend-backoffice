@@ -3,7 +3,9 @@ import { PhoneLayout } from "../layout/PhoneLayout"
 export const EmployeePagePhone = () => {
 	return (
 		<>
-			<PhoneLayout />
+			<PhoneLayout>
+				<div>Employee list - phone view</div>
+			</PhoneLayout>
 		</>
 	)
 }
