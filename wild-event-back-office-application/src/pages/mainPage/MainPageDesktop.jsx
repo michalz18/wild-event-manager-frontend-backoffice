@@ -1,13 +1,10 @@
-import { DashboardComponent } from "../../components/dashboard/DashboardComponent"
-import { HeaderComponent } from "../../components/header/HeaderComponent"
 import { WelcomeWindow } from "../../components/welcomeWindow/WelcomeComponent"
+import { DesktopLayout } from "../layout/DesktopLayout"
 
 export const MainPageDesktop = () => {
 	return (
-		<>
-			<HeaderComponent />
-			<DashboardComponent />
+		<DesktopLayout>
 			<WelcomeWindow />
-		</>
+		</DesktopLayout>
 	)
 }

@@ -1,11 +1,9 @@
-import { MenuAppBar } from "../../components/menuAppBar/MenuAppBar"
-import { WelcomeWindow } from "../../components/welcomeWindow/WelcomeComponent"
+import { PhoneLayout } from "../layout/PhoneLayout"
 
 export const MainPagePhone = () => {
 	return (
-		<>
-			<MenuAppBar />
-			<WelcomeWindow />
-		</>
+		<PhoneLayout>
+			<div>Tekst</div>
+		</PhoneLayout>
 	)
 }

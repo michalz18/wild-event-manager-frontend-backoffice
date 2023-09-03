@@ -1,9 +1,7 @@
 import { useMediaQuery } from "react-responsive"
-import { PhoneLayout } from "./PhoneLayout"
-import { DesktopLayout } from "./DesktopLayout"
 
-export const ResponsiveLayout = () => {
+export const ResponsiveLayout = ({ phoneComponent, desktopComponent }) => {
 	const isPhone = useMediaQuery({ maxWidth: 767 })
 
-	return <>{isPhone ? <PhoneLayout /> : <DesktopLayout />}</>
+	return isPhone ? phoneComponent : desktopComponent
 }

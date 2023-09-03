@@ -6,7 +6,7 @@ export const WelcomeWindow = ({ userId }) => {
 
 	useEffect(() => {
 		// fetchUserData(userId).then((data) => setUserData(data));
-		// Na potrzeby przykładu użyjemy stałych danych
+		// stałe dane
 		const sampleUserData = {
 			firstName: "Artur",
 			lastName: "Pokora",

@@ -1,11 +1,12 @@
 import { ResponsiveLayout } from "../layout/ResponsiveLayout"
-import { WelcomeWindow } from "../../components/welcomeWindow/WelcomeComponent"
+import { MainPageDesktop } from "./MainPageDesktop"
+import { MainPagePhone } from "./MainPagePhone"
 
 export const MainPage = () => {
 	return (
-		<>
-			<ResponsiveLayout />
-			<WelcomeWindow />
-		</>
+		<ResponsiveLayout
+			desktopComponent={<MainPageDesktop />}
+			phoneComponent={<MainPagePhone />}
+		/>
 	)
 }
