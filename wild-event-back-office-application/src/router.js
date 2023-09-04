@@ -1,12 +1,10 @@
-import { createBrowserRouter } from "react-router-dom"
+import { Outlet, createBrowserRouter } from "react-router-dom"
 import Test from "./test"
 import ErrorPage from "./pages/ErrorPage"
-import Layout from "./pages/layout/Layout"
 import LoginForm from "./components/loginForm/LoginForm"
-import { LogoutPage } from "./pages/LogoutPage"
-import { MainPage } from "./pages/MainPage"
+import { MainPage, LogoutPage, EventPage, MyEventPage, EmployeePage, MapPage } from "./pages/index";
+
 import { DarkModeProvider } from "./components/darkMode/DarkModeProvider"
-import { MyEventList } from "./pages/MyEventList";
 import { CalendarPage} from "./pages/CalendarPage";
 import EventForm from "./components/eventManager/newEventForm/EventForm";
 
@@ -16,7 +14,7 @@ const router = createBrowserRouter([
 		path: "/",
 		element: (
 			<DarkModeProvider>
-				<Layout />
+				<Outlet />
 			</DarkModeProvider>
 		),
 		errorElement: <ErrorPage />,
@@ -43,7 +41,8 @@ const router = createBrowserRouter([
 			},
 			{
 				path: "/my-events/event",
-				element: <MyEventList />,
+				element: <MyEventPage />,
+				text: "My events",
 				errorElement: <ErrorPage />,
 			},
 			{
@@ -53,7 +52,8 @@ const router = createBrowserRouter([
 			},
 			{
 				path: "/event-management/event",
-				element: <EventForm />,
+				element: <EventPage />,
+				text: "Event management", 
 				errorElement: <ErrorPage />,
 			},
 			{
@@ -68,7 +68,8 @@ const router = createBrowserRouter([
 			},
 			{
 				path: "/staff-management/staff",
-				element: <Test />,
+				element: <EmployeePage />,
+				text: "Employee management",
 				errorElement: <ErrorPage />,
 			},
 			{
@@ -88,16 +89,17 @@ const router = createBrowserRouter([
 			},
 			{
 				path: "/map-config/map",
-				element: <Test />,
+				element: <MapPage />,
+				text: "Map configuration",
 				errorElement: <ErrorPage />,
 			},
 			{
 				path: "/logout",
-				element: <LogoutPage />, // Dodaj tę ścieżkę
+				element: <LogoutPage />,
 				errorElement: <ErrorPage />,
 			},
 		],
 	},
 ])
 
-export default router
+export default router;
