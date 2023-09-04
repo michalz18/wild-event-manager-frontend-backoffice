@@ -7,7 +7,7 @@ import { MainPage, LogoutPage, EventPage, MyEventPage, EmployeePage, MapPage } f
 import { DarkModeProvider } from "./components/darkMode/DarkModeProvider"
 import { CalendarPage} from "./pages/CalendarPage";
 import EventForm from "./components/eventManager/newEventForm/EventForm";
-
+import EmployeeTable from "./components/employeeManager/mainTable/EmployeeTable";
 
 const router = createBrowserRouter([
 	{
