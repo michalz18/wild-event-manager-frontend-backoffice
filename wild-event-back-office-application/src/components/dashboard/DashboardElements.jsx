@@ -6,7 +6,7 @@ import MapIcon from "@mui/icons-material/Map";
 const itemList = [
   { text: "Event management", icon: <EventIcon />, path: "/event-management/event" },
   { text: "My events", icon: <NotificationIcon />, path: "/my-events/event" },
-  { text: "Employee management", icon: <PersonIcon />, path: "/staff-management/staff" },
+  { text: "Employee management", icon: <PersonIcon />, path: "/staff-management" },
   { text: "Map configuration", icon: <MapIcon />, path: "/map-config/map" },
 ];
 
