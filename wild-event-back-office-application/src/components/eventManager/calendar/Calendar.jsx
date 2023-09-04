@@ -40,13 +40,11 @@ const Calendar = ({ isAdmin }) => {
     }
     const getIdFromEventTitle = (title) => {
         const find = events.find(event => event.title === title)
-        console.log(find)
         return find ? find.id : "";
     }
 
     const handleEventClick = (selected) => {
         if (window.confirm(`Are you sure you want to delete the event? ${selected.event.title}`)) {
-           console.log(`${getIdFromEventTitle(selected.event._def.title)}`)
 
             deleteEvent(getIdFromEventTitle(selected.event._def.title))
             selected.event.remove();
@@ -54,36 +52,37 @@ const Calendar = ({ isAdmin }) => {
     };
 
     return (
-    <Container maxWidth="lg" sx={{ mt: {xs: 2, sm: 3, md: 10 }}}>
-        <Box >
-            <FullCallendar
-                timeZone="local"
-                height={window.innerWidth <= 600 ? '60vh' : '70vh'}
-                plugins={[
-                    dayGridPlugin,
-                    timeGridPlugin,
-                    interactionPlugin,
-                    listPlugin
-                ]}
-                headerToolbar={{
-                    left: "prev,next",
-                    center: "title",
-                    right: "dayGridMonth,timeGridWeek,timeGridDay,listMonth"
-                }}
-                initialView="dayGridMonth"
-                editable={isAdmin}
-                selectable={isAdmin}
-                select={handleDateClick}
-                eventClick={handleEventClick}
-                events={events}
-                selectMirror={isAdmin}
-                dayMaxEvents={isAdmin}
-                datesSet={data => ""} // PATCH new date
+        <Container maxWidth="lg" sx={{ mt: { xs: 2, sm: 3, md: 10 } }}>
+            <Box >
+                <FullCallendar
+                    timeZone="local"
+                    height={window.innerWidth <= 600 ? '60vh' : '70vh'}
+                    plugins={[
+                        dayGridPlugin,
+                        timeGridPlugin,
+                        interactionPlugin,
+                        listPlugin
+                    ]}
+                    headerToolbar={{
+                        left: "prev,next",
+                        center: "title",
+                        right: "dayGridMonth,timeGridWeek,timeGridDay,listMonth"
+                    }}
+                    initialView="dayGridMonth"
+                    editable={isAdmin}
+                    selectable={isAdmin}
+                    select={handleDateClick}
+                    eventClick={handleEventClick}
+                    events={events}
+                    selectMirror={isAdmin}
+                    dayMaxEvents={isAdmin}
+            
+                    eventDrop={(info) => { console.log(info.event.id) }}
 
-            >
-            </FullCallendar>
-        </Box>
-    </Container>
+                >
+                </FullCallendar>
+            </Box>
+        </Container>
     )
 }
 
