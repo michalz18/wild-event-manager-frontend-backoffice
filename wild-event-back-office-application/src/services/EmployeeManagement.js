@@ -1,6 +1,6 @@
 const getAllActiveUsers = async () => {
   try {
-    const response = await fetch('http://localhost:8080/staff-management/staff');
+    const response = await fetch(`${process.env.REACT_APP_GET_ACTIVE_USERS}`);
     if (!response.ok) {
       throw new Error("Failed to fetch active users!");
     }
@@ -12,7 +12,7 @@ const getAllActiveUsers = async () => {
 
 const getAllLocations = async () => {
   try {
-    const response = await fetch('http://localhost:8080/auth/locations');
+    const response = await fetch(`${process.env.REACT_APP_GET_LOCATIONS}`);
     if (!response.ok) {
         throw new Error("There is an issue with fetching locations!");
     }
@@ -24,7 +24,7 @@ const getAllLocations = async () => {
 
 const addUser = async (userDTO) => {
   try {
-    const response = await fetch(`http://localhost:8080/staff-management/staff`, {
+    const response = await fetch(`${process.env.REACT_APP_ADD_USER}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -43,7 +43,7 @@ const addUser = async (userDTO) => {
 const updateUser = async (userId, userDTO) => {
   try {
     const response = await fetch(
-      `http://localhost:8080/staff-management/staff/${userId}`,
+      `${process.env.REACT_APP_UPDATE_USER}${userId}`,
       {
         method: "PUT",
         headers: {
@@ -63,7 +63,7 @@ const updateUser = async (userId, userDTO) => {
 const deactivateUser = async (userId) => {
   try {
     const response = await fetch(
-      `http://localhost:8080/staff-management/staff/deactivate/${userId}`,
+      `${process.env.REACT_APP_DEACTIVATE_USER}${userId}`,
       {
         method: "PUT",
         headers: {

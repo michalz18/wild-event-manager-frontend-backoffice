@@ -3,14 +3,12 @@ import Test from "./test";
 import ErrorPage from "./pages/ErrorPage";
 import Layout from "./pages/layout/Layout";
 import LoginForm from "./components/loginForm/LoginForm";
-import EmployeeTable from "./components/employeeManager/emplyeeTable/EmployeeTable";
-
-
+import EmployeeTable from "./components/employeeManager/mainTable/EmployeeTable";
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <EmployeeTable />,
+    element: <Layout />,
     errorElement: <ErrorPage />,
     children: [
       {
@@ -44,8 +42,8 @@ const router = createBrowserRouter([
         errorElement: <ErrorPage />,
       },
       {
-        path: "/staff-management/staff",
-        element: <Test />,
+        path: "/staff-management",
+        element: <EmployeeTable />,
         errorElement: <ErrorPage />,
       },
       {
@@ -67,9 +65,9 @@ const router = createBrowserRouter([
         path: "/map-config/map",
         element: <Test />,
         errorElement: <ErrorPage />,
-      }
+      },
     ],
   },
-])
+]);
 
 export default router;
