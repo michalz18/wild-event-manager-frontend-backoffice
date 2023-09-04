@@ -19,7 +19,7 @@ export default function UserActionsMenu({ onEdit, onDeactivate }) {
       <MoreVertIcon onClick={handleMenuOpen} style={{ cursor: 'pointer' }} />
       <Menu
         anchorEl={anchorEl}
-        open={Boolean(anchorEl)}
+        open={!!anchorEl}
         onClose={handleMenuClose}
       >
         <MenuItem onClick={() => {

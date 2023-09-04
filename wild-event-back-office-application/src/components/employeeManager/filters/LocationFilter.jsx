@@ -32,7 +32,7 @@ export default function LocationFilter({ allLocations, onLocationSelect }) {
             <Menu
                 anchorEl={anchorEl}
                 keepMounted
-                open={anchorEl}
+                open={!!anchorEl}
                 onClose={handleClose}
             >
                 <MenuItem key="none" onClick={() => handleLocationSelect("None")}>

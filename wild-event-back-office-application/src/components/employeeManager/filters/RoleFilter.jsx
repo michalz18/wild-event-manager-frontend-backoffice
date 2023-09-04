@@ -32,7 +32,7 @@ export default function RoleFilter({ allRoles, onRoleSelect }) {
             <Menu
                 anchorEl={anchorEl}
                 keepMounted
-                open={anchorEl}
+                open={!!anchorEl}
                 onClose={handleClose}
             >
                 <MenuItem key="none" onClick={() => handleRoleSelect("None")}>
