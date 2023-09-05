@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { addUser } from '../../../services/EmployeeManagement';
 import { TextField, Dialog, DialogTitle, DialogContent, DialogActions, Button, FormControl, InputLabel, Select, MenuItem, FormHelperText } from '@mui/material';
 
-export default function AddEmployeeDialog({ open, handleClose, allRoles, allLocations }) {
+const AddEmployeeDialog = ({ open, handleClose, allRoles, allLocations }) => {
   const [formData, setFormData] = useState({ name: '', email: '', phone: '', roles: [], locations: [] });
   const [errors, setErrors] = useState({});
 
@@ -67,6 +67,7 @@ export default function AddEmployeeDialog({ open, handleClose, allRoles, allLoca
 
     await addUser(userDTO);
     handleClose(false, userDTO);
+    setFormData({ name: '', email: '', phone: '', roles: [], locations: [] });
   };
 
 
@@ -153,3 +154,5 @@ export default function AddEmployeeDialog({ open, handleClose, allRoles, allLoca
     </Dialog>
   );
 }
+
+export default AddEmployeeDialog;

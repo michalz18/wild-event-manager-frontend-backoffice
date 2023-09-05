@@ -21,7 +21,7 @@ import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
 import { Button } from '@mui/material';
 
-export default function EmployeeTable() {
+const EmployeeTable = () => {
     const [users, setUsers] = useState([]);
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(5);
@@ -288,3 +288,4 @@ export default function EmployeeTable() {
     );
 }
 
+export default EmployeeTable;

@@ -4,7 +4,7 @@ import MenuItem from '@mui/material/MenuItem';
 import IconButton from '@mui/material/IconButton';
 import FilterListIcon from '@mui/icons-material/FilterList';
 
-export default function RoleFilter({ allRoles, onRoleSelect }) {
+const RoleFilter = ({ allRoles, onRoleSelect }) => {
     const [anchorEl, setAnchorEl] = useState(null);
 
     const handleClick = (event) => {
@@ -32,7 +32,7 @@ export default function RoleFilter({ allRoles, onRoleSelect }) {
             <Menu
                 anchorEl={anchorEl}
                 keepMounted
-                open={anchorEl}
+                open={!!anchorEl}
                 onClose={handleClose}
             >
                 <MenuItem key="none" onClick={() => handleRoleSelect("None")}>
@@ -47,3 +47,5 @@ export default function RoleFilter({ allRoles, onRoleSelect }) {
         </div>
     );
 }
+
+export default RoleFilter;
