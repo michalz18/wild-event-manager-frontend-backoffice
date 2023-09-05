@@ -6,7 +6,8 @@ import listPlugin from '@fullcalendar/list';
 import interactionPlugin from "@fullcalendar/interaction";
 import { Box, Container } from "@mui/material";
 import { useNavigate, } from "react-router-dom";
-import { getAllEvents, deleteEvent } from "../../../services/EventService"
+import { getAllEvents, deleteEvent, updateDate, updateDateEvent } from "../../../services/EventService"
+import dayjs from 'dayjs';
 
 
 
@@ -16,21 +17,37 @@ const Calendar = ({ isAdmin }) => {
 
     const getEvents = async () => {
         try {
-            const data = await getAllEvents();
-            setEvents(
-                data.map(eventDataFromDB => ({
-                    title: eventDataFromDB.title,
-                    start: eventDataFromDB.startsAt,
-                    end: eventDataFromDB.endsAt,
-                    id: eventDataFromDB.id
-
-                })));
+          const data = await getAllEvents();
+          setEvents(
+            data.map(eventDataFromDB => {
+              const startDate = new Date(eventDataFromDB.startsAt);
+              const endDate = new Date(eventDataFromDB.endsAt);
+      
+              const isSingleDay = isDatesDifferenceOneDay(startDate, endDate);
+      
+              const formattedStart = isSingleDay ? startDate.toISOString().split("T")[0] : startDate.toISOString();
+              const formattedEnd = isSingleDay ? null : endDate.toISOString();
+      
+              return {
+                title: eventDataFromDB.title,
+                start: formattedStart,
+                end: formattedEnd,
+                id: eventDataFromDB.id
+              };
+            })
+          );
         } catch (error) {
-            console.error("Error fetching events", error);
-            setEvents([]);
+          console.error("Error fetching events", error);
+          setEvents([]);
         }
-    }
-
+      };
+      
+      function isDatesDifferenceOneDay(date1, date2) {
+        const oneDayMilliseconds = 24 * 60 * 60 * 1000;
+        const differenceMilliseconds = Math.abs(date1 - date2);
+        return differenceMilliseconds === oneDayMilliseconds;
+      }
+      
     useEffect(() => {
         getEvents();
     }, []);
@@ -50,6 +67,57 @@ const Calendar = ({ isAdmin }) => {
             selected.event.remove();
         }
     };
+    const changeDate = (id, newStart, newEnd) => {
+        setEvents((prevEvents) =>
+            prevEvents.map((event) =>
+                event.id === id
+                    ? { ...event, start: newStart, end: newEnd }
+                    : event
+
+            )
+        );
+    }
+    const handleDateUpdate = (info) => {
+        const id = info.event._def.publicId;
+        const newStart = dayjs(info.event.startStr);
+        let newEnd = dayjs(info.event.endStr);
+        const formattedStart = newStart.format("YYYY-MM-DDTHH:mm:ss");
+
+
+        if (!newEnd.isValid()) {
+            const defaultEndEvent = newStart.add(1, 'hour');
+            newEnd = defaultEndEvent;
+            console.log(defaultEndEvent);
+          }
+        
+        const dto = {
+          id: id,
+          dateRange: {
+            startsAt: "",
+            endsAt: ""
+          },
+        };
+      
+        if (info.event.allDay && isDatesDifferenceOneDay(newStart,newEnd) ) {
+            changeDate(id, info.event.startStr, null);
+           
+            
+            dto.dateRange.startsAt = formattedStart;
+            
+            const endDate = newStart.add(1, 'day');
+            dto.dateRange.endsAt = endDate.format("YYYY-MM-DDTHH:mm:ss");
+         
+        } else {
+            const formattedEnd = newEnd.format("YYYY-MM-DDTHH:mm:ss");
+            dto.dateRange.startsAt = formattedStart;
+            dto.dateRange.endsAt = formattedEnd;
+
+        }
+        console.log(dto)
+        updateDateEvent(dto);
+
+      };
+      
 
     return (
         <Container maxWidth="lg" sx={{ mt: { xs: 2, sm: 3, md: 10 } }}>
@@ -76,8 +144,8 @@ const Calendar = ({ isAdmin }) => {
                     events={events}
                     selectMirror={isAdmin}
                     dayMaxEvents={isAdmin}
-            
-                    eventDrop={(info) => { console.log(info.event.id) }}
+
+                    eventDrop={handleDateUpdate}
 
                 >
                 </FullCallendar>

@@ -1,6 +1,5 @@
 import React from "react";
 import { Dialog, DialogTitle, DialogContent, DialogActions, FormGroup, FormControl, InputLabel, Input, Button, Autocomplete, TextField, Select, MenuItem, Checkbox, FormControlLabel } from '@mui/material';
-// import { Box } from '@mui/system';
 import { useNavigate, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { LocalizationProvider, DateTimePicker } from '@mui/x-date-pickers';
@@ -63,7 +62,7 @@ const EventForm = () => {
         organizers: [],
         openToPublic: false
     });
-
+    
     const handleDateChange = (newValue, flag) => {
         const formattedValue = newValue.format("YYYY-MM-DDTHH:mm:ss");
         setEventData((prevData) => ({
@@ -102,7 +101,7 @@ const EventForm = () => {
 
     return (
         <Dialog fullWidth open={true}  >
-            <DialogTitle>Add New Employee</DialogTitle>
+            <DialogTitle>Add New Event</DialogTitle>
             <DialogContent  >
                 <FormGroup >
                     <FormControl margin="normal">
