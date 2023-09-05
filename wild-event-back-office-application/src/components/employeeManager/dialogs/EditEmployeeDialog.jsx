@@ -3,8 +3,18 @@ import { updateUser } from '../../../services/EmployeeManagement';
 import { TextField, Dialog, DialogTitle, DialogContent, DialogActions, Button, FormControl, InputLabel, Select, MenuItem, FormHelperText } from '@mui/material';
 
 export default function AddEmployeeDialog({ open, handleClose, allRoles, allLocations, userToEdit }) {
-    const [formData, setFormData] = useState(userToEdit || { roles: [], locations: [] });
+    const [formData, setFormData] = useState(userToEdit || {
+        name: "",
+        email: "",
+        phone: "",
+        roles: [],
+        locations: []
+    });
     const [errors, setErrors] = useState({});
+
+
+
+
 
     useEffect(() => {
         if (userToEdit) {
