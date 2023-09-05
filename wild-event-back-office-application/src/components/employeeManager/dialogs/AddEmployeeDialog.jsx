@@ -67,6 +67,7 @@ const AddEmployeeDialog = ({ open, handleClose, allRoles, allLocations }) => {
 
     await addUser(userDTO);
     handleClose(false, userDTO);
+    setFormData({ name: '', email: '', phone: '', roles: [], locations: [] });
   };
 
 
