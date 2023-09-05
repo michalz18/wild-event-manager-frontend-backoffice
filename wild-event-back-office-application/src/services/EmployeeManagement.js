@@ -31,10 +31,18 @@ const addUser = async (userDTO) => {
       },
       body: JSON.stringify(userDTO),
     });
+
     if (!response.ok) {
       throw new Error("Failed to add user!");
     }
-    return await response.json();
+
+    const contentType = response.headers.get("content-type");
+    
+    if (contentType && contentType.indexOf("application/json") !== -1) {
+      return await response.json();
+    } else {
+      return await response.text();
+    }
   } catch (error) {
     console.error("Cannot add user:", error);
   }
