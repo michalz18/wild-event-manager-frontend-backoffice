@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { updateUser } from '../../../services/EmployeeManagement';
 import { TextField, Dialog, DialogTitle, DialogContent, DialogActions, Button, FormControl, InputLabel, Select, MenuItem, FormHelperText } from '@mui/material';
 
-export default function AddEmployeeDialog({ open, handleClose, allRoles, allLocations, userToEdit }) {
+const EditEmployeeDialog = ({ open, handleClose, allRoles, allLocations, userToEdit }) => {
     const [formData, setFormData] = useState(userToEdit || {
         name: "",
         email: "",
@@ -11,10 +11,6 @@ export default function AddEmployeeDialog({ open, handleClose, allRoles, allLoca
         locations: []
     });
     const [errors, setErrors] = useState({});
-
-
-
-
 
     useEffect(() => {
         if (userToEdit) {
@@ -180,3 +176,5 @@ export default function AddEmployeeDialog({ open, handleClose, allRoles, allLoca
         </Dialog>
     );
 }
+
+export default EditEmployeeDialog;

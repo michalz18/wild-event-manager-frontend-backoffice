@@ -4,7 +4,7 @@ import MenuItem from '@mui/material/MenuItem';
 import IconButton from '@mui/material/IconButton';
 import FilterListIcon from '@mui/icons-material/FilterList';
 
-export default function LocationFilter({ allLocations, onLocationSelect }) {
+const LocationFilter = ({ allLocations, onLocationSelect }) => {
     const [anchorEl, setAnchorEl] = useState(null);
 
     const handleClick = (event) => {
@@ -47,3 +47,5 @@ export default function LocationFilter({ allLocations, onLocationSelect }) {
         </div>
     );
 }
+
+export default LocationFilter;
