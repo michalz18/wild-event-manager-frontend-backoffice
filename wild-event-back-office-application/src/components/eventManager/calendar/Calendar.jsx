@@ -5,55 +5,62 @@ import timeGridPlugin from '@fullcalendar/timegrid';
 import listPlugin from '@fullcalendar/list';
 import interactionPlugin from "@fullcalendar/interaction";
 import { Box, Container } from "@mui/material";
-import { useNavigate, } from "react-router-dom";
 import { getAllEvents, deleteEvent, updateDate, updateDateEvent } from "../../../services/EventService"
 import dayjs from 'dayjs';
+import EventForm from "../newEventForm/EventForm";
 
 
 
 const Calendar = ({ isAdmin }) => {
-    const navigate = useNavigate();
     const [events, setEvents] = useState([]);
+    const [open, setOpen] = useState(false);
+
 
     const getEvents = async () => {
         try {
-          const data = await getAllEvents();
-          setEvents(
-            data.map(eventDataFromDB => {
-              const startDate = new Date(eventDataFromDB.startsAt);
-              const endDate = new Date(eventDataFromDB.endsAt);
-      
-              const isSingleDay = isDatesDifferenceOneDay(startDate, endDate);
-      
-              const formattedStart = isSingleDay ? startDate.toISOString().split("T")[0] : startDate.toISOString();
-              const formattedEnd = isSingleDay ? null : endDate.toISOString();
-      
-              return {
-                title: eventDataFromDB.title,
-                start: formattedStart,
-                end: formattedEnd,
-                id: eventDataFromDB.id
-              };
-            })
-          );
+            const data = await getAllEvents();
+            setEvents(
+                data.map(eventDataFromDB => {
+                    const startDate = new Date(eventDataFromDB.startsAt);
+                    const endDate = new Date(eventDataFromDB.endsAt);
+
+                    const isSingleDay = isDatesDifferenceOneDay(startDate, endDate);
+
+
+                    const formattedStart = isSingleDay ? eventDataFromDB.startsAt.toString().split("T")[0] : eventDataFromDB.startsAt;
+                    const formattedEnd = isSingleDay ? null : endDate.toISOString();
+
+                    return {
+                        title: eventDataFromDB.title,
+                        start: formattedStart,
+                        end: formattedEnd,
+                        id: eventDataFromDB.id,
+
+                    };
+                })
+            );
         } catch (error) {
-          console.error("Error fetching events", error);
-          setEvents([]);
+            console.error("Error fetching events", error);
+            setEvents([]);
         }
-      };
-      
-      function isDatesDifferenceOneDay(date1, date2) {
+    };
+
+    function isDatesDifferenceOneDay(date1, date2) {
         const oneDayMilliseconds = 24 * 60 * 60 * 1000;
         const differenceMilliseconds = Math.abs(date1 - date2);
         return differenceMilliseconds === oneDayMilliseconds;
-      }
-      
+    }
+
     useEffect(() => {
         getEvents();
     }, []);
 
     const handleDateClick = (selected) => {
-        navigate("/add-event");
+        setOpen(true);
+        // navigate("/add-event");
+    }
+    const handleModalClose = () => {
+        setOpen(false)
     }
     const getIdFromEventTitle = (title) => {
         const find = events.find(event => event.title === title)
@@ -83,74 +90,77 @@ const Calendar = ({ isAdmin }) => {
         let newEnd = dayjs(info.event.endStr);
         const formattedStart = newStart.format("YYYY-MM-DDTHH:mm:ss");
 
-
         if (!newEnd.isValid()) {
             const defaultEndEvent = newStart.add(1, 'hour');
             newEnd = defaultEndEvent;
-            console.log(defaultEndEvent);
-          }
-        
+        }
         const dto = {
-          id: id,
-          dateRange: {
-            startsAt: "",
-            endsAt: ""
-          },
+            id: id,
+            dateRange: {
+                startsAt: "",
+                endsAt: ""
+            },
         };
-      
-        if (info.event.allDay && isDatesDifferenceOneDay(newStart,newEnd) ) {
+
+        if (info.event.allDay) {
             changeDate(id, info.event.startStr, null);
-           
-            
+
             dto.dateRange.startsAt = formattedStart;
-            
             const endDate = newStart.add(1, 'day');
+            console.log(`EndDay: ${endDate.format("YYYY-MM-DDTHH:mm:ss")}`)
             dto.dateRange.endsAt = endDate.format("YYYY-MM-DDTHH:mm:ss");
-         
+
         } else {
             const formattedEnd = newEnd.format("YYYY-MM-DDTHH:mm:ss");
             dto.dateRange.startsAt = formattedStart;
             dto.dateRange.endsAt = formattedEnd;
+            changeDate(id, dto.dateRange.startsAt, dto.dateRange.endsAt);
 
         }
-        console.log(dto)
+
         updateDateEvent(dto);
 
-      };
-      
+    };
+
 
     return (
-        <Container maxWidth="lg" sx={{ mt: { xs: 2, sm: 3, md: 10 } }}>
-            <Box >
-                <FullCallendar
-                    timeZone="local"
-                    height={window.innerWidth <= 600 ? '60vh' : '70vh'}
-                    plugins={[
-                        dayGridPlugin,
-                        timeGridPlugin,
-                        interactionPlugin,
-                        listPlugin
-                    ]}
-                    headerToolbar={{
-                        left: "prev,next",
-                        center: "title",
-                        right: "dayGridMonth,timeGridWeek,timeGridDay,listMonth"
-                    }}
-                    initialView="dayGridMonth"
-                    editable={isAdmin}
-                    selectable={isAdmin}
-                    select={handleDateClick}
-                    eventClick={handleEventClick}
-                    events={events}
-                    selectMirror={isAdmin}
-                    dayMaxEvents={isAdmin}
+        <>
+            <Container maxWidth="lg" sx={{ mt: { xs: 2, sm: 3, md: 10 } }}>
+                <Box >
+                    <FullCallendar
+                        timeZone="local"
+                        height={window.innerWidth <= 600 ? '60vh' : '70vh'}
+                        plugins={[
+                            dayGridPlugin,
+                            timeGridPlugin,
+                            interactionPlugin,
+                            listPlugin
+                        ]}
+                        headerToolbar={{
+                            left: "prev,next",
+                            center: "title",
+                            right: "dayGridMonth,timeGridWeek,timeGridDay,listMonth"
+                        }}
+                        initialView="dayGridMonth"
+                        editable={isAdmin}
+                        selectable={isAdmin}
+                        select={handleDateClick}
+                        eventClick={handleEventClick}
+                        events={events}
+                        selectMirror={isAdmin}
+                        dayMaxEvents={isAdmin}
 
-                    eventDrop={handleDateUpdate}
+                        eventDrop={handleDateUpdate}
+                        eventResize={handleDateUpdate}
+                    >
+                    </FullCallendar>
+                </Box>
+            </Container>
+            <EventForm open={open} handleModalClose={handleModalClose}>
 
-                >
-                </FullCallendar>
-            </Box>
-        </Container>
+            </EventForm>
+
+        </>
     )
 }
 

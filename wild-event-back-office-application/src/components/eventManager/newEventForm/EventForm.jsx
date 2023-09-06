@@ -11,7 +11,7 @@ import { getUsers } from "../../../services/UserService"
 
 
 
-const EventForm = () => {
+const EventForm = ({ open, handleModalClose }) => {
     const START_AT = 'start';
     const ENDS_AT = 'end';
     const navigate = useNavigate();
@@ -62,7 +62,7 @@ const EventForm = () => {
         organizers: [],
         openToPublic: false
     });
-    
+
     const handleDateChange = (newValue, flag) => {
         const formattedValue = newValue.format("YYYY-MM-DDTHH:mm:ss");
         setEventData((prevData) => ({
@@ -74,11 +74,12 @@ const EventForm = () => {
         }));
     };
 
-    const handleSubmit =async (event) => {
+    const handleSubmit = async (event) => {
         event.preventDefault();
         if (new Date(eventData.dateRange.startsAt) < new Date(eventData.dateRange.endsAt)) {
-           await addEvent(eventData);
-            navigate("/calendar");
+            await addEvent(eventData);
+            await handleModalClose();
+            // navigate("/calendar");
         } else {
             alert("Invalid dates. Make sure the start date is earlier than the end date.");
         }
@@ -89,9 +90,9 @@ const EventForm = () => {
             ...eventData,
             [name]: value,
         });
-    }; 
+    };
 
-    const getNameFromId=(selected)=>{
+    const getNameFromId = (selected) => {
         const selectedNames = selected.map(id => {
             const user = userDB.find(user => user.id === id);
             return user ? user.name : "";
@@ -100,7 +101,7 @@ const EventForm = () => {
     }
 
     return (
-        <Dialog fullWidth open={true}  >
+        <Dialog fullWidth open={open}  >
             <DialogTitle>Add New Event</DialogTitle>
             <DialogContent  >
                 <FormGroup >
@@ -113,10 +114,10 @@ const EventForm = () => {
 
                             onChange={handleInputChange} />
                     </FormControl>
-                    <FormControl  margin="normal" >
+                    <FormControl margin="normal" >
                         <TextField
                             label="Description"
-                       
+
                             variant="outlined"
                             name="description"
                             value={eventData.description}
@@ -179,7 +180,7 @@ const EventForm = () => {
             </DialogContent>
 
             <DialogActions>
-                <Button onClick={() => navigate('/calendar')} color="primary">
+                <Button onClick={handleModalClose} color="primary">
                     Cancel
                 </Button>
                 <Button onClick={handleSubmit} color="primary">
