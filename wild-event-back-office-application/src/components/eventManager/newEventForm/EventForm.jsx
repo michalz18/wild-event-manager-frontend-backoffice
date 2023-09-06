@@ -11,13 +11,24 @@ import { getUsers } from "../../../services/UserService"
 
 
 
-const EventForm = ({ open, handleModalClose }) => {
+const EventForm = ({ open, handleModalClose, isUpdateEvent, pickedEvent, handleDeleteEvent }) => {
     const START_AT = 'start';
     const ENDS_AT = 'end';
     const navigate = useNavigate();
     const [locationDB, setLocationDB] = useState([]);
     const [userDB, setUserDB] = useState([]);
 
+    const [eventData, setEventData] = useState({
+        title: "",
+        description: "",
+        dateRange: {
+            startsAt: dayjs().format('YYYY-MM-DDTHH:mm:ssZ[Z]'),
+            endsAt: dayjs().format('YYYY-MM-DDTHH:mm:ssZ[Z]'),
+        },
+        locationId: "",
+        organizers: [],
+        openToPublic: false
+    });
     const getAllUsers = async () => {
         try {
             const data = await getUsers();
@@ -51,17 +62,18 @@ const EventForm = ({ open, handleModalClose }) => {
         getAllUsers();
     }, []);
 
-    const [eventData, setEventData] = useState({
-        title: "",
-        description: "",
-        dateRange: {
-            startsAt: dayjs().format('YYYY-MM-DDTHH:mm:ssZ[Z]'),
-            endsAt: dayjs().format('YYYY-MM-DDTHH:mm:ssZ[Z]'),
-        },
-        locationId: "",
-        organizers: [],
-        openToPublic: false
-    });
+    useEffect(() => {
+        console.log(pickedEvent)
+        setEventData((prevData) => ({
+
+            ...prevData,
+            title: pickedEvent.title,
+            dateRange: {
+                startsAt: pickedEvent.start.includes("T") ? dayjs(pickedEvent.start) : dayjs(`${pickedEvent.start}T00:00`),
+                endsAt: pickedEvent.end.includes("T") ? dayjs(pickedEvent.end) : dayjs(`${pickedEvent.end}T00:00`)
+            }
+        }));
+    }, [pickedEvent]);
 
     const handleDateChange = (newValue, flag) => {
         const formattedValue = newValue.format("YYYY-MM-DDTHH:mm:ss");
@@ -102,7 +114,7 @@ const EventForm = ({ open, handleModalClose }) => {
 
     return (
         <Dialog fullWidth open={open}  >
-            <DialogTitle>Add New Event</DialogTitle>
+            <DialogTitle>{isUpdateEvent ? "Event details" : "Add New Event"}</DialogTitle>
             <DialogContent  >
                 <FormGroup >
                     <FormControl margin="normal">
@@ -111,7 +123,6 @@ const EventForm = ({ open, handleModalClose }) => {
                             variant="outlined"
                             name="title"
                             value={eventData.title}
-
                             onChange={handleInputChange} />
                     </FormControl>
                     <FormControl margin="normal" >
@@ -127,6 +138,7 @@ const EventForm = ({ open, handleModalClose }) => {
                     <FormControl margin="normal">
                         <LocalizationProvider dateAdapter={AdapterDayjs}>
                             <DateTimePicker spacing={0.5}
+                                defaultValue={pickedEvent.start.includes("T") ? dayjs(pickedEvent.start) : dayjs(`${pickedEvent.start}T00:00`)}
                                 label="Start at"
                                 value={eventData.dateRange.startAt}
                                 onChange={(newValue) => handleDateChange(newValue, START_AT)} />
@@ -136,6 +148,8 @@ const EventForm = ({ open, handleModalClose }) => {
                         <LocalizationProvider dateAdapter={AdapterDayjs}>
                             <DateTimePicker
                                 label="Ends at"
+                                defaultValue={pickedEvent.end.includes("T") ? dayjs(pickedEvent.end) : dayjs(`${pickedEvent.end}T00:00`)}
+
                                 value={eventData.dateRange.endAt}
                                 onChange={(newValue) => handleDateChange(newValue, ENDS_AT)} />
                         </LocalizationProvider>
@@ -179,14 +193,28 @@ const EventForm = ({ open, handleModalClose }) => {
                 </FormGroup>
             </DialogContent>
 
-            <DialogActions>
+            {isUpdateEvent ? (
+                <DialogActions>
+                    <Button onClick={handleModalClose} color="primary">
+                        Cancel
+                    </Button>
+                    <Button onClick={handleModalClose} color="primary">
+                        Update
+                    </Button>
+                    <Button onClick={() => handleDeleteEvent(pickedEvent)} color="error">
+                        Delete
+                    </Button>
+                </DialogActions>
+            ) : <DialogActions>
                 <Button onClick={handleModalClose} color="primary">
                     Cancel
                 </Button>
                 <Button onClick={handleSubmit} color="primary">
                     Submit
                 </Button>
-            </DialogActions>
+            </DialogActions>}
+
+
         </Dialog>
     );
 };

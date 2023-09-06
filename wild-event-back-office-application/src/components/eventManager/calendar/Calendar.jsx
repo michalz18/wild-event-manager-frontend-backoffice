@@ -14,7 +14,14 @@ import EventForm from "../newEventForm/EventForm";
 const Calendar = ({ isAdmin }) => {
     const [events, setEvents] = useState([]);
     const [open, setOpen] = useState(false);
-
+    const [eventToUpdate, setEventToUpdate] = useState({});
+    const [isUpdateEvent, setIsUpdateEvent] = useState(false);
+    const [pickedEvent, setPickedEvent] = useState({
+        id:"",
+        title: "",
+        start: "",
+        end:""
+    });
 
     const getEvents = async () => {
         try {
@@ -35,7 +42,6 @@ const Calendar = ({ isAdmin }) => {
                         start: formattedStart,
                         end: formattedEnd,
                         id: eventDataFromDB.id,
-
                     };
                 })
             );
@@ -56,11 +62,31 @@ const Calendar = ({ isAdmin }) => {
     }, []);
 
     const handleDateClick = (selected) => {
+        console.log(selected)
         setOpen(true);
-        // navigate("/add-event");
+        setIsUpdateEvent(false);
+        setEventToUpdate(selected);
+
+        setPickedEvent({
+            id:"",
+            title: "",
+            start: selected.startStr,
+            end:selected.endStr
+        })
+
+
     }
     const handleModalClose = () => {
-        setOpen(false)
+        setIsUpdateEvent(false)
+        setOpen(false);
+        setPickedEvent({
+            id:"",
+            title: "",
+            start: "",
+            end:""
+     
+        });
+        
     }
     const getIdFromEventTitle = (title) => {
         const find = events.find(event => event.title === title)
@@ -68,12 +94,29 @@ const Calendar = ({ isAdmin }) => {
     }
 
     const handleEventClick = (selected) => {
-        if (window.confirm(`Are you sure you want to delete the event? ${selected.event.title}`)) {
+        setOpen(true)
 
-            deleteEvent(getIdFromEventTitle(selected.event._def.title))
-            selected.event.remove();
-        }
+        setEventToUpdate(selected);
+        setIsUpdateEvent(true);
+
+        setPickedEvent({
+            id:selected.event.id,
+            title: selected.event.title,
+            start: selected.event.startStr,
+            end:selected.event.endStr,
+            selected:selected
+        })
+    
     };
+
+    const handleDeleteEvent = (dto) =>{
+         if (window.confirm(`Are you sure you want to delete the event? ${dto.title}`)) {
+            deleteEvent(getIdFromEventTitle(dto.title))
+            dto.selected.event.remove();
+            handleModalClose();
+        }
+    } 
+    console.log(pickedEvent)
     const changeDate = (id, newStart, newEnd) => {
         setEvents((prevEvents) =>
             prevEvents.map((event) =>
@@ -107,7 +150,6 @@ const Calendar = ({ isAdmin }) => {
 
             dto.dateRange.startsAt = formattedStart;
             const endDate = newStart.add(1, 'day');
-            console.log(`EndDay: ${endDate.format("YYYY-MM-DDTHH:mm:ss")}`)
             dto.dateRange.endsAt = endDate.format("YYYY-MM-DDTHH:mm:ss");
 
         } else {
@@ -117,12 +159,9 @@ const Calendar = ({ isAdmin }) => {
             changeDate(id, dto.dateRange.startsAt, dto.dateRange.endsAt);
 
         }
-
         updateDateEvent(dto);
 
     };
-
-
     return (
         <>
             <Container maxWidth="lg" sx={{ mt: { xs: 2, sm: 3, md: 10 } }}>
@@ -156,7 +195,7 @@ const Calendar = ({ isAdmin }) => {
                     </FullCallendar>
                 </Box>
             </Container>
-            <EventForm open={open} handleModalClose={handleModalClose}>
+            <EventForm open={open} handleDeleteEvent={handleDeleteEvent} handleModalClose={handleModalClose} isUpdateEvent={isUpdateEvent} pickedEvent={pickedEvent} >
 
             </EventForm>
 
