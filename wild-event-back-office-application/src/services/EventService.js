@@ -40,4 +40,39 @@ const deleteEvent = async (id) => {
         console.error("Event could not be deleted:", error);
     }
 }
-export { getAllEvents, addEvent, deleteEvent };
+
+const updateDate = async (event, id) => {
+    try {
+        const response = await fetch(`http://localhost:8080/event-management/event/${id}`, {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(event)
+        });
+        if (!response.ok) {
+            throw new Error("Problem occurred while updating the event!");
+        }
+    } catch (error) {
+        console.error("Event could not be updated: ", error);
+    }
+}
+
+const updateDateEvent = async (eventDTO) => {
+    try {
+        const response = await fetch(`http://localhost:8080/event-management/event`, {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(eventDTO)
+        });
+        if (!response.ok) {
+            throw new Error("Problem occurred while updating the event!");
+        }
+    } catch (error) {
+        console.error("Event could not be updated: ", error);
+    }
+}
+
+export { getAllEvents, addEvent, deleteEvent, updateDate, updateDateEvent };
