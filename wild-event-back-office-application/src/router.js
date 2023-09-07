@@ -8,6 +8,7 @@ import { MainPage } from "./pages/MainPage"
 import { DarkModeProvider } from "./components/darkMode/DarkModeProvider"
 import { MyEventList } from "./pages/MyEventList";
 import { CalendarPage} from "./pages/CalendarPage";
+import { MapUploader } from "./pages/MapUploader"
 import EventForm from "./components/eventManager/newEventForm/EventForm";
 
 
@@ -76,19 +77,19 @@ const router = createBrowserRouter([
 				element: <Test />,
 				errorElement: <ErrorPage />,
 			},
+			// {
+			// 	path: "/map-config/location",
+			// 	element: <Test />,
+			// 	errorElement: <ErrorPage />,
+			// },
+			// {
+			// 	path: "/map-config/location/id",
+			// 	element: <Test />,
+			// 	errorElement: <ErrorPage />,
+			// },
 			{
-				path: "/map-config/location",
-				element: <Test />,
-				errorElement: <ErrorPage />,
-			},
-			{
-				path: "/map-config/location/id",
-				element: <Test />,
-				errorElement: <ErrorPage />,
-			},
-			{
-				path: "/map-config/map",
-				element: <Test />,
+				path: "/map-config",
+				element: <MapUploader />,
 				errorElement: <ErrorPage />,
 			},
 			{

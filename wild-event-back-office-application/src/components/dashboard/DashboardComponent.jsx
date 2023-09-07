@@ -12,16 +12,16 @@ export const DashboardComponent = () => {
 	const drawerWidth = 340
 
 	const itemList = [
-		{ text: "Event management", icon: <EventIcon /> },
-		{ text: "My events", icon: <NotificationIcon /> },
-		{ text: "Employee management", icon: <PersonIcon /> },
-		{ text: "Map configuration", icon: <MapIcon /> },
+		{ text: "Event management", icon: <EventIcon />, link:"/my-events/event" },
+		{ text: "My events", icon: <NotificationIcon />, link:"/event-management/event" },
+		{ text: "Employee management", icon: <PersonIcon />, link:"/staff-management/staff" },
+		{ text: "Map configuration", icon: <MapIcon />, link:"/map-config" },
 	]
 
   const navigate = useNavigate() ;
 
-	const handleMyEventsClick = () =>{
-		navigate("/my-events/event")
+	const handleMyEventsClick = (item) =>{
+		navigate(item.link)
 	}
 
   const handleLogoutClick = () => {
@@ -44,7 +44,7 @@ export const DashboardComponent = () => {
 				<List>
 					{itemList.map((item, index) => (
 						<ListItem key={item.text} disablePadding>
-							<ListItemButton onClick={handleMyEventsClick}>
+							<ListItemButton onClick={() => handleMyEventsClick(item)}>
 								<ListItemIcon>{item.icon}</ListItemIcon>
 								<ListItemText primary={item.text} />
 							</ListItemButton>
