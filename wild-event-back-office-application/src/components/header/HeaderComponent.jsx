@@ -4,7 +4,6 @@ import { useDarkMode } from "../../components/darkMode/DarkModeProvider";
 
 export const HeaderComponent = () => {
 	const { darkMode, toggleDarkMode } = useDarkMode();
-	console.log("dark mode: ", darkMode);
 
   return (
     <Box sx={{ display: "flex" }}>
