@@ -32,6 +32,7 @@ const EmployeeTable = () => {
     const [selectedRole, setSelectedRole] = useState("");
     const [allLocations, setAllLocations] = useState([]);
     const [userToEdit, setUserToEdit] = useState(null);
+    // sprawdz czy jest pusty
     const [openAddDialog, setOpenAddDialog] = useState(false);
     const [openEditDialog, setOpenEditDialog] = useState(false);
     const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);

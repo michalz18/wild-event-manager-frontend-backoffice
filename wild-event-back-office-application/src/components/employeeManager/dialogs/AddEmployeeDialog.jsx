@@ -17,7 +17,7 @@ const AddEmployeeDialog = ({ open, handleClose, allRoles, allLocations }) => {
 
   const validateField = (name, value) => {
     let newErrors = { ...errors };
-
+// incorporate formik or validator class. It shouldnt be that many if statement
     if (name === "name") {
       if (!value || value.length < 3 || !/^[a-zA-Z\s]+$/.test(value)) {
         newErrors.name = 'Name should be at least 3 characters long and contain only letters and spaces';

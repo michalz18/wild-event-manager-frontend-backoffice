@@ -27,18 +27,10 @@ export const DashboardComponent = () => {
 	const fontSizeScale = isMd
 		? maxFontSizeMd
 		: isLg
-		? maxFontSizeLg
-		: minFontSize
+			? maxFontSizeLg
+			: minFontSize
 
 	const navigate = useNavigate()
-
-	const handleItemClick = path => {
-		navigate(path)
-	}
-
-	const handleLogoutClick = () => {
-		navigate("/logout")
-	}
 
 	return (
 		<>
@@ -57,7 +49,7 @@ export const DashboardComponent = () => {
 					<List>
 						{itemList.map(item => (
 							<ListItem key={item.text} disablePadding>
-								<ListItemButton onClick={() => handleItemClick(item.path)}>
+								<ListItemButton onClick={() => navigate(item.path)}>
 									<ListItemIcon>{item.icon}</ListItemIcon>
 									<ListItemText
 										primary={item.text}
@@ -71,7 +63,7 @@ export const DashboardComponent = () => {
 					</List>
 					<Divider />
 					<List>
-						<ListItemButton onClick={handleLogoutClick}>
+						<ListItemButton onClick={() => navigate("/logout")}>
 							<ListItemIcon>
 								<LogoutIcon />
 							</ListItemIcon>

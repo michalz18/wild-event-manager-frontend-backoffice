@@ -6,7 +6,7 @@ import FilterListIcon from '@mui/icons-material/FilterList';
 
 const RoleFilter = ({ allRoles, onRoleSelect }) => {
     const [anchorEl, setAnchorEl] = useState(null);
-
+// refactor like locationFilter
     const handleClick = (event) => {
         setAnchorEl(event.currentTarget);
     };

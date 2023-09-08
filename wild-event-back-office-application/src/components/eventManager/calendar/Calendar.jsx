@@ -62,7 +62,6 @@ const Calendar = ({ isAdmin }) => {
     }, []);
 
     const handleDateClick = (selected) => {
-        console.log(selected)
         setOpen(true);
         setIsUpdateEvent(false);
         setEventToUpdate(selected);
@@ -116,7 +115,7 @@ const Calendar = ({ isAdmin }) => {
             handleModalClose();
         }
     } 
-    console.log(pickedEvent)
+  
     const changeDate = (id, newStart, newEnd) => {
         setEvents((prevEvents) =>
             prevEvents.map((event) =>

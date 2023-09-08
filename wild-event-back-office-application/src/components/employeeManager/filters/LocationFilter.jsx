@@ -6,7 +6,7 @@ import FilterListIcon from '@mui/icons-material/FilterList';
 
 const LocationFilter = ({ allLocations, onLocationSelect }) => {
     const [anchorEl, setAnchorEl] = useState(null);
-
+// delete one line function
     const handleClick = (event) => {
         setAnchorEl(event.currentTarget);
     };
@@ -16,6 +16,7 @@ const LocationFilter = ({ allLocations, onLocationSelect }) => {
     };
 
     const handleLocationSelect = (location) => {
+        // make ternery operator insted of if statement
         if (location === "None") {
             onLocationSelect("");
         } else {
