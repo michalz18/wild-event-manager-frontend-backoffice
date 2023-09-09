@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import FullCallendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
@@ -17,11 +17,12 @@ const Calendar = ({ isAdmin }) => {
     const [eventToUpdate, setEventToUpdate] = useState({});
     const [isUpdateEvent, setIsUpdateEvent] = useState(false);
     const [pickedEvent, setPickedEvent] = useState({
-        id:"",
+        id: "",
         title: "",
         start: "",
-        end:""
+        end: ""
     });
+    const calendarRef = useRef(null);
 
     const getEvents = async () => {
         try {
@@ -62,16 +63,15 @@ const Calendar = ({ isAdmin }) => {
     }, []);
 
     const handleDateClick = (selected) => {
-        console.log(selected)
         setOpen(true);
         setIsUpdateEvent(false);
         setEventToUpdate(selected);
 
         setPickedEvent({
-            id:"",
+            id: "",
             title: "",
             start: selected.startStr,
-            end:selected.endStr
+            end: selected.endStr
         })
 
 
@@ -80,13 +80,16 @@ const Calendar = ({ isAdmin }) => {
         setIsUpdateEvent(false)
         setOpen(false);
         setPickedEvent({
-            id:"",
+            id: "",
             title: "",
             start: "",
-            end:""
-     
+            end: ""
+
         });
-        
+        // let calendarApi = calendarRef.current.getApi();
+        // calendarApi.addEvent(event)
+
+
     }
     const getIdFromEventTitle = (title) => {
         const find = events.find(event => event.title === title)
@@ -99,24 +102,25 @@ const Calendar = ({ isAdmin }) => {
         setEventToUpdate(selected);
         setIsUpdateEvent(true);
 
+
+
         setPickedEvent({
-            id:selected.event.id,
+            id: selected.event.id,
             title: selected.event.title,
             start: selected.event.startStr,
-            end:selected.event.endStr,
-            selected:selected
+            end: selected.event.endStr,
+            selected: selected
         })
-    
+
     };
 
-    const handleDeleteEvent = (dto) =>{
-         if (window.confirm(`Are you sure you want to delete the event? ${dto.title}`)) {
+    const handleDeleteEvent = (dto) => {
+        if (window.confirm(`Are you sure you want to delete the event? ${dto.title}`)) {
             deleteEvent(getIdFromEventTitle(dto.title))
             dto.selected.event.remove();
             handleModalClose();
         }
-    } 
-    console.log(pickedEvent)
+    }
     const changeDate = (id, newStart, newEnd) => {
         setEvents((prevEvents) =>
             prevEvents.map((event) =>
@@ -162,11 +166,31 @@ const Calendar = ({ isAdmin }) => {
         updateDateEvent(dto);
 
     };
+    const onEventAdded = (event, id) => {
+        let calendarApi = calendarRef.current.getApi();
+
+        calendarApi.addEvent(event)
+
+        const formattedEnd = event.dateRange.startsAt.format("YYYY-MM-DDTHH:mm:ss");
+        const formattedEnd2 = event.dateRange.endsAt.format("YYYY-MM-DDTHH:mm:ss");
+
+        const dtoObj = {
+            id: id,
+            title: event.title,
+            start: formattedEnd,
+            end: formattedEnd2
+        }
+        calendarApi.addEvent(dtoObj)
+        console.log(dtoObj)
+
+
+    }
     return (
         <>
             <Container maxWidth="lg" sx={{ mt: { xs: 2, sm: 3, md: 10 } }}>
                 <Box >
                     <FullCallendar
+                        ref={calendarRef}
                         timeZone="local"
                         height={window.innerWidth <= 600 ? '60vh' : '70vh'}
                         plugins={[
@@ -195,7 +219,7 @@ const Calendar = ({ isAdmin }) => {
                     </FullCallendar>
                 </Box>
             </Container>
-            <EventForm open={open} handleDeleteEvent={handleDeleteEvent} handleModalClose={handleModalClose} isUpdateEvent={isUpdateEvent} pickedEvent={pickedEvent} >
+            <EventForm open={open} onEventAdded={onEventAdded} handleDeleteEvent={handleDeleteEvent} handleModalClose={handleModalClose} isUpdateEvent={isUpdateEvent} pickedEvent={pickedEvent} >
 
             </EventForm>
 

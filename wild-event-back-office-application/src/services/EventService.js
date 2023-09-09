@@ -21,6 +21,7 @@ const addEvent = async (eventData) => {
         if (!response.ok) {
             throw new Error("Problem occurred while adding an event!");
         }
+        return await response.json();
     } catch (error) {
         console.error("Event could not be added:", error);
     }

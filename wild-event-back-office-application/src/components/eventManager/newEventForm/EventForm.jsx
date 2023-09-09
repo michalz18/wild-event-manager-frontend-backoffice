@@ -11,7 +11,7 @@ import { getUsers } from "../../../services/UserService"
 
 
 
-const EventForm = ({ open, handleModalClose, isUpdateEvent, pickedEvent, handleDeleteEvent }) => {
+const EventForm = ({ open, handleModalClose, isUpdateEvent, pickedEvent, handleDeleteEvent, onEventAdded }) => {
     const START_AT = 'start';
     const ENDS_AT = 'end';
     const navigate = useNavigate();
@@ -63,7 +63,6 @@ const EventForm = ({ open, handleModalClose, isUpdateEvent, pickedEvent, handleD
     }, []);
 
     useEffect(() => {
-        console.log(pickedEvent)
         setEventData((prevData) => ({
 
             ...prevData,
@@ -89,9 +88,10 @@ const EventForm = ({ open, handleModalClose, isUpdateEvent, pickedEvent, handleD
     const handleSubmit = async (event) => {
         event.preventDefault();
         if (new Date(eventData.dateRange.startsAt) < new Date(eventData.dateRange.endsAt)) {
-            await addEvent(eventData);
+            const id = await addEvent(eventData);
             await handleModalClose();
-            // navigate("/calendar");
+            onEventAdded(eventData,id);
+
         } else {
             alert("Invalid dates. Make sure the start date is earlier than the end date.");
         }
