@@ -42,12 +42,12 @@ const deleteEvent = async (id) => {
     }
 }
 
-const updateDate = async (event, id) => {
+const updateEvent = async (event,id) => {
     try {
         const response = await fetch(`http://localhost:8080/event-management/event/${id}`, {
             method: "PATCH",
             headers: {
-                "Content-Type": "application/json"
+                "Content-Type": "application/json" 
             },
             body: JSON.stringify(event)
         });
@@ -76,4 +76,4 @@ const updateDateEvent = async (eventDTO) => {
     }
 }
 
-export { getAllEvents, addEvent, deleteEvent, updateDate, updateDateEvent };
+export { getAllEvents, addEvent, deleteEvent, updateEvent, updateDateEvent };

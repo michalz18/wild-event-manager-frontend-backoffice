@@ -5,13 +5,17 @@ import timeGridPlugin from '@fullcalendar/timegrid';
 import listPlugin from '@fullcalendar/list';
 import interactionPlugin from "@fullcalendar/interaction";
 import { Box, Container } from "@mui/material";
-import { getAllEvents, deleteEvent, updateDate, updateDateEvent } from "../../../services/EventService"
+import { getAllEvents, deleteEvent, updateDateEvent } from "../../../services/EventService"
 import dayjs from 'dayjs';
 import EventForm from "../newEventForm/EventForm";
 
 
 
 const Calendar = ({ isAdmin }) => {
+    const [defaultState, setDefaultState] = useState({
+        id: '',
+        title: '',
+    });
     const [events, setEvents] = useState([]);
     const [open, setOpen] = useState(false);
     const [eventToUpdate, setEventToUpdate] = useState({});
@@ -34,7 +38,6 @@ const Calendar = ({ isAdmin }) => {
 
                     const isSingleDay = isDatesDifferenceOneDay(startDate, endDate);
 
-
                     const formattedStart = isSingleDay ? eventDataFromDB.startsAt.toString().split("T")[0] : eventDataFromDB.startsAt;
                     const formattedEnd = isSingleDay ? null : endDate.toISOString();
 
@@ -43,6 +46,9 @@ const Calendar = ({ isAdmin }) => {
                         start: formattedStart,
                         end: formattedEnd,
                         id: eventDataFromDB.id,
+                        description: eventDataFromDB.description,
+                        location: eventDataFromDB.location,
+                        organizers: eventDataFromDB.organizers
                     };
                 })
             );
@@ -51,7 +57,6 @@ const Calendar = ({ isAdmin }) => {
             setEvents([]);
         }
     };
-
     function isDatesDifferenceOneDay(date1, date2) {
         const oneDayMilliseconds = 24 * 60 * 60 * 1000;
         const differenceMilliseconds = Math.abs(date1 - date2);
@@ -83,33 +88,48 @@ const Calendar = ({ isAdmin }) => {
             id: "",
             title: "",
             start: "",
-            end: ""
+            end: "",
+            description: "",
+            location: "",
+            organizers: []
 
         });
-        // let calendarApi = calendarRef.current.getApi();
-        // calendarApi.addEvent(event)
 
 
+        setDefaultState({
+            id: '',
+            title: '',
+        })
     }
     const getIdFromEventTitle = (title) => {
         const find = events.find(event => event.title === title)
         return find ? find.id : "";
     }
+    const getEventFromSelectedField = (id) => {
+        return events.find(event => event.id === id);
 
+    }
     const handleEventClick = (selected) => {
         setOpen(true)
+        setDefaultState({
+            id: '29b77468-c687-4565-bf9f-0cb6c5db9183',
+            title: 'Jungle Trek',
+        })
 
         setEventToUpdate(selected);
         setIsUpdateEvent(true);
-
-
-
+        const event = getEventFromSelectedField(selected.event.id);
         setPickedEvent({
             id: selected.event.id,
             title: selected.event.title,
             start: selected.event.startStr,
             end: selected.event.endStr,
-            selected: selected
+            selected: selected,
+            description: event.description,
+            organizers: event.organizers,
+            location: event.location
+
+
         })
 
     };
@@ -166,13 +186,36 @@ const Calendar = ({ isAdmin }) => {
         updateDateEvent(dto);
 
     };
+    const onEventUpdated = (updatedEvent) => {
+        let calendarApi = calendarRef.current.getApi();
+        setEvents((prevEvents) =>
+            prevEvents.map((event) =>
+                event.id === updatedEvent.id
+                    ? { ...event, updatedEvent }
+                    : event
+
+            )
+
+        );
+        const formattedEnd = updatedEvent.dateRange.startsAt.format("YYYY-MM-DDTHH:mm:ss");
+        const formattedEnd2 = updatedEvent.dateRange.endsAt.format("YYYY-MM-DDTHH:mm:ss");
+
+        const dtoObj = {
+            id: updatedEvent.id,
+            title: updatedEvent.title,
+            start: formattedEnd,
+            end: formattedEnd2
+        }
+        calendarApi.addEvent(dtoObj)
+
+    }
     const onEventAdded = (event, id) => {
         let calendarApi = calendarRef.current.getApi();
 
-        calendarApi.addEvent(event)
 
-        const formattedEnd = event.dateRange.startsAt.format("YYYY-MM-DDTHH:mm:ss");
-        const formattedEnd2 = event.dateRange.endsAt.format("YYYY-MM-DDTHH:mm:ss");
+        console.log(event)
+        const formattedEnd = dayjs(event.dateRange.startsAt).format("YYYY-MM-DDTHH:mm:ss");
+        const formattedEnd2 = dayjs(event.dateRange.endsAt).format("YYYY-MM-DDTHH:mm:ss");
 
         const dtoObj = {
             id: id,
@@ -185,6 +228,7 @@ const Calendar = ({ isAdmin }) => {
 
 
     }
+
     return (
         <>
             <Container maxWidth="lg" sx={{ mt: { xs: 2, sm: 3, md: 10 } }}>
@@ -219,7 +263,7 @@ const Calendar = ({ isAdmin }) => {
                     </FullCallendar>
                 </Box>
             </Container>
-            <EventForm open={open} onEventAdded={onEventAdded} handleDeleteEvent={handleDeleteEvent} handleModalClose={handleModalClose} isUpdateEvent={isUpdateEvent} pickedEvent={pickedEvent} >
+            <EventForm open={open} defaultState={defaultState} onEventUpdated={onEventUpdated} onEventAdded={onEventAdded} handleDeleteEvent={handleDeleteEvent} handleModalClose={handleModalClose} isUpdateEvent={isUpdateEvent} pickedEvent={pickedEvent} >
 
             </EventForm>
 

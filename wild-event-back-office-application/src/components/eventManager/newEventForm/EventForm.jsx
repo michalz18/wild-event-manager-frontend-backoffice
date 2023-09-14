@@ -1,20 +1,19 @@
 import React from "react";
 import { Dialog, DialogTitle, DialogContent, DialogActions, FormGroup, FormControl, InputLabel, Input, Button, Autocomplete, TextField, Select, MenuItem, Checkbox, FormControlLabel } from '@mui/material';
-import { useNavigate, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { LocalizationProvider, DateTimePicker } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import dayjs from 'dayjs';
-import { addEvent } from "../../../services/EventService"
+import { addEvent, updateEvent } from "../../../services/EventService"
 import { getLocations } from "../../../services/LocationService"
 import { getUsers } from "../../../services/UserService"
 
 
 
-const EventForm = ({ open, handleModalClose, isUpdateEvent, pickedEvent, handleDeleteEvent, onEventAdded }) => {
+const EventForm = ({ open, handleModalClose, isUpdateEvent, pickedEvent, handleDeleteEvent, onEventAdded, onEventUpdated ,defaultState}) => {
     const START_AT = 'start';
     const ENDS_AT = 'end';
-    const navigate = useNavigate();
+    const [defaultLocation, setDefaultLocation] = useState(undefined);
     const [locationDB, setLocationDB] = useState([]);
     const [userDB, setUserDB] = useState([]);
 
@@ -22,13 +21,53 @@ const EventForm = ({ open, handleModalClose, isUpdateEvent, pickedEvent, handleD
         title: "",
         description: "",
         dateRange: {
-            startsAt: dayjs().format('YYYY-MM-DDTHH:mm:ssZ[Z]'),
-            endsAt: dayjs().format('YYYY-MM-DDTHH:mm:ssZ[Z]'),
+            startsAt: pickedEvent ? pickedEvent.start : dayjs().format('YYYY-MM-DDTHH:mm:ssZ[Z]'),
+            endsAt: pickedEvent ? pickedEvent.end : dayjs().format('YYYY-MM-DDTHH:mm:ssZ[Z]'),
         },
         locationId: "",
         organizers: [],
         openToPublic: false
     });
+
+    useEffect(() => {
+        if (pickedEvent && pickedEvent.organizers && userDB) {
+            setDefaultLocation(locationDB.find(el => el.title === pickedEvent.location))
+            setEventData((prevData) => ({
+                ...prevData,
+                title: pickedEvent.title,
+                description: pickedEvent.description,
+                dateRange: {
+                    startsAt: pickedEvent.start.includes("T")
+                        ? dayjs(pickedEvent.start)
+                        : dayjs(`${pickedEvent.start}T00:00`),
+                    endsAt: pickedEvent.end.includes("T")
+                        ? dayjs(pickedEvent.end)
+                        : dayjs(`${pickedEvent.end}T00:00`),
+                },
+                locationId: locationDB
+                    .filter(location => location.title === pickedEvent.location)
+                    .map(location => location.id)
+                    .filter(id => id !== null).toString(),
+                organizers: pickedEvent.organizers.map((organizerName) => {
+                    const user = userDB.find((user) => user.name === organizerName);
+                    return user ? user.id : null;
+                }).filter((id) => id !== null),
+            }));
+        }
+    }, [pickedEvent, userDB]);
+
+    const getPickedLocationID = () => {
+        return locationDB
+            .filter(location => location.title === pickedEvent.location)
+            .map(location => location.id)
+            .filter(id => id !== null).toString()
+    }
+    const getPickedLocationTitle = () => {
+        return locationDB
+            .filter(location => location.title === pickedEvent.location)
+            .map(location => location.title)
+            .filter(id => id !== null).toString()
+    }
     const getAllUsers = async () => {
         try {
             const data = await getUsers();
@@ -62,17 +101,6 @@ const EventForm = ({ open, handleModalClose, isUpdateEvent, pickedEvent, handleD
         getAllUsers();
     }, []);
 
-    useEffect(() => {
-        setEventData((prevData) => ({
-
-            ...prevData,
-            title: pickedEvent.title,
-            dateRange: {
-                startsAt: pickedEvent.start.includes("T") ? dayjs(pickedEvent.start) : dayjs(`${pickedEvent.start}T00:00`),
-                endsAt: pickedEvent.end.includes("T") ? dayjs(pickedEvent.end) : dayjs(`${pickedEvent.end}T00:00`)
-            }
-        }));
-    }, [pickedEvent]);
 
     const handleDateChange = (newValue, flag) => {
         const formattedValue = newValue.format("YYYY-MM-DDTHH:mm:ss");
@@ -85,12 +113,30 @@ const EventForm = ({ open, handleModalClose, isUpdateEvent, pickedEvent, handleD
         }));
     };
 
-    const handleSubmit = async (event) => {
+    const handleSubmit = async (event, eventAlreadyExist) => {
         event.preventDefault();
         if (new Date(eventData.dateRange.startsAt) < new Date(eventData.dateRange.endsAt)) {
-            const id = await addEvent(eventData);
+            let id = null;
+            if (eventAlreadyExist) {
+                id = await updateEvent(eventData, pickedEvent.id);
+            } else {
+                id = await addEvent(eventData);
+
+            }
+            const formattedStart = dayjs(eventData.dateRange.startsAt).format("YYYY-MM-DDTHH:mm:ss");
+            const formattedEnd = dayjs(eventData.dateRange.endsAt).format("YYYY-MM-DDTHH:mm:ss");
+            setEventData((prevData) => ({
+                ...prevData,
+                dateRange: {
+                    ...prevData.dateRange,
+                    startsAt: formattedStart,
+                    endsAt: formattedEnd
+                }
+            }));
+
+            onEventAdded(eventData, id);
             await handleModalClose();
-            onEventAdded(eventData,id);
+
 
         } else {
             alert("Invalid dates. Make sure the start date is earlier than the end date.");
@@ -102,6 +148,7 @@ const EventForm = ({ open, handleModalClose, isUpdateEvent, pickedEvent, handleD
             ...eventData,
             [name]: value,
         });
+        console.log(event)
     };
 
     const getNameFromId = (selected) => {
@@ -112,6 +159,12 @@ const EventForm = ({ open, handleModalClose, isUpdateEvent, pickedEvent, handleD
         return selectedNames.join(", ");
     }
 
+    const getTitleFromId = (selected) => {
+        const location = locationDB.find(location => location.id === eventData.locationId);
+        return location ? location.name : "";
+
+    }
+    console.log(eventData.locationId)
     return (
         <Dialog fullWidth open={open}  >
             <DialogTitle>{isUpdateEvent ? "Event details" : "Add New Event"}</DialogTitle>
@@ -156,19 +209,24 @@ const EventForm = ({ open, handleModalClose, isUpdateEvent, pickedEvent, handleD
                     </FormControl>
                     <FormControl margin="normal">
                         <Autocomplete
+                            value={defaultState}
+
                             disablePortal
                             options={locationDB}
                             getOptionLabel={(option) => option.title}
                             renderInput={(params) => <TextField {...params} label="Locations" />}
                             onChange={(event, value) => setEventData((prevData) => ({
                                 ...prevData,
-                                locationId: value.id
+                                locationId: value ? value.id : null
                             }))}
                         />
                     </FormControl>
+
+
                     <FormControl margin="normal">
                         <InputLabel>Select Users</InputLabel>
                         <Select
+
                             label="Select Users"
                             multiple
                             value={eventData.organizers}
@@ -183,6 +241,29 @@ const EventForm = ({ open, handleModalClose, isUpdateEvent, pickedEvent, handleD
                             ))}
                         </Select>
                     </FormControl>
+                    {/* <FormControl margin="normal">
+                        <InputLabel>Locations</InputLabel>
+                        <Select
+                            value={eventData.locationId}
+                            renderValue={getTitleFromId}
+
+                            onChange={(event) => {
+                                const selectedLocationId = event.target.value;
+                                setEventData((prevData) => ({
+                                    ...prevData,
+                                    locationId: selectedLocationId || null
+                                }));
+                            }}
+                        >
+                            {locationDB.map((location, index) => (
+                                <MenuItem key={index} value={location.id}>
+                                    {location.title}
+                                </MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl> */}
+
+
                     <FormControl margin="normal" >
                         <FormControlLabel control={<Checkbox onChange={(event) => setEventData((prevData) => ({
                             ...prevData,
@@ -198,7 +279,7 @@ const EventForm = ({ open, handleModalClose, isUpdateEvent, pickedEvent, handleD
                     <Button onClick={handleModalClose} color="primary">
                         Cancel
                     </Button>
-                    <Button onClick={handleModalClose} color="primary">
+                    <Button onClick={(event) => handleSubmit(event, true)} color="primary">
                         Update
                     </Button>
                     <Button onClick={() => handleDeleteEvent(pickedEvent)} color="error">
@@ -209,7 +290,7 @@ const EventForm = ({ open, handleModalClose, isUpdateEvent, pickedEvent, handleD
                 <Button onClick={handleModalClose} color="primary">
                     Cancel
                 </Button>
-                <Button onClick={handleSubmit} color="primary">
+                <Button onClick={(event) => handleSubmit(event, false)} color="primary">
                     Submit
                 </Button>
             </DialogActions>}
