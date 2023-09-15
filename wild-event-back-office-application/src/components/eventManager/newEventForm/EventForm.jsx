@@ -5,18 +5,14 @@ import { LocalizationProvider, DateTimePicker } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import dayjs from 'dayjs';
 import { addEvent, updateEvent } from "../../../services/EventService"
-import { getLocations } from "../../../services/LocationService"
 import { getUsers } from "../../../services/UserService"
 
 
 
-const EventForm = ({ open, handleModalClose, isUpdateEvent, pickedEvent, handleDeleteEvent, onEventAdded, onEventUpdated ,defaultState}) => {
+const EventForm = ({ open, locationDB, handleModalClose, isUpdateEvent, pickedEvent, handleDeleteEvent, onEventAdded, }) => {
     const START_AT = 'start';
     const ENDS_AT = 'end';
-    const [defaultLocation, setDefaultLocation] = useState(undefined);
-    const [locationDB, setLocationDB] = useState([]);
     const [userDB, setUserDB] = useState([]);
-
     const [eventData, setEventData] = useState({
         title: "",
         description: "",
@@ -31,43 +27,32 @@ const EventForm = ({ open, handleModalClose, isUpdateEvent, pickedEvent, handleD
 
     useEffect(() => {
         if (pickedEvent && pickedEvent.organizers && userDB) {
-            setDefaultLocation(locationDB.find(el => el.title === pickedEvent.location))
             setEventData((prevData) => ({
                 ...prevData,
                 title: pickedEvent.title,
                 description: pickedEvent.description,
                 dateRange: {
-                    startsAt: pickedEvent.start.includes("T")
-                        ? dayjs(pickedEvent.start)
-                        : dayjs(`${pickedEvent.start}T00:00`),
-                    endsAt: pickedEvent.end.includes("T")
-                        ? dayjs(pickedEvent.end)
-                        : dayjs(`${pickedEvent.end}T00:00`),
+                    startsAt: pickedEvent.start,
+                    endsAt: pickedEvent.end,
                 },
-                locationId: locationDB
-                    .filter(location => location.title === pickedEvent.location)
-                    .map(location => location.id)
-                    .filter(id => id !== null).toString(),
+                locationId: pickedEvent.location.id,
                 organizers: pickedEvent.organizers.map((organizerName) => {
                     const user = userDB.find((user) => user.name === organizerName);
                     return user ? user.id : null;
                 }).filter((id) => id !== null),
             }));
         }
+        if (pickedEvent) {
+            setEventData((prevData) => ({
+                ...prevData,
+                dateRange: {
+                    startsAt: `${pickedEvent.start}T00:00`,
+                    endsAt: `${pickedEvent.end}T00:00`,
+                },
+            }))
+        }
     }, [pickedEvent, userDB]);
 
-    const getPickedLocationID = () => {
-        return locationDB
-            .filter(location => location.title === pickedEvent.location)
-            .map(location => location.id)
-            .filter(id => id !== null).toString()
-    }
-    const getPickedLocationTitle = () => {
-        return locationDB
-            .filter(location => location.title === pickedEvent.location)
-            .map(location => location.title)
-            .filter(id => id !== null).toString()
-    }
     const getAllUsers = async () => {
         try {
             const data = await getUsers();
@@ -82,22 +67,7 @@ const EventForm = ({ open, handleModalClose, isUpdateEvent, pickedEvent, handleD
         }
     }
 
-    const getAllLocations = async () => {
-        try {
-            const data = await getLocations();
-            setLocationDB(
-                data.map(locationDataFromDB => ({
-                    id: locationDataFromDB.id,
-                    title: locationDataFromDB.title,
-                })));
-        } catch (error) {
-            console.error("Error fetching locations", error);
-            setLocationDB([]);
-        }
-    }
-
     useEffect(() => {
-        getAllLocations();
         getAllUsers();
     }, []);
 
@@ -117,12 +87,8 @@ const EventForm = ({ open, handleModalClose, isUpdateEvent, pickedEvent, handleD
         event.preventDefault();
         if (new Date(eventData.dateRange.startsAt) < new Date(eventData.dateRange.endsAt)) {
             let id = null;
-            if (eventAlreadyExist) {
-                id = await updateEvent(eventData, pickedEvent.id);
-            } else {
-                id = await addEvent(eventData);
+            eventAlreadyExist ? id = await updateEvent(eventData, pickedEvent.id) : id = await addEvent(eventData);
 
-            }
             const formattedStart = dayjs(eventData.dateRange.startsAt).format("YYYY-MM-DDTHH:mm:ss");
             const formattedEnd = dayjs(eventData.dateRange.endsAt).format("YYYY-MM-DDTHH:mm:ss");
             setEventData((prevData) => ({
@@ -133,7 +99,7 @@ const EventForm = ({ open, handleModalClose, isUpdateEvent, pickedEvent, handleD
                     endsAt: formattedEnd
                 }
             }));
-
+console.log(id)
             onEventAdded(eventData, id);
             await handleModalClose();
 
@@ -148,7 +114,6 @@ const EventForm = ({ open, handleModalClose, isUpdateEvent, pickedEvent, handleD
             ...eventData,
             [name]: value,
         });
-        console.log(event)
     };
 
     const getNameFromId = (selected) => {
@@ -159,12 +124,6 @@ const EventForm = ({ open, handleModalClose, isUpdateEvent, pickedEvent, handleD
         return selectedNames.join(", ");
     }
 
-    const getTitleFromId = (selected) => {
-        const location = locationDB.find(location => location.id === eventData.locationId);
-        return location ? location.name : "";
-
-    }
-    console.log(eventData.locationId)
     return (
         <Dialog fullWidth open={open}  >
             <DialogTitle>{isUpdateEvent ? "Event details" : "Add New Event"}</DialogTitle>
@@ -209,7 +168,7 @@ const EventForm = ({ open, handleModalClose, isUpdateEvent, pickedEvent, handleD
                     </FormControl>
                     <FormControl margin="normal">
                         <Autocomplete
-                            value={defaultState}
+                            value={pickedEvent.location}
 
                             disablePortal
                             options={locationDB}
@@ -256,7 +215,7 @@ const EventForm = ({ open, handleModalClose, isUpdateEvent, pickedEvent, handleD
                             }}
                         >
                             {locationDB.map((location, index) => (
-                                <MenuItem key={index} value={location.id}>
+                                <MenuItem  key={index} value={location.id}>
                                     {location.title}
                                 </MenuItem>
                             ))}
