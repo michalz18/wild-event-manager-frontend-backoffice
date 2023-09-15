@@ -3,7 +3,7 @@ import Test from "./test"
 import ErrorPage from "./pages/ErrorPage"
 import LoginForm from "./components/loginForm/LoginForm"
 import { MainPage, LogoutPage, EventPage, MyEventPage, EmployeePage, MapPage } from "./pages/index";
-
+import { UserProvider } from './services/useUser';
 import { DarkModeProvider } from "./components/darkMode/DarkModeProvider"
 import { CalendarPage} from "./pages/CalendarPage";
 import { MapUploader } from "./pages/MapUploader"
@@ -14,7 +14,9 @@ const router = createBrowserRouter([
 		path: "/",
 		element: (
 			<DarkModeProvider>
-				<Outlet />
+				<UserProvider>  
+					<Outlet />
+				</UserProvider>
 			</DarkModeProvider>
 		),
 		errorElement: <ErrorPage />,
