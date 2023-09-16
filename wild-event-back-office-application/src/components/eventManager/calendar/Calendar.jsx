@@ -9,10 +9,13 @@ import { getAllEvents, deleteEvent, updateDateEvent } from "../../../services/Ev
 import dayjs from 'dayjs';
 import EventForm from "../newEventForm/EventForm";
 import { getLocations } from "../../../services/LocationService"
+import { getUsers } from "../../../services/UserService"
 
 
 
 const Calendar = ({ isAdmin }) => {
+    const [userDB, setUserDB] = useState([]);
+
     const [defaultState, setDefaultState] = useState({
         id: '',
         title: '',
@@ -78,11 +81,23 @@ const Calendar = ({ isAdmin }) => {
             setLocationDB([]);
         }
     }
-
+    const getAllUsers = async () => {
+        try {
+            const data = await getUsers();
+            setUserDB(
+                data.map(userData => ({
+                    id: userData.id,
+                    name: userData.name,
+                })));
+        } catch (error) {
+            console.error("Error fetching users", error);
+            setUserDB([]);
+        }
+    }
     useEffect(() => {
         getEvents();
         getAllLocations();
-
+        getAllUsers();
     }, []);
 
     const handleDateClick = (selected) => {
@@ -96,6 +111,7 @@ const Calendar = ({ isAdmin }) => {
             start: selected.startStr,
             end: selected.endStr
         })
+
 
     }
     const handleModalClose = () => {
@@ -144,10 +160,16 @@ const Calendar = ({ isAdmin }) => {
             end: selected.event.endStr,
             selected: selected,
             description: event.description,
-            organizers: event.organizers,
-            location: locationDB.find(location => location.title === event.location)
+            organizers: event.organizers.map((organizerId) => {
+                const user = userDB.find((user) => user.id === organizerId);
+                return user ? user.name : null;
+            }).filter((name) => name !== null),
+            location: locationDB.find(location => location.title === event.location || location.id === event.location)
 
         })
+        console.log(selected)
+        console.log(event)
+        console.log(pickedEvent)
 
     };
 
@@ -203,24 +225,8 @@ const Calendar = ({ isAdmin }) => {
         updateDateEvent(dto);
 
     };
-
-
-    const findEventIndexById = (events, id) => events.findIndex(event => event.id === id);
-
-    const removeEvent = (id, calendarApi) => {
-        const indexToRemove = findEventIndexById(events, id);
-        if (indexToRemove !== -1) {
-            calendarApi.remove(events[indexToRemove]);
-        }
-    }
-    
-
     const onEventUpdated = (updatedEvent) => {
         let calendarApi = calendarRef.current.getApi();
-
-        removeEvent(updatedEvent.id, calendarApi);
-
-
         setEvents((prevEvents) =>
             prevEvents.map((event) =>
                 event.id === updatedEvent.id
@@ -242,7 +248,6 @@ const Calendar = ({ isAdmin }) => {
         calendarApi.addEvent(dtoObj)
 
     }
-
     const onEventAdded = (event, id) => {
         let calendarApi = calendarRef.current.getApi();
 
@@ -251,23 +256,26 @@ const Calendar = ({ isAdmin }) => {
         const formattedEnd = dayjs(event.dateRange.startsAt).format("YYYY-MM-DDTHH:mm:ss");
         const formattedEnd2 = dayjs(event.dateRange.endsAt).format("YYYY-MM-DDTHH:mm:ss");
 
-        setEvents((prevData) => ({
-            ...prevData,
-            event
-        }))
         const dtoObj = {
             id: id,
             title: event.title,
             start: formattedEnd,
-            end: formattedEnd2
+            end: formattedEnd2,
+            description: event.description,
+            location: event.locationId,
+            organizers: event.organizers
         }
-        console.log()
+
+        setEvents([
+            ...events,
+            dtoObj
+        ])
         calendarApi.addEvent(dtoObj)
-        console.log(dtoObj)
+
 
 
     }
-
+    console.log(events)
     return (
         <>
             <Container maxWidth="lg" sx={{ mt: { xs: 2, sm: 3, md: 10 } }}>
@@ -302,7 +310,7 @@ const Calendar = ({ isAdmin }) => {
                     </FullCallendar>
                 </Box>
             </Container>
-            <EventForm open={open} locationDB={locationDB} defaultState={defaultState} onEventUpdated={onEventUpdated} onEventAdded={onEventAdded} handleDeleteEvent={handleDeleteEvent} handleModalClose={handleModalClose} isUpdateEvent={isUpdateEvent} pickedEvent={pickedEvent} >
+            <EventForm open={open} userDB={userDB} locationDB={locationDB} defaultState={defaultState} onEventUpdated={onEventUpdated} onEventAdded={onEventAdded} handleDeleteEvent={handleDeleteEvent} handleModalClose={handleModalClose} isUpdateEvent={isUpdateEvent} pickedEvent={pickedEvent} >
 
             </EventForm>
 
@@ -311,4 +319,3 @@ const Calendar = ({ isAdmin }) => {
 }
 
 export default Calendar;
-

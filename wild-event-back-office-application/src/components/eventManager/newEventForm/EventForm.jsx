@@ -5,14 +5,12 @@ import { LocalizationProvider, DateTimePicker } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import dayjs from 'dayjs';
 import { addEvent, updateEvent } from "../../../services/EventService"
-import { getUsers } from "../../../services/UserService"
 
 
 
-const EventForm = ({ open, locationDB, handleModalClose, isUpdateEvent, pickedEvent, handleDeleteEvent, onEventAdded, }) => {
+const EventForm = ({ open, locationDB, handleModalClose, isUpdateEvent, pickedEvent, handleDeleteEvent, onEventAdded, userDB}) => {
     const START_AT = 'start';
     const ENDS_AT = 'end';
-    const [userDB, setUserDB] = useState([]);
     const [eventData, setEventData] = useState({
         title: "",
         description: "",
@@ -53,23 +51,9 @@ const EventForm = ({ open, locationDB, handleModalClose, isUpdateEvent, pickedEv
         }
     }, [pickedEvent, userDB]);
 
-    const getAllUsers = async () => {
-        try {
-            const data = await getUsers();
-            setUserDB(
-                data.map(userData => ({
-                    id: userData.id,
-                    name: userData.name,
-                })));
-        } catch (error) {
-            console.error("Error fetching users", error);
-            setUserDB([]);
-        }
-    }
 
-    useEffect(() => {
-        getAllUsers();
-    }, []);
+
+
 
 
     const handleDateChange = (newValue, flag) => {
@@ -85,28 +69,28 @@ const EventForm = ({ open, locationDB, handleModalClose, isUpdateEvent, pickedEv
 
     const handleSubmit = async (event, eventAlreadyExist) => {
         event.preventDefault();
-        if (new Date(eventData.dateRange.startsAt) < new Date(eventData.dateRange.endsAt)) {
-            let id = null;
-            eventAlreadyExist ? id = await updateEvent(eventData, pickedEvent.id) : id = await addEvent(eventData);
+        // if (new Date(eventData.dateRange.startsAt) < new Date(eventData.dateRange.endsAt)) {
+        let id = null;
+        eventAlreadyExist ? id = await updateEvent(eventData, pickedEvent.id) : id = await addEvent(eventData);
 
-            const formattedStart = dayjs(eventData.dateRange.startsAt).format("YYYY-MM-DDTHH:mm:ss");
-            const formattedEnd = dayjs(eventData.dateRange.endsAt).format("YYYY-MM-DDTHH:mm:ss");
-            setEventData((prevData) => ({
-                ...prevData,
-                dateRange: {
-                    ...prevData.dateRange,
-                    startsAt: formattedStart,
-                    endsAt: formattedEnd
-                }
-            }));
-console.log(id)
-            onEventAdded(eventData, id);
-            await handleModalClose();
+        const formattedStart = dayjs(eventData.dateRange.startsAt).format("YYYY-MM-DDTHH:mm:ss");
+        const formattedEnd = dayjs(eventData.dateRange.endsAt).format("YYYY-MM-DDTHH:mm:ss");
+        setEventData((prevData) => ({
+            ...prevData,
+            dateRange: {
+                ...prevData.dateRange,
+                startsAt: formattedStart,
+                endsAt: formattedEnd
+            }
+        }));
+        console.log(id)
+        await onEventAdded(eventData, id);
+        await handleModalClose();
 
 
-        } else {
-            alert("Invalid dates. Make sure the start date is earlier than the end date.");
-        }
+        // } else {
+        //     alert("Invalid dates. Make sure the start date is earlier than the end date.");
+        // }
     }
     const handleInputChange = (event) => {
         const { name, value } = event.target;
