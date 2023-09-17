@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { addUser } from '../../../services/EmployeeManagement';
+import { registerUser } from '../../../services/EmployeeManagement';
 import { TextField, Dialog, DialogTitle, DialogContent, DialogActions, Button, FormControl, InputLabel, Select, MenuItem, FormHelperText } from '@mui/material';
 
 const AddEmployeeDialog = ({ open, handleClose, allRoles, allLocations }) => {
@@ -65,9 +65,14 @@ const AddEmployeeDialog = ({ open, handleClose, allRoles, allLocations }) => {
       locationIds: formData.locations,
     };
 
-    await addUser(userDTO);
-    handleClose(false, userDTO);
-    setFormData({ name: '', email: '', phone: '', roles: [], locations: [] });
+    try {
+      const response = await registerUser(userDTO);
+      console.log("User registered:", response);
+      handleClose(false, userDTO);
+      setFormData({ name: '', email: '', phone: '', roles: [], locations: [] });
+    } catch (error) {
+      console.error("Error during registration:", error);
+    }
   };
 
 

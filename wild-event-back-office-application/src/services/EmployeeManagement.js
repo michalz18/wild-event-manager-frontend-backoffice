@@ -1,27 +1,35 @@
-const getAllActiveUsers = async () => {
+const getAllActiveUsers = async (token) => {
   try {
-    const response = await fetch(`${process.env.REACT_APP_GET_ACTIVE_USERS}`);
+    const response = await fetch(`${process.env.REACT_APP_GET_ACTIVE_USERS}`, {
+      headers: {
+        "Authorization": `Bearer ${token}`
+      }
+    });
     if (!response.ok) {
       throw new Error("Failed to fetch active users!");
     }
     return await response.json();
   } catch (error) {
-    console.error("Cannot fetch active users!");
+    console.error("Cannot fetch active users:", error);
   }
 };
 
-const getAllLocations = async () => {
+
+const getAllLocations = async (token) => {
   try {
-    const response = await fetch(`${process.env.REACT_APP_GET_LOCATIONS}`);
+    const response = await fetch(`${process.env.REACT_APP_GET_LOCATIONS}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
     if (!response.ok) {
-        throw new Error("There is an issue with fetching locations!");
+      throw new Error("There is an issue with fetching locations!");
     }
     return await response.json();
-} catch (error) {
+  } catch (error) {
     console.error("Cannot fetch locations:", error);
-}
+  }
 };
-
 const registerUser = async (userDTO) => {
   const response = await fetch(`${process.env.REACT_APP_REGISTER_USER}`, {
     method: "POST",
@@ -78,4 +86,4 @@ const deactivateUser = async (userId) => {
   }
 };
 
-export { getAllActiveUsers, getAllLocations, addUser, updateUser, deactivateUser };
+export { getAllActiveUsers, getAllLocations, registerUser, updateUser, deactivateUser };

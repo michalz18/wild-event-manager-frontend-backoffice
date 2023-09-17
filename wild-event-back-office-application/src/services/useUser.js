@@ -12,18 +12,21 @@ export const useUser = () => {
 
 export const UserProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-
-  const login = (userData) => {
+  const [token, setToken] = useState(null);
+  
+  const login = (userData, userToken) => {
     setUser(userData);
+    setToken(userToken);
     console.log(userData);
   };
 
   const logout = () => {
     setUser(null);
+    setToken(null);
   };
 
   return (
-    <UserContext.Provider value={{ user, login, logout }}>
+    <UserContext.Provider value={{ user, token, login, logout }}>
       {children}
     </UserContext.Provider>
   );

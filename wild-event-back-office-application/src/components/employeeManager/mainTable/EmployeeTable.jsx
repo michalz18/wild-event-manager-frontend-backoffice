@@ -20,6 +20,7 @@ import TablePagination from '@mui/material/TablePagination';
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
 import { Button } from '@mui/material';
+import { useUser } from '../../../services/useUser';
 
 const EmployeeTable = () => {
     const [users, setUsers] = useState([]);
@@ -42,17 +43,18 @@ const EmployeeTable = () => {
         message: '',
         severity: 'success'
     });
+    const { token } = useUser();
 
 
     useEffect(() => {
         const fetchUsers = async () => {
-            const fetchedUsers = await getAllActiveUsers();
+            const fetchedUsers = await getAllActiveUsers(token);
             setUsers(fetchedUsers);
             setFilteredUsers(fetchedUsers);
         };
 
         fetchUsers();
-    }, []);
+    }, [token]);
 
     useEffect(() => {
         const filtered = users.filter(user => {
@@ -70,7 +72,7 @@ const EmployeeTable = () => {
 
     useEffect(() => {
         const fetchRoles = async () => {
-            const roles = await getAllRoles();
+            const roles = await getAllRoles(token);
             setAllRoles(roles);
         };
 
@@ -79,7 +81,7 @@ const EmployeeTable = () => {
 
     useEffect(() => {
         const fetchLocations = async () => {
-            const locations = await getAllLocations();
+            const locations = await getAllLocations(token);
             setAllLocations(locations);
         };
 

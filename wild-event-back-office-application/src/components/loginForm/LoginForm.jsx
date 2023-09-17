@@ -50,7 +50,7 @@ const LoginForm = () => {
           sessionStorage.setItem('token', response.token);
         }
         localStorage.setItem('token', response.token);
-        login(response);
+        login(response, response.token);
         navigate('/main');
       } catch (error) {
         console.error('Error while logging in:', error);
