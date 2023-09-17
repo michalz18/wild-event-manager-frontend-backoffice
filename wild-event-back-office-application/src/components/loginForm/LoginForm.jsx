@@ -33,6 +33,8 @@ const LoginForm = () => {
   const navigate = useNavigate();
   const { login } = useUser();
   const [loginError, setLoginError] = useState(null);
+  const [rememberMe, setRememberMe] = useState(false);
+
   const formik = useFormik({
     initialValues: {
       email: '',
@@ -42,6 +44,11 @@ const LoginForm = () => {
     onSubmit: async (values) => {
       try {
         const response = await loginUser(values.email, values.password);
+        if (rememberMe) {
+          localStorage.setItem('token', response.token);
+        } else {
+          sessionStorage.setItem('token', response.token);
+        }
         localStorage.setItem('token', response.token);
         login(response);
         navigate('/main');
@@ -66,7 +73,7 @@ const LoginForm = () => {
               Sign in
             </Typography>
             <Box component="form" noValidate onSubmit={formik.handleSubmit} sx={{ mt: 1 }}>
-            {loginError && <Typography color="error">{loginError}</Typography>}
+              {loginError && <Typography color="error">{loginError}</Typography>}
               <TextField
                 margin="normal"
                 required
@@ -97,7 +104,16 @@ const LoginForm = () => {
                 error={formik.touched.password && Boolean(formik.errors.password)}
                 helperText={formik.touched.password && formik.errors.password}
               />
-              <FormControlLabel control={<Checkbox value="remember" color="primary" />} label="Remember me" />
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={rememberMe}
+                    onChange={(e) => setRememberMe(e.target.checked)}
+                    color="primary"
+                  />
+                }
+                label="Remember me"
+              />
               <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}>
                 Sign In
               </Button>
