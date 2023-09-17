@@ -13,12 +13,13 @@ export const useUser = () => {
 export const UserProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(null);
-  
+
   const login = (userData, userToken) => {
     setUser(userData);
     setToken(userToken);
     console.log(userData);
   };
+
 
   const logout = () => {
     setUser(null);

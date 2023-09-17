@@ -30,6 +30,7 @@ const getAllLocations = async (token) => {
     console.error("Cannot fetch locations:", error);
   }
 };
+
 const registerUser = async (userDTO) => {
   const response = await fetch(`${process.env.REACT_APP_REGISTER_USER}`, {
     method: "POST",
@@ -40,7 +41,8 @@ const registerUser = async (userDTO) => {
   });
 
   if (response.ok) {
-    return await response.json();
+    const data = await response.json();
+    return data;
   } else {
     const message = await response.text();
     throw new Error(message);
@@ -86,4 +88,26 @@ const deactivateUser = async (userId) => {
   }
 };
 
-export { getAllActiveUsers, getAllLocations, registerUser, updateUser, deactivateUser };
+const resetPassword = async (token, newPassword) => {
+  const response = await fetch(`${process.env.REACT_APP_RESET_PASSWORD}`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ token, newPassword }),
+  });
+
+  if (response.ok) {
+    const message = await response.text();
+    console.log("Password reset successful:", message);
+    return message;
+  } else {
+    const errorMessage = await response.text();
+    console.error("Cannot reset password:", errorMessage);
+    throw new Error(errorMessage);
+  }
+};
+
+
+
+export { getAllActiveUsers, getAllLocations, registerUser, updateUser, deactivateUser, resetPassword };

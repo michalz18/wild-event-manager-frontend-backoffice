@@ -9,8 +9,6 @@ import {
   Button,
   CssBaseline,
   TextField,
-  FormControlLabel,
-  Checkbox,
   Link,
   Paper,
   Box,
@@ -33,7 +31,6 @@ const LoginForm = () => {
   const navigate = useNavigate();
   const { login } = useUser();
   const [loginError, setLoginError] = useState(null);
-  const [rememberMe, setRememberMe] = useState(false);
 
   const formik = useFormik({
     initialValues: {
@@ -44,11 +41,6 @@ const LoginForm = () => {
     onSubmit: async (values) => {
       try {
         const response = await loginUser(values.email, values.password);
-        if (rememberMe) {
-          localStorage.setItem('token', response.token);
-        } else {
-          sessionStorage.setItem('token', response.token);
-        }
         localStorage.setItem('token', response.token);
         login(response, response.token);
         navigate('/main');
@@ -104,7 +96,7 @@ const LoginForm = () => {
                 error={formik.touched.password && Boolean(formik.errors.password)}
                 helperText={formik.touched.password && formik.errors.password}
               />
-              <FormControlLabel
+              {/* <FormControlLabel
                 control={
                   <Checkbox
                     checked={rememberMe}
@@ -113,7 +105,7 @@ const LoginForm = () => {
                   />
                 }
                 label="Remember me"
-              />
+              /> */}
               <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}>
                 Sign In
               </Button>
