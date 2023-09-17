@@ -148,7 +148,8 @@ const EmployeeTable = () => {
     };
 
 
-    const handleCloseEdit = async (wasCancelled, updatedUser) => {
+    const handleCloseEdit = async (event, wasCancelled, updatedUser) => {
+        event.preventDefault();
         if (wasCancelled) {
             setOpenEditDialog(false);
             return;

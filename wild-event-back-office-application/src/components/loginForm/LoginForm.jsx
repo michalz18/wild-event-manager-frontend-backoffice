@@ -41,7 +41,7 @@ const LoginForm = () => {
     onSubmit: async (values) => {
       try {
         const response = await loginUser(values.email, values.password);
-        localStorage.setItem('token', response.token);
+        sessionStorage.setItem('token', response.token);
         login(response, response.token);
         navigate('/main');
       } catch (error) {

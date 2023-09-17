@@ -11,19 +11,23 @@ export const useUser = () => {
 };
 
 export const UserProvider = ({ children }) => {
+  // Inicjalizacja stanu token z sessionStorage
+  const initialToken = sessionStorage.getItem('token');
+  
   const [user, setUser] = useState(null);
-  const [token, setToken] = useState(null);
+  const [token, setToken] = useState(initialToken);
 
   const login = (userData, userToken) => {
     setUser(userData);
     setToken(userToken);
+    sessionStorage.setItem('token', userToken);
     console.log(userData);
   };
-
 
   const logout = () => {
     setUser(null);
     setToken(null);
+    sessionStorage.removeItem('token'); // Usuwanie tokena z sessionStorage podczas wylogowania
   };
 
   return (
@@ -32,3 +36,4 @@ export const UserProvider = ({ children }) => {
     </UserContext.Provider>
   );
 };
+
