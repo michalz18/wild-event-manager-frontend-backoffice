@@ -22,22 +22,20 @@ const getAllLocations = async () => {
 }
 };
 
-const addUser = async (userDTO) => {
-  try {
-    const response = await fetch(`${process.env.REACT_APP_ADD_USER}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(userDTO),
-    });
-    if (!response.ok) {
-      throw new Error("Failed to add user!");
-    }
+const registerUser = async (userDTO) => {
+  const response = await fetch(`${process.env.REACT_APP_REGISTER_USER}`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(userDTO),
+  });
 
-   return await response.text();
-  } catch (error) {
-    console.error("Cannot add user:", error);
+  if (response.ok) {
+    return await response.json();
+  } else {
+    const message = await response.text();
+    throw new Error(message);
   }
 };
 
