@@ -53,6 +53,8 @@ const LocationsEditList = ({mapLocations, setLocations}) => {
     }));
 };
 
+console.log(mapLocations)
+
   const deleteLocationById = async () => {
     try {
         await deleteLocation(locationDeleteId)
@@ -101,7 +103,7 @@ const LocationsEditList = ({mapLocations, setLocations}) => {
                 open={updateDialogOpen}
                 location={locationUpdate}
                 handleClose={finishUpdating}
-                mapCoordinates={{mapLatitude: mapLocations.coordinate.latitude , mapLongitude: mapLocations.coordinate.longitude}}
+                mapCoordinates={{mapLatitude:mapLocations.coordinate.longitude , mapLongitude: mapLocations.coordinate.latitude}}
           />
           <LocationDeleteDialog
                 open={deleteDialogOpen}
