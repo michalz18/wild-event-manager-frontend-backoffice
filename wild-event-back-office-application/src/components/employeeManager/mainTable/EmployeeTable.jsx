@@ -135,7 +135,7 @@ const EmployeeTable = () => {
             return;
         }
         if (newUser) {
-            const fetchedUsers = await getAllActiveUsers();
+            const fetchedUsers = await getAllActiveUsers(token);
             setUsers(fetchedUsers);
             setFilteredUsers(fetchedUsers);
             setSnackbarInfo({
