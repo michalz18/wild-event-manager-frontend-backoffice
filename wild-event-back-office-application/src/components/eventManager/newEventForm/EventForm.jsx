@@ -1,79 +1,70 @@
 import React from "react";
 import { Dialog, DialogTitle, DialogContent, DialogActions, FormGroup, FormControl, InputLabel, Input, Button, Autocomplete, TextField, Select, MenuItem, Checkbox, FormControlLabel } from '@mui/material';
-import { useNavigate, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { LocalizationProvider, DateTimePicker } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import dayjs from 'dayjs';
-import { addEvent } from "../../../services/EventService"
-import { getLocations } from "../../../services/LocationService"
-import { getUsers } from "../../../services/UserService"
+import { addEvent, updateEvent } from "../../../services/EventService"
 
 
 
-const EventForm = ({ open, handleModalClose, isUpdateEvent, pickedEvent, handleDeleteEvent }) => {
+const EventForm = ({ open, locationDB, handleModalClose, isUpdateEvent, pickedEvent, handleDeleteEvent, onEventAdded, userDB}) => {
     const START_AT = 'start';
     const ENDS_AT = 'end';
-    const navigate = useNavigate();
-    const [locationDB, setLocationDB] = useState([]);
-    const [userDB, setUserDB] = useState([]);
-
     const [eventData, setEventData] = useState({
         title: "",
         description: "",
         dateRange: {
-            startsAt: dayjs().format('YYYY-MM-DDTHH:mm:ssZ[Z]'),
-            endsAt: dayjs().format('YYYY-MM-DDTHH:mm:ssZ[Z]'),
+            startsAt: pickedEvent ? pickedEvent.start : dayjs().format('YYYY-MM-DDTHH:mm:ss'),
+            endsAt: pickedEvent ? pickedEvent.end : dayjs().format('YYYY-MM-DDTHH:mm:ss'),
         },
         locationId: "",
         organizers: [],
         openToPublic: false
     });
-    const getAllUsers = async () => {
-        try {
-            const data = await getUsers();
-            setUserDB(
-                data.map(userData => ({
-                    id: userData.id,
-                    name: userData.name,
-                })));
-        } catch (error) {
-            console.error("Error fetching users", error);
-            setUserDB([]);
-        }
-    }
-
-    const getAllLocations = async () => {
-        try {
-            const data = await getLocations();
-            setLocationDB(
-                data.map(locationDataFromDB => ({
-                    id: locationDataFromDB.id,
-                    title: locationDataFromDB.title,
-                })));
-        } catch (error) {
-            console.error("Error fetching locations", error);
-            setLocationDB([]);
-        }
-    }
 
     useEffect(() => {
-        getAllLocations();
-        getAllUsers();
-    }, []);
+        if (pickedEvent && pickedEvent.organizers && userDB) {
+            setEventData((prevData) => ({
+                ...prevData,
+                title: pickedEvent.title,
+                description: pickedEvent.description,
+                dateRange: {
+                    startsAt: dayjs(pickedEvent.start).format('YYYY-MM-DDTHH:mm:ss'),
+                    endsAt: dayjs(pickedEvent.end).format('YYYY-MM-DDTHH:mm:ss'),
+                },
+                locationId: pickedEvent.location.id,
+                organizers: pickedEvent.organizers.map((organizerName) => {
+                    const user = userDB.find((user) => user.name === organizerName);
+                    return user ? user.id : null;
+                }).filter((id) => id !== null),
+            }));
+        }
+        if (!isUpdateEvent) {
+            setEventData((prevData) => ({
+                ...prevData,
+                dateRange: {
+                    startsAt: `${pickedEvent.start}T00:00`,
+                    endsAt: `${pickedEvent.end}T00:00`,
+                },
+            }))
+        }
+        if (pickedEvent.allDay) {
+            setEventData((prevData) => ({
+                ...prevData,
+                dateRange: {
+                    startsAt: `${pickedEvent.start}T00:00`,
+                    endsAt: dayjs(pickedEvent.start).add(1, 'day').format('YYYY-MM-DDTHH:mm:ss'),
+                },
+            }))
+        }
+      
+    }, [pickedEvent, userDB]);
 
-    useEffect(() => {
-        console.log(pickedEvent)
-        setEventData((prevData) => ({
 
-            ...prevData,
-            title: pickedEvent.title,
-            dateRange: {
-                startsAt: pickedEvent.start.includes("T") ? dayjs(pickedEvent.start) : dayjs(`${pickedEvent.start}T00:00`),
-                endsAt: pickedEvent.end.includes("T") ? dayjs(pickedEvent.end) : dayjs(`${pickedEvent.end}T00:00`)
-            }
-        }));
-    }, [pickedEvent]);
+
+
+
 
     const handleDateChange = (newValue, flag) => {
         const formattedValue = newValue.format("YYYY-MM-DDTHH:mm:ss");
@@ -86,15 +77,30 @@ const EventForm = ({ open, handleModalClose, isUpdateEvent, pickedEvent, handleD
         }));
     };
 
-    const handleSubmit = async (event) => {
+    const handleSubmit = async (event, eventAlreadyExist) => {
         event.preventDefault();
-        if (new Date(eventData.dateRange.startsAt) < new Date(eventData.dateRange.endsAt)) {
-            await addEvent(eventData);
-            await handleModalClose();
-            // navigate("/calendar");
-        } else {
-            alert("Invalid dates. Make sure the start date is earlier than the end date.");
-        }
+        // if (new Date(eventData.dateRange.startsAt) < new Date(eventData.dateRange.endsAt)) {
+        let id = null;
+        eventAlreadyExist ? id = await updateEvent(eventData, pickedEvent.id) : id = await addEvent(eventData);
+
+        const formattedStart = dayjs(eventData.dateRange.startsAt).format("YYYY-MM-DDTHH:mm:ss");
+        const formattedEnd = dayjs(eventData.dateRange.endsAt).format("YYYY-MM-DDTHH:mm:ss");
+        setEventData((prevData) => ({
+            ...prevData,
+            dateRange: {
+                ...prevData.dateRange,
+                startsAt: formattedStart,
+                endsAt: formattedEnd
+            }
+        }));
+        console.log(eventData)
+        await onEventAdded(eventData, id);
+        await handleModalClose();
+
+
+        // } else {
+        //     alert("Invalid dates. Make sure the start date is earlier than the end date.");
+        // }
     }
     const handleInputChange = (event) => {
         const { name, value } = event.target;
@@ -148,7 +154,7 @@ const EventForm = ({ open, handleModalClose, isUpdateEvent, pickedEvent, handleD
                         <LocalizationProvider dateAdapter={AdapterDayjs}>
                             <DateTimePicker
                                 label="Ends at"
-                                defaultValue={pickedEvent.end.includes("T") ? dayjs(pickedEvent.end) : dayjs(`${pickedEvent.end}T00:00`)}
+                                defaultValue={pickedEvent.end.trim() !== "" ? dayjs(pickedEvent.end) : dayjs(pickedEvent.start).add(1, 'day')}
 
                                 value={eventData.dateRange.endAt}
                                 onChange={(newValue) => handleDateChange(newValue, ENDS_AT)} />
@@ -156,19 +162,24 @@ const EventForm = ({ open, handleModalClose, isUpdateEvent, pickedEvent, handleD
                     </FormControl>
                     <FormControl margin="normal">
                         <Autocomplete
+                            value={pickedEvent.location}
+
                             disablePortal
                             options={locationDB}
                             getOptionLabel={(option) => option.title}
                             renderInput={(params) => <TextField {...params} label="Locations" />}
                             onChange={(event, value) => setEventData((prevData) => ({
                                 ...prevData,
-                                locationId: value.id
+                                locationId: value ? value.id : null
                             }))}
                         />
                     </FormControl>
+
+
                     <FormControl margin="normal">
                         <InputLabel>Select Users</InputLabel>
                         <Select
+
                             label="Select Users"
                             multiple
                             value={eventData.organizers}
@@ -183,6 +194,29 @@ const EventForm = ({ open, handleModalClose, isUpdateEvent, pickedEvent, handleD
                             ))}
                         </Select>
                     </FormControl>
+                    {/* <FormControl margin="normal">
+                        <InputLabel>Locations</InputLabel>
+                        <Select
+                            value={eventData.locationId}
+                            renderValue={getTitleFromId}
+
+                            onChange={(event) => {
+                                const selectedLocationId = event.target.value;
+                                setEventData((prevData) => ({
+                                    ...prevData,
+                                    locationId: selectedLocationId || null
+                                }));
+                            }}
+                        >
+                            {locationDB.map((location, index) => (
+                                <MenuItem  key={index} value={location.id}>
+                                    {location.title}
+                                </MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl> */}
+
+
                     <FormControl margin="normal" >
                         <FormControlLabel control={<Checkbox onChange={(event) => setEventData((prevData) => ({
                             ...prevData,
@@ -198,7 +232,7 @@ const EventForm = ({ open, handleModalClose, isUpdateEvent, pickedEvent, handleD
                     <Button onClick={handleModalClose} color="primary">
                         Cancel
                     </Button>
-                    <Button onClick={handleModalClose} color="primary">
+                    <Button onClick={(event) => handleSubmit(event, true)} color="primary">
                         Update
                     </Button>
                     <Button onClick={() => handleDeleteEvent(pickedEvent)} color="error">
@@ -209,7 +243,7 @@ const EventForm = ({ open, handleModalClose, isUpdateEvent, pickedEvent, handleD
                 <Button onClick={handleModalClose} color="primary">
                     Cancel
                 </Button>
-                <Button onClick={handleSubmit} color="primary">
+                <Button onClick={(event) => handleSubmit(event, false)} color="primary">
                     Submit
                 </Button>
             </DialogActions>}
