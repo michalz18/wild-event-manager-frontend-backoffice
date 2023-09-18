@@ -8,7 +8,7 @@ import { addEvent, updateEvent } from "../../../services/EventService"
 
 
 
-const EventForm = ({ open, locationDB, handleModalClose, isUpdateEvent, pickedEvent, handleDeleteEvent, onEventAdded, userDB}) => {
+const EventForm = ({ open, locationDB, handleModalClose, isUpdateEvent, pickedEvent, handleDeleteEvent, onEventAdded, userDB, handleEvent }) => {
     const START_AT = 'start';
     const ENDS_AT = 'end';
     const [eventData, setEventData] = useState({
@@ -58,7 +58,7 @@ const EventForm = ({ open, locationDB, handleModalClose, isUpdateEvent, pickedEv
                 },
             }))
         }
-      
+
     }, [pickedEvent, userDB]);
 
 
@@ -94,7 +94,9 @@ const EventForm = ({ open, locationDB, handleModalClose, isUpdateEvent, pickedEv
             }
         }));
         console.log(eventData)
-        await onEventAdded(eventData, id);
+        console.log(id)
+
+        await handleEvent(eventData, id);
         await handleModalClose();
 
 

@@ -15,11 +15,6 @@ import { getUsers } from "../../../services/UserService"
 
 const Calendar = ({ isAdmin }) => {
     const [userDB, setUserDB] = useState([]);
-
-    const [defaultState, setDefaultState] = useState({
-        id: '',
-        title: '',
-    });
     const [events, setEvents] = useState([]);
     const [locationDB, setLocationDB] = useState([]);
     const [open, setOpen] = useState(false);
@@ -129,16 +124,8 @@ const Calendar = ({ isAdmin }) => {
 
         });
 
+    }
 
-        setDefaultState({
-            id: '',
-            title: '',
-        })
-    }
-    const getIdFromEventTitle = (title) => {
-        const find = events.find(event => event.title === title)
-        return find ? find.id : "";
-    }
     const getEventFromSelectedField = (id) => {
         return events.find(event => event.id === id);
 
@@ -149,10 +136,7 @@ const Calendar = ({ isAdmin }) => {
     };
     const handleEventClick = (selected) => {
         setOpen(true)
-        setDefaultState({
-            id: '29b77468-c687-4565-bf9f-0cb6c5db9183',
-            title: 'Jungle Trek',
-        })
+      
 
         setEventToUpdate(selected);
         setIsUpdateEvent(true);
@@ -171,18 +155,16 @@ const Calendar = ({ isAdmin }) => {
                 })
                 : event.organizers,
             location: locationDB.find(location => location.title === event.location || location.id === event.location),
-            allDay:selected.event.allDay
+            allDay: selected.event.allDay
 
         })
-        console.log(selected)
-        console.log(event)
-        console.log(pickedEvent)
+   
 
     };
 
     const handleDeleteEvent = (dto) => {
         if (window.confirm(`Are you sure you want to delete the event? ${dto.title}`)) {
-            deleteEvent(getIdFromEventTitle(dto.title))
+            deleteEvent(dto.id)
             dto.selected.event.remove();
             handleModalClose();
         }
@@ -232,57 +214,44 @@ const Calendar = ({ isAdmin }) => {
         updateDateEvent(dto);
 
     };
-    const onEventUpdated = (updatedEvent) => {
-        let calendarApi = calendarRef.current.getApi();
-        setEvents((prevEvents) =>
-            prevEvents.map((event) =>
-                event.id === updatedEvent.id
-                    ? { ...event, updatedEvent }
-                    : event
-
-            )
-
-        );
-        const formattedEnd = updatedEvent.dateRange.startsAt.format("YYYY-MM-DDTHH:mm:ss");
-        const formattedEnd2 = updatedEvent.dateRange.endsAt.format("YYYY-MM-DDTHH:mm:ss");
-
-        const dtoObj = {
-            id: updatedEvent.id,
-            title: updatedEvent.title,
-            start: formattedEnd,
-            end: formattedEnd2
-        }
-        calendarApi.addEvent(dtoObj)
-
-    }
-    const onEventAdded = (event, id) => {
+    const handleEvent = (eventData, id) => {
         let calendarApi = calendarRef.current.getApi();
 
+        const existingEvent = events.find(event => event.id === id);
+        const formattedStart = dayjs(eventData.dateRange.startsAt).format("YYYY-MM-DDTHH:mm:ss");
+        const formattedEnd = dayjs(eventData.dateRange.endsAt).format("YYYY-MM-DDTHH:mm:ss");
 
-        console.log(event)
-        const formattedEnd = dayjs(event.dateRange.startsAt).format("YYYY-MM-DDTHH:mm:ss");
-        const formattedEnd2 = dayjs(event.dateRange.endsAt).format("YYYY-MM-DDTHH:mm:ss");
+
+        const isSingleDay = isDatesDifferenceOneDay(new Date(formattedStart), new Date(formattedEnd));
+
 
         const dtoObj = {
             id: id,
-            title: event.title,
-            start: formattedEnd,
-            end: formattedEnd2,
-            description: event.description,
-            location: event.locationId,
-            organizers: event.organizers
+            title: eventData.title,
+            start: isSingleDay ? formattedStart.toString().split("T")[0] : formattedStart,
+            end: isSingleDay ? null : formattedEnd,
+            description: eventData.description,
+            location: eventData.locationId,
+            organizers: eventData.organizers,
+
+        };
+
+        if (existingEvent) {
+            calendarApi.getEventById(existingEvent.id)?.remove();
+            setEvents(prevEvents =>
+                prevEvents.map(event =>
+                    event.id === id ? { ...event, ...dtoObj } : event
+                )
+            );
+        } else {
+            setEvents(prevEvents => [...prevEvents, dtoObj]);
         }
 
-        setEvents([
-            ...events,
-            dtoObj
-        ])
-        calendarApi.addEvent(dtoObj)
+        calendarApi.addEvent(dtoObj);
+
+    };
 
 
-
-    }
-  
     return (
         <>
             <Container maxWidth="lg" sx={{ mt: { xs: 2, sm: 3, md: 10 } }}>
@@ -317,7 +286,7 @@ const Calendar = ({ isAdmin }) => {
                     </FullCallendar>
                 </Box>
             </Container>
-            <EventForm open={open} userDB={userDB} locationDB={locationDB} defaultState={defaultState} onEventUpdated={onEventUpdated} onEventAdded={onEventAdded} handleDeleteEvent={handleDeleteEvent} handleModalClose={handleModalClose} isUpdateEvent={isUpdateEvent} pickedEvent={pickedEvent} >
+            <EventForm open={open} userDB={userDB} locationDB={locationDB} handleEvent={handleEvent} handleDeleteEvent={handleDeleteEvent} handleModalClose={handleModalClose} isUpdateEvent={isUpdateEvent} pickedEvent={pickedEvent} >
 
             </EventForm>
 
