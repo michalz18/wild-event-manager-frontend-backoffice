@@ -100,7 +100,6 @@ const EmployeeTable = () => {
         } catch (error) {
             console.error("Could not deactivate user:", error)
         }
-
         handleCloseDeactivateDialog();
     }
 
