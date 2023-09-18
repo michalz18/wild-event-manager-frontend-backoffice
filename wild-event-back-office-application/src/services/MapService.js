@@ -9,7 +9,6 @@ const getMap = async () => {
 
 const saveMap = async (map) => {
   try {
-    console.log(`${process.env.REACT_APP_SAVE_MAP}`)
       const response = await fetch('http://localhost:8080/map-config/map', {
           method: "POST",
           headers: {

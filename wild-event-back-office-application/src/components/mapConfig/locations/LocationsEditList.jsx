@@ -6,22 +6,78 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
-import TableFooter from '@mui/material/TableFooter';
-import TablePagination from '@mui/material/TablePagination';
 import LocationActionsMenu from './LocationActionsMenu';
+import { Box, Button } from "@mui/material";
+import LocationDialog from "../dialog/LocationDialog"
+import LocationDeleteDialog from "../dialog/LocationDeleteDialog";
+import MuiAlert from '@mui/material/Alert';
+import { deleteLocation } from "../../../services/LocationService";
+import Snackbar from '@mui/material/Snackbar';
 
-const LocationsEditList = ({mapLocations}) => {
+const LocationsEditList = ({mapLocations, setLocations}) => {
+  const [updateDialogOpen, setUpdateDialogOpen] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [locationUpdate, setLocationUpdate] = useState(null);
+  const [locationDeleteId, setLocationDeleteId] = useState(null);
+  const [snackbarInfo, setSnackbarInfo] = useState({
+    open: false,
+    message: '',
+    severity: 'success'
+});
 
-  const handleEditLocation = (id) => {};
+  const handleOpenDeleteDialog = (id) => {
+    setLocationDeleteId(id)
+    setDeleteDialogOpen(true)
+  };
+
+  const setUpdating = (location) => {
+    setLocationUpdate(location)
+    setUpdateDialogOpen(true)
+  };
+
+  const finishUpdating = () => {
+    setLocationUpdate(null)
+    setLocationDeleteId(null)
+    setUpdateDialogOpen(false)
+    setDeleteDialogOpen(false)
+    setLocations()
+  };
+
+  const handleCloseSnackbar = (event, reason) => {
+    if (reason === 'clickaway') {
+        return;
+    }
+    setSnackbarInfo(prev => ({
+        ...prev,
+        open: false
+    }));
+};
+
+  const deleteLocationById = async () => {
+    try {
+        await deleteLocation(locationDeleteId)
+        setSnackbarInfo({
+            open: true,
+            message: 'Location has been deleted!',
+            severity: 'success'
+        });
+    } catch (error) {
+        console.error("Could not delete location:", error)
+    }
+  }
   
-  const handleOpenDeleteDialog = (id) => {};
-  
-  return  <TableContainer component={Paper}>
+  return <Box>
+        <TableContainer component={Paper}>
             <Table aria-label="simple table"> 
                 <TableHead>
                     <TableRow>
                         <TableCell align="center" sx={{ fontWeight: 'bold', fontSize: '1.1rem' }}>No</TableCell>
                         <TableCell align="center" sx={{ fontWeight: 'bold', fontSize: '1.1rem' }}>Title</TableCell>
+                        <TableCell align="center" sx={{ fontWeight: 'bold', fontSize: '1.1rem' }}>
+                        <Button variant="outlined" color="primary" size="large"
+                            style={{borderRadius: '50%', height: '60px', fontSize: '32px', lineHeight: '64px'}}
+                            onClick={() => setUpdateDialogOpen(true)}>+</Button>
+                        </TableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>
@@ -31,7 +87,7 @@ const LocationsEditList = ({mapLocations}) => {
                                 <TableCell align="center">{location.title}</TableCell>
                                 <TableCell align="center">
                                     <LocationActionsMenu
-                                        onEdit={() => handleEditLocation(location.id)}
+                                        onEdit={() => setUpdating(location)}
                                         onDeactivate={() => handleOpenDeleteDialog(location.id)}
                                     />
                                 </TableCell>
@@ -41,6 +97,24 @@ const LocationsEditList = ({mapLocations}) => {
                     </TableBody>
             </Table>
           </TableContainer>
+          <LocationDialog 
+                open={updateDialogOpen}
+                location={locationUpdate}
+                handleClose={finishUpdating}
+                mapCoordinates={{mapLatitude: mapLocations.coordinate.latitude , mapLongitude: mapLocations.coordinate.longitude}}
+          />
+          <LocationDeleteDialog
+                open={deleteDialogOpen}
+                handleClose={finishUpdating}
+                handleConfirm={deleteLocationById}
+          />
+           <Snackbar open={snackbarInfo.open} autoHideDuration={3000} onClose={handleCloseSnackbar}>
+                <MuiAlert onClose={handleCloseSnackbar} severity={snackbarInfo.severity} elevation={6} variant="filled">
+                    {snackbarInfo.message}
+                </MuiAlert>
+            </Snackbar>
+          </Box>
+          
   ;
 };
 

@@ -5,10 +5,12 @@ import { saveMap } from "../../../services/MapService";
 import { Button } from "@mui/material";
 import Marker from "./Marker"
 import './Map.css'
+import MapDialog from "../dialog/MapDialog";
 
 const Map = ({mapLocations}) => {
   const [mapData, setMap] = useState(mapLocations);
   const [mapSave, setMapSave] = useState(mapData);
+  const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
   const mapContainerRef = useRef(null);
    mapboxgl.accessToken = `${process.env.REACT_APP_API_KEY}`;
   
@@ -41,13 +43,14 @@ const Map = ({mapLocations}) => {
     return () => map.remove();
 }}, [mapData]);
 
-const save = () => {
-  saveMap(mapSave);
-}
-
   return <div>
-          <Button variant="contained" onClick={save}>Save current map setting</Button>
+          <Button variant="contained" onClick={() => setConfirmDialogOpen(true)}>Save current map setting</Button>
           <div className="map-container" ref={mapContainerRef} />
+          <MapDialog
+                open={confirmDialogOpen}
+                handleClose={() => setConfirmDialogOpen(false)}
+                handleConfirm={() => saveMap(mapSave)}
+          />
          </div>
   ;
 };

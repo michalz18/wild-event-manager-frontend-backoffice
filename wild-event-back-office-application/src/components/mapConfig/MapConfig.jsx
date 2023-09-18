@@ -7,20 +7,24 @@ import LocationsEditList from "./locations/LocationsEditList";
 export const MapConfig = () => {
     const [mapLocations, setMapLocations] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [isUpdated, setIsUpdated] = useState(false);
 
     useEffect(() => {
         fetchData();
     }, []);
 
+    const update = () => {
+        fetchData();
+    };
+
     const fetchData = async () => {
         try {
             const map = await getMap();
             setMapLocations(map);
-            setIsLoading(false); // Set isLoading to false once data is fetched
         } catch (error) {
             console.error("Error fetching map", error);
-            setIsLoading(false); // Set isLoading to false in case of an error
         }
+        setIsLoading(false);
     };
 
     return (
@@ -32,7 +36,7 @@ export const MapConfig = () => {
                     <Grid container spacing={2}>
                         <Grid item xs={6}>
                             <Box>
-                                <LocationsEditList mapLocations={mapLocations}></LocationsEditList>
+                                <LocationsEditList mapLocations={mapLocations} setLocations={() => update()}></LocationsEditList>
                             </Box>
                         </Grid>
                         <Grid item xs={6}>
