@@ -143,6 +143,10 @@ const Calendar = ({ isAdmin }) => {
         return events.find(event => event.id === id);
 
     }
+    const isUUID = (str) => {
+        const uuidRegex = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
+        return uuidRegex.test(str);
+    };
     const handleEventClick = (selected) => {
         setOpen(true)
         setDefaultState({
@@ -160,11 +164,14 @@ const Calendar = ({ isAdmin }) => {
             end: selected.event.endStr,
             selected: selected,
             description: event.description,
-            organizers: event.organizers.map((organizerId) => {
-                const user = userDB.find((user) => user.id === organizerId);
-                return user ? user.name : null;
-            }).filter((name) => name !== null),
-            location: locationDB.find(location => location.title === event.location || location.id === event.location)
+            organizers: isUUID(event.organizers)
+                ? event.organizers.map((organizerId) => {
+                    const user = userDB.find((user) => user.id === organizerId);
+                    return user ? user.name : null;
+                })
+                : event.organizers,
+            location: locationDB.find(location => location.title === event.location || location.id === event.location),
+            allDay:selected.event.allDay
 
         })
         console.log(selected)
@@ -275,7 +282,7 @@ const Calendar = ({ isAdmin }) => {
 
 
     }
-    console.log(events)
+  
     return (
         <>
             <Container maxWidth="lg" sx={{ mt: { xs: 2, sm: 3, md: 10 } }}>

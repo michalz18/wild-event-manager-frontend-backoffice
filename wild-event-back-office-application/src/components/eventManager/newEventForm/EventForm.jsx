@@ -15,8 +15,8 @@ const EventForm = ({ open, locationDB, handleModalClose, isUpdateEvent, pickedEv
         title: "",
         description: "",
         dateRange: {
-            startsAt: pickedEvent ? pickedEvent.start : dayjs().format('YYYY-MM-DDTHH:mm:ssZ[Z]'),
-            endsAt: pickedEvent ? pickedEvent.end : dayjs().format('YYYY-MM-DDTHH:mm:ssZ[Z]'),
+            startsAt: pickedEvent ? pickedEvent.start : dayjs().format('YYYY-MM-DDTHH:mm:ss'),
+            endsAt: pickedEvent ? pickedEvent.end : dayjs().format('YYYY-MM-DDTHH:mm:ss'),
         },
         locationId: "",
         organizers: [],
@@ -30,8 +30,8 @@ const EventForm = ({ open, locationDB, handleModalClose, isUpdateEvent, pickedEv
                 title: pickedEvent.title,
                 description: pickedEvent.description,
                 dateRange: {
-                    startsAt: pickedEvent.start,
-                    endsAt: pickedEvent.end,
+                    startsAt: dayjs(pickedEvent.start).format('YYYY-MM-DDTHH:mm:ss'),
+                    endsAt: dayjs(pickedEvent.end).format('YYYY-MM-DDTHH:mm:ss'),
                 },
                 locationId: pickedEvent.location.id,
                 organizers: pickedEvent.organizers.map((organizerName) => {
@@ -40,7 +40,7 @@ const EventForm = ({ open, locationDB, handleModalClose, isUpdateEvent, pickedEv
                 }).filter((id) => id !== null),
             }));
         }
-        if (pickedEvent) {
+        if (!isUpdateEvent) {
             setEventData((prevData) => ({
                 ...prevData,
                 dateRange: {
@@ -49,6 +49,16 @@ const EventForm = ({ open, locationDB, handleModalClose, isUpdateEvent, pickedEv
                 },
             }))
         }
+        if (pickedEvent.allDay) {
+            setEventData((prevData) => ({
+                ...prevData,
+                dateRange: {
+                    startsAt: `${pickedEvent.start}T00:00`,
+                    endsAt: dayjs(pickedEvent.start).add(1, 'day').format('YYYY-MM-DDTHH:mm:ss'),
+                },
+            }))
+        }
+      
     }, [pickedEvent, userDB]);
 
 
@@ -83,7 +93,7 @@ const EventForm = ({ open, locationDB, handleModalClose, isUpdateEvent, pickedEv
                 endsAt: formattedEnd
             }
         }));
-        console.log(id)
+        console.log(eventData)
         await onEventAdded(eventData, id);
         await handleModalClose();
 
@@ -144,7 +154,7 @@ const EventForm = ({ open, locationDB, handleModalClose, isUpdateEvent, pickedEv
                         <LocalizationProvider dateAdapter={AdapterDayjs}>
                             <DateTimePicker
                                 label="Ends at"
-                                defaultValue={pickedEvent.end.includes("T") ? dayjs(pickedEvent.end) : dayjs(`${pickedEvent.end}T00:00`)}
+                                defaultValue={pickedEvent.end.trim() !== "" ? dayjs(pickedEvent.end) : dayjs(pickedEvent.start).add(1, 'day')}
 
                                 value={eventData.dateRange.endAt}
                                 onChange={(newValue) => handleDateChange(newValue, ENDS_AT)} />
