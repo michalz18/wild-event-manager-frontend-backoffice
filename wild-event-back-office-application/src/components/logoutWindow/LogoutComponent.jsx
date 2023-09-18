@@ -2,7 +2,7 @@ import React from "react"
 import { useNavigate } from "react-router-dom"
 
 import { Box, Paper, Typography, Button } from "@mui/material"
-
+//package logoutWindow and class LogoutComponent should be logout/logout.jsx
 export const LogoutComponent = () => {
 	const navigate = useNavigate()
 

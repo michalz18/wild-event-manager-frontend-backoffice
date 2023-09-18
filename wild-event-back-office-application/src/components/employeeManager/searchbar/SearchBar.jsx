@@ -2,7 +2,7 @@ import React from 'react';
 import TextField from '@mui/material/TextField';
 
 const SearchBar = ({ onSearch }) => {
-    
+
   const handleInputChange = (e) => {
     onSearch(e.target.value);
   };

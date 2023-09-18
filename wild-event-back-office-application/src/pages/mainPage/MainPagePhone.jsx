@@ -1,9 +1,10 @@
-import { PhoneLayout } from "../layout/PhoneLayout"
+import { PhoneLayout } from "../layout/PhoneLayout";
+import { WelcomeWindow } from "../../components/welcomeWindow/WelcomeComponent";
 
 export const MainPagePhone = () => {
 	return (
 		<PhoneLayout>
-			<div>Tekst</div>
+			<WelcomeWindow />
 		</PhoneLayout>
 	)
 }

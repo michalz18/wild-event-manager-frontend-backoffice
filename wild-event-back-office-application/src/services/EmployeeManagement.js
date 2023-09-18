@@ -34,7 +34,8 @@ const addUser = async (userDTO) => {
     if (!response.ok) {
       throw new Error("Failed to add user!");
     }
-    return await response.json();
+
+   return await response.text();
   } catch (error) {
     console.error("Cannot add user:", error);
   }

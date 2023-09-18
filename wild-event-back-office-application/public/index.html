@@ -11,9 +11,51 @@
     />
     <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
     <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
-
+    <link href="https://api.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.css" rel="stylesheet">
+    <script src="https://api.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.js"></script>
     <title>React App</title>
+
   </head>
+  <style>
+    
+
+.map-container {
+    position: absorelute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+  }
+  
+  .sidebarStyle {
+    display: inline-block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    margin: 12px;
+    background-color: #404040;
+    color: #ffffff;
+    z-index: 1 !important;
+    padding: 6px;
+    font-weight: bold;
+  }
+  
+  .marker {
+    background-color: black;
+    border: black;
+    color: white;
+    padding: 10px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 1vh;
+    margin: 4px 2px;
+    border-radius: 50%;
+  }
+  .mapboxgl-ctrl-bottom-right {
+    display: none;
+  }
+  </style>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>

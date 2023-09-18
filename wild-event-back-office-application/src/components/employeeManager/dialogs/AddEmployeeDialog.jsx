@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { addUser } from '../../../services/EmployeeManagement';
 import { TextField, Dialog, DialogTitle, DialogContent, DialogActions, Button, FormControl, InputLabel, Select, MenuItem, FormHelperText } from '@mui/material';
 
-export default function AddEmployeeDialog({ open, handleClose, allRoles, allLocations }) {
+const AddEmployeeDialog = ({ open, handleClose, allRoles, allLocations }) => {
   const [formData, setFormData] = useState({ name: '', email: '', phone: '', roles: [], locations: [] });
   const [errors, setErrors] = useState({});
 
@@ -17,7 +17,7 @@ export default function AddEmployeeDialog({ open, handleClose, allRoles, allLoca
 
   const validateField = (name, value) => {
     let newErrors = { ...errors };
-
+// incorporate formik or validator class. It shouldnt be that many if statement
     if (name === "name") {
       if (!value || value.length < 3 || !/^[a-zA-Z\s]+$/.test(value)) {
         newErrors.name = 'Name should be at least 3 characters long and contain only letters and spaces';
@@ -67,6 +67,7 @@ export default function AddEmployeeDialog({ open, handleClose, allRoles, allLoca
 
     await addUser(userDTO);
     handleClose(false, userDTO);
+    setFormData({ name: '', email: '', phone: '', roles: [], locations: [] });
   };
 
 
@@ -153,3 +154,5 @@ export default function AddEmployeeDialog({ open, handleClose, allRoles, allLoca
     </Dialog>
   );
 }
+
+export default AddEmployeeDialog;
