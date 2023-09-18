@@ -136,7 +136,7 @@ const Calendar = ({ isAdmin }) => {
     };
     const handleEventClick = (selected) => {
         setOpen(true)
-      
+
 
         setEventToUpdate(selected);
         setIsUpdateEvent(true);
@@ -158,17 +158,33 @@ const Calendar = ({ isAdmin }) => {
             allDay: selected.event.allDay
 
         })
-   
+
 
     };
 
-    const handleDeleteEvent = (dto) => {
-        if (window.confirm(`Are you sure you want to delete the event? ${dto.title}`)) {
-            deleteEvent(dto.id)
-            dto.selected.event.remove();
-            handleModalClose();
+    const handleDeleteEvent = async (dto) => {
+        const confirmed = window.confirm(`Are you sure you want to delete the event? ${dto.title}`);
+
+        if (!confirmed) {
+            return;
         }
-    }
+
+        try {
+            const eventExistsInDatabase = events.some(event => event.id === dto.id);
+
+            if (eventExistsInDatabase) {
+                console.log(dto.id);
+                await deleteEvent(dto.id);
+                setEvents(prevEvents => prevEvents.filter(event => event.id !== dto.id));
+                dto.selected.event.remove();
+                handleModalClose();
+            } else {
+                console.log("This event doesn't exist in the database.");
+            }
+        } catch (error) {
+            console.error("An error occurred while deleting the event:", error);
+        }
+    };
     const changeDate = (id, newStart, newEnd) => {
         setEvents((prevEvents) =>
             prevEvents.map((event) =>
