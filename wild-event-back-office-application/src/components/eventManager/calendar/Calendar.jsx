@@ -11,9 +11,18 @@ import EventForm from "../newEventForm/EventForm";
 import { getLocations } from "../../../services/LocationService"
 import { getUsers } from "../../../services/UserService"
 
+import Snackbar from '@mui/material/Snackbar';
+
+import MuiAlert from '@mui/material/Alert';
 
 
 const Calendar = ({ isAdmin }) => {
+    const [snackbarInfo, setSnackbarInfo] = useState({
+        open: false,
+        message: '',
+        severity: 'success'
+    });
+
     const [userDB, setUserDB] = useState([]);
     const [events, setEvents] = useState([]);
     const [locationDB, setLocationDB] = useState([]);
@@ -163,28 +172,31 @@ const Calendar = ({ isAdmin }) => {
     };
 
     const handleDeleteEvent = async (dto) => {
-        const confirmed = window.confirm(`Are you sure you want to delete the event? ${dto.title}`);
-
-        if (!confirmed) {
-            return;
-        }
 
         try {
             const eventExistsInDatabase = events.some(event => event.id === dto.id);
 
             if (eventExistsInDatabase) {
-                console.log(dto.id);
                 await deleteEvent(dto.id);
                 setEvents(prevEvents => prevEvents.filter(event => event.id !== dto.id));
                 dto.selected.event.remove();
                 handleModalClose();
+
+                setSnackbarInfo({
+                    open: true,
+                    message: `User has been deleted`,
+                    severity: 'success'
+                });
             } else {
                 console.log("This event doesn't exist in the database.");
+
             }
         } catch (error) {
             console.error("An error occurred while deleting the event:", error);
+
         }
     };
+
     const changeDate = (id, newStart, newEnd) => {
         setEvents((prevEvents) =>
             prevEvents.map((event) =>
@@ -229,6 +241,8 @@ const Calendar = ({ isAdmin }) => {
         }
         updateDateEvent(dto);
 
+
+
     };
     const handleEvent = (eventData, id) => {
         let calendarApi = calendarRef.current.getApi();
@@ -263,10 +277,22 @@ const Calendar = ({ isAdmin }) => {
             setEvents(prevEvents => [...prevEvents, dtoObj]);
         }
 
+        setSnackbarInfo({
+            open: true,
+            message: `User has been ${existingEvent ? "updated" : "added"}`,
+            severity: 'success'
+        });
+
         calendarApi.addEvent(dtoObj);
 
     };
+    const handleCloseSnackbar = () => {
 
+        setSnackbarInfo(prev => ({
+            ...prev,
+            open: false
+        }));
+    };
 
     return (
         <>
@@ -305,7 +331,11 @@ const Calendar = ({ isAdmin }) => {
             <EventForm open={open} userDB={userDB} locationDB={locationDB} handleEvent={handleEvent} handleDeleteEvent={handleDeleteEvent} handleModalClose={handleModalClose} isUpdateEvent={isUpdateEvent} pickedEvent={pickedEvent} >
 
             </EventForm>
-
+            <Snackbar open={snackbarInfo.open} autoHideDuration={3000} onClose={handleCloseSnackbar}>
+                <MuiAlert onClose={handleCloseSnackbar} severity={snackbarInfo.severity} elevation={6} variant="filled">
+                    {snackbarInfo.message}
+                </MuiAlert>
+            </Snackbar>
         </>
     )
 }

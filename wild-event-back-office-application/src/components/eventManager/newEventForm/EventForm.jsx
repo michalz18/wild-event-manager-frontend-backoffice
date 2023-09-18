@@ -11,6 +11,7 @@ import { addEvent, updateEvent } from "../../../services/EventService"
 const EventForm = ({ open, locationDB, handleModalClose, isUpdateEvent, pickedEvent, handleDeleteEvent, onEventAdded, userDB, handleEvent }) => {
     const START_AT = 'start';
     const ENDS_AT = 'end';
+
     const [eventData, setEventData] = useState({
         title: "",
         description: "",
@@ -77,6 +78,7 @@ const EventForm = ({ open, locationDB, handleModalClose, isUpdateEvent, pickedEv
         let id = null;
         eventAlreadyExist ? id = await updateEvent(eventData, pickedEvent.id) : id = await addEvent(eventData);
 
+    
         const formattedStart = dayjs(eventData.dateRange.startsAt).format("YYYY-MM-DDTHH:mm:ss");
         const formattedEnd = dayjs(eventData.dateRange.endsAt).format("YYYY-MM-DDTHH:mm:ss");
         setEventData((prevData) => ({
@@ -99,7 +101,7 @@ const EventForm = ({ open, locationDB, handleModalClose, isUpdateEvent, pickedEv
             [name]: value,
         });
     };
-    const getNameFromId = (selected) => {
+        const getNameFromId = (selected) => {
         const selectedNames = selected.map(id => {
             const user = userDB.find(user => user.id === id);
             return user ? user.name : "";
@@ -214,7 +216,7 @@ const EventForm = ({ open, locationDB, handleModalClose, isUpdateEvent, pickedEv
                     Submit
                 </Button>
             </DialogActions>}
-
+       
 
         </Dialog>
     );
