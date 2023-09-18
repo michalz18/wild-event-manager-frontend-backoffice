@@ -186,7 +186,9 @@ const Calendar = ({ isAdmin }) => {
             dto.selected.event.remove();
             handleModalClose();
         }
+
     }
+
     const changeDate = (id, newStart, newEnd) => {
         setEvents((prevEvents) =>
             prevEvents.map((event) =>

@@ -21,7 +21,7 @@ import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
 import { Button } from '@mui/material';
 
-export default function EmployeeTable() {
+const EmployeeTable = () => {
     const [users, setUsers] = useState([]);
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(5);
@@ -32,6 +32,7 @@ export default function EmployeeTable() {
     const [selectedRole, setSelectedRole] = useState("");
     const [allLocations, setAllLocations] = useState([]);
     const [userToEdit, setUserToEdit] = useState(null);
+    // sprawdz czy jest pusty
     const [openAddDialog, setOpenAddDialog] = useState(false);
     const [openEditDialog, setOpenEditDialog] = useState(false);
     const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
@@ -288,3 +289,4 @@ export default function EmployeeTable() {
     );
 }
 
+export default EmployeeTable;
