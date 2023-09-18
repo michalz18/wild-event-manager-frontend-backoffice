@@ -4,6 +4,7 @@ import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { useUser } from '../../services/useUser';
 import { loginUser } from '../../services/LoginService';
+import ResetPasswordRequestByEmail from '../resetPasswordForm/ResetPasswordRequestByEmail'; 
 import {
   Avatar,
   Button,
@@ -16,6 +17,10 @@ import {
   Typography,
   ThemeProvider,
   createTheme,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle
 } from '@mui/material';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import backgroundImage from '../../assets/logo.png';
@@ -31,6 +36,7 @@ const LoginForm = () => {
   const navigate = useNavigate();
   const { login } = useUser();
   const [loginError, setLoginError] = useState(null);
+  const [isDialogOpen, setDialogOpen] = useState(false); 
 
   const formik = useFormik({
     initialValues: {
@@ -50,6 +56,9 @@ const LoginForm = () => {
       }
     },
   });
+
+  const openDialog = () => setDialogOpen(true); 
+  const closeDialog = () => setDialogOpen(false); 
 
   return (
     <ThemeProvider theme={defaultTheme}>
@@ -96,22 +105,12 @@ const LoginForm = () => {
                 error={formik.touched.password && Boolean(formik.errors.password)}
                 helperText={formik.touched.password && formik.errors.password}
               />
-              {/* <FormControlLabel
-                control={
-                  <Checkbox
-                    checked={rememberMe}
-                    onChange={(e) => setRememberMe(e.target.checked)}
-                    color="primary"
-                  />
-                }
-                label="Remember me"
-              /> */}
               <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}>
                 Sign In
               </Button>
               <Grid container>
                 <Grid item xs>
-                  <Link href="#" variant="body2">
+                  <Link href="#" variant="body2" onClick={openDialog}>
                     Forgot password?
                   </Link>
                 </Grid>
@@ -120,6 +119,16 @@ const LoginForm = () => {
           </Box>
         </Grid>
       </Grid>
+      <Dialog open={isDialogOpen} onClose={closeDialog} maxWidth="sm" fullWidth>
+        <DialogContent>
+          <ResetPasswordRequestByEmail />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={closeDialog} color="primary">
+            Close
+          </Button>
+        </DialogActions>
+      </Dialog>
     </ThemeProvider>
   );
 };
