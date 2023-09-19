@@ -1,20 +1,24 @@
 import React, { useState, useEffect } from 'react';
-import {FormGroup, FormControl, Button, TextField} from '@mui/material';
+import {FormGroup, FormControl, Button, TextField, Grid, Box, DialogContent} from '@mui/material';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogTitle from '@mui/material/DialogTitle';
 import { submitLocation } from '../../../services/LocationService';
+import MapForm from '../map/MapForm';
 
-const LocationDialog = ({ open, location, handleClose, mapCoordinates }) => {
-    const [locationData, setLocationData] = useState(
-        {
-            id:null,
-            title:"",
-            description: "",
-            longitude: 0,
-            latitude: 0
-        }
-    )
+
+const LocationDialog = ({mapLocations, open, location, handleClose, mapCoordinates }) => {
+    
+    const [locationData, setLocationData] = useState({})
+
+    // const setCoordinateText = (coor) => {
+    //     console.log(locationData)
+    //     setLocationData({
+    //       ...locationData,
+    //       longitude: coor.lng,
+    //       latitude: coor.lat,
+    //     });
+    //   };
 
     useEffect(() => {
         if (location) {
@@ -37,6 +41,7 @@ const LocationDialog = ({ open, location, handleClose, mapCoordinates }) => {
     }, [open]);
 
     const handleInputChange = (event) => {
+        console.log(locationData)
         const { name, value } = event.target;
         setLocationData({
             ...locationData,
@@ -52,9 +57,12 @@ const LocationDialog = ({ open, location, handleClose, mapCoordinates }) => {
     }
 
     return (
-        <Dialog fullWidth open={open} onClose={handleClose}>
+        <Dialog fullWidth open={open} onClose={handleClose} style={{}}>
             <DialogTitle>{location ? "Location details" : "Add new location"}</DialogTitle>
-            <FormGroup >
+            <DialogContent>
+            <Grid container spacing={2}>
+            <Grid item xs={6}>
+                    <FormGroup >
                     <FormControl margin="normal">
                         <TextField autoFocus
                             label="Title"
@@ -92,6 +100,15 @@ const LocationDialog = ({ open, location, handleClose, mapCoordinates }) => {
                             onChange={handleInputChange} />
                     </FormControl>
                 </FormGroup>
+            </Grid>
+            <Grid item xs={6}>  
+                <Box sx={{ width: '290px', height: '400px' }}>
+                    <MapForm mapLocations={mapLocations} location={location} locationData={locationData} setLocationData={setLocationData}></MapForm>
+                </Box>
+            </Grid>
+            </Grid>
+            </DialogContent>
+            
             <DialogActions>
                     <Button onClick={() => handleClose()} color="primary">
                         Cancel
@@ -100,6 +117,7 @@ const LocationDialog = ({ open, location, handleClose, mapCoordinates }) => {
                         {location ? "Update" : "Create"}
                     </Button>
             </DialogActions>
+            
         </Dialog>
     );
 };

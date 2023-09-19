@@ -28,7 +28,7 @@ export const MapConfig = () => {
     };
 
     return (
-        <Box sx={{ mt: '64px', ml: '340px' }}>
+        <Box sx={{ mt: '200px', ml: '0px' }}>
             <Box>
                 {isLoading ? (
                     <Box>Loading...</Box>
@@ -43,6 +43,7 @@ export const MapConfig = () => {
                             <Box sx={{ width: '390px', height: '844px', marginTop: '30px' }}>
                                 <Map mapLocations={mapLocations}></Map>
                             </Box>
+                           
                         </Grid>
                     </Grid>
                 )}

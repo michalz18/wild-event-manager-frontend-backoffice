@@ -23,12 +23,12 @@ const Map = ({mapLocations}) => {
       zoom: mapData.zoom,
       bearing: mapData.bearing
     }, []);
-    mapData.locations.forEach((feature) => {
+    mapData.locations.forEach((location, index) => {
       const ref = React.createRef();
       ref.current = document.createElement('div');
-      createRoot(ref.current).render(<Marker feature={feature} />);
+      createRoot(ref.current).render(<Marker feature={location} index={index + 1}/>);
       new mapboxgl.Marker(ref.current)
-        .setLngLat([feature.coordinateDTO.latitude, feature.coordinateDTO.longitude])
+        .setLngLat([location.coordinateDTO.latitude, location.coordinateDTO.longitude])
         .addTo(map);
     });
     map.addControl(new mapboxgl.NavigationControl(), 'top-right');

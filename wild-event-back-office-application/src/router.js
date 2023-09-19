@@ -6,7 +6,6 @@ import { MainPage, LogoutPage, EventPage, MyEventPage, EmployeePage, MapPage } f
 
 import { DarkModeProvider } from "./components/darkMode/DarkModeProvider"
 import { CalendarPage} from "./pages/CalendarPage";
-import { MapUploader } from "./pages/MapUploader"
 import EventForm from "./components/eventManager/newEventForm/EventForm";
 
 const router = createBrowserRouter([
@@ -74,7 +73,7 @@ const router = createBrowserRouter([
 			},
 			{
 				path: "/map-config/map",
-				element: <MapUploader />,
+				element: <MapPage/>,
 				text: "Map configuration",
 				errorElement: <ErrorPage />,
 			},

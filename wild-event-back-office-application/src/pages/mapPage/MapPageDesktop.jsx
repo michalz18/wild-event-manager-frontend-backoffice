@@ -1,9 +1,12 @@
 import { DesktopLayout } from "../layout/DesktopLayout"
+import { MapConfig } from "../../components/mapConfig/MapConfig"
 
 export const MapPageDesktop = () => {
 	return (
 		<>
-			<DesktopLayout></DesktopLayout>
+			<DesktopLayout>
+				<MapConfig></MapConfig>
+			</DesktopLayout>
 		</>
 	)
 }

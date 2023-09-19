@@ -67,6 +67,7 @@ const LocationsEditList = ({mapLocations, setLocations}) => {
   }
   
   return <Box>
+  
         <TableContainer component={Paper}>
             <Table aria-label="simple table"> 
                 <TableHead>
@@ -98,6 +99,7 @@ const LocationsEditList = ({mapLocations, setLocations}) => {
             </Table>
           </TableContainer>
           <LocationDialog 
+                mapLocations={mapLocations}
                 open={updateDialogOpen}
                 location={locationUpdate}
                 handleClose={finishUpdating}
