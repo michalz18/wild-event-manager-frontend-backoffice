@@ -21,6 +21,7 @@ import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
 import { Button } from '@mui/material';
 import { useUser } from '../../../services/useUser';
+import { mapRoleIdsToNames, mapLocationIdsToTitles } from "./UserMappers";
 
 const EmployeeTable = () => {
     const [users, setUsers] = useState([]);
@@ -130,6 +131,7 @@ const EmployeeTable = () => {
         }
         setOpenAddDialog(false);
     };
+    
 
 
     const handleCloseEdit = async (wasCancelled, updatedUser) => {
@@ -137,19 +139,27 @@ const EmployeeTable = () => {
             setOpenEditDialog(false);
             return;
         }
-
+    
         if (updatedUser) {
-            const fetchedUsers = await getAllActiveUsers(token);
-            setUsers(fetchedUsers);
+            setUsers(prevUsers => {
+                return prevUsers.map(user => {
+                    if (user.id === updatedUser.id) {
+                        return updatedUser; 
+                    }
+                    return user; 
+                });
+            });
+    
             setSnackbarInfo({
                 open: true,
                 message: 'User has been edited!',
                 severity: 'info'
             });
         }
-
+    
         setOpenEditDialog(false);
     };
+    
 
     const handleOpenDeactivateDialog = (userId) => {
         setConfirmDialogOpen(true);
