@@ -1,11 +1,7 @@
 import React from 'react';
 import TextField from '@mui/material/TextField';
 
-const SearchBar = ({ onSearch }) => {
-
-  const handleInputChange = (e) => {
-    onSearch(e.target.value);
-  };
+const SearchBar = ({ setSearchTerm }) => {
 
   return (
     <div style={{ margin: '20px' }}>
@@ -14,7 +10,7 @@ const SearchBar = ({ onSearch }) => {
         label="Search by name"
         type="search"
         variant="outlined"
-        onChange={handleInputChange}
+        onChange={e => setSearchTerm(e.target.value)}
       />
     </div>
   );

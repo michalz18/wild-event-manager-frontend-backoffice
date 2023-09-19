@@ -55,9 +55,7 @@ const EmployeeTable = () => {
         fetchUsers();
     }, [token]);
 
-    const handleSearch = (term) => {
-        setSearchTerm(term);
-    };
+  
 
     useEffect(() => {
         const fetchRoles = async () => {
@@ -195,7 +193,7 @@ const EmployeeTable = () => {
 
     return (
         <div>
-            <SearchBar onSearch={handleSearch} />
+            <SearchBar setSearchTerm={setSearchTerm} />
             <TableContainer component={Paper}>
                 <Table aria-label="simple table">
                     <TableHead>
