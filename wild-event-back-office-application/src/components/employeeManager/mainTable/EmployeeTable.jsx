@@ -123,13 +123,13 @@ const EmployeeTable = () => {
         if (newUser) {
             const roles = mapRoleIdsToNames(newUser.roleIds, allRoles);
             const locations = mapLocationIdsToTitles(newUser.locationIds, allLocations);
-    
+
             setUsers(prevUsers => [...prevUsers, {
                 ...newUser,
                 roles,
                 locations
             }]);
-    
+
             setSnackbarInfo({
                 open: true,
                 message: 'User has been added!',
@@ -138,7 +138,7 @@ const EmployeeTable = () => {
         }
         setOpenAddDialog(false);
     };
-    
+
 
 
     const handleCloseEdit = async (wasCancelled, updatedUser) => {
@@ -146,27 +146,32 @@ const EmployeeTable = () => {
             setOpenEditDialog(false);
             return;
         }
-    
+
         if (updatedUser) {
-            setUsers(prevUsers => {
-                return prevUsers.map(user => {
-                    if (user.id === updatedUser.id) {
-                        return updatedUser; 
-                    }
-                    return user; 
-                });
-            });
-    
+            const roles = mapRoleIdsToNames(updatedUser.roleIds, allRoles);
+            const locations = mapLocationIdsToTitles(updatedUser.locationIds, allLocations);
+
+            setUsers(prevUsers => prevUsers.map(user => {
+                if (user.id === updatedUser.id) {
+                    return {
+                        ...updatedUser,
+                        roles,
+                        locations
+                    };
+                }
+                return user;
+            }));
+
             setSnackbarInfo({
                 open: true,
                 message: 'User has been edited!',
                 severity: 'info'
             });
         }
-    
+
         setOpenEditDialog(false);
     };
-    
+
 
     const handleOpenDeactivateDialog = (userId) => {
         setConfirmDialogOpen(true);
@@ -226,12 +231,12 @@ const EmployeeTable = () => {
                                 return user.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
                                     (selectedRole === "" || user.roles.includes(selectedRole)) &&
                                     (selectedLocation === "" || user.locations.includes(selectedLocation));
-                              }).slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                            }).slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                             : users.filter(user => {
                                 return user.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
                                     (selectedRole === "" || user.roles.includes(selectedRole)) &&
                                     (selectedLocation === "" || user.locations.includes(selectedLocation));
-                              })
+                            })
                         ).map((user) => (
                             <TableRow key={user.id}>
                                 <TableCell component="th" scope="row">
