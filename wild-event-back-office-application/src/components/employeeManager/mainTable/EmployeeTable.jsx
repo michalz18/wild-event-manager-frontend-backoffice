@@ -121,8 +121,15 @@ const EmployeeTable = () => {
             return;
         }
         if (newUser) {
-            const fetchedUsers = await getAllActiveUsers(token);
-            setUsers(fetchedUsers);
+            const roles = mapRoleIdsToNames(newUser.roleIds, allRoles);
+            const locations = mapLocationIdsToTitles(newUser.locationIds, allLocations);
+    
+            setUsers(prevUsers => [...prevUsers, {
+                ...newUser,
+                roles,
+                locations
+            }]);
+    
             setSnackbarInfo({
                 open: true,
                 message: 'User has been added!',
