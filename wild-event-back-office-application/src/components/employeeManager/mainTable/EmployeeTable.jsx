@@ -63,7 +63,7 @@ const EmployeeTable = () => {
                 (selectedLocation === "" || user.locations.includes(selectedLocation))
         });
         setFilteredUsers(filtered);
-    }, [searchTerm, users, selectedRole, selectedLocation]);
+    }, [searchTerm, users, selectedRole, selectedLocation, token]);
 
 
     const handleSearch = (term) => {
@@ -77,7 +77,7 @@ const EmployeeTable = () => {
         };
 
         fetchRoles();
-    }, []);
+    }, [token]);
 
     useEffect(() => {
         const fetchLocations = async () => {
@@ -86,12 +86,12 @@ const EmployeeTable = () => {
         };
 
         fetchLocations();
-    }, []);
+    }, [token]);
 
     const handleDeactivateUser = async (userId) => {
         try {
-            await deactivateUser(userId)
-            const fetchedUsers = await getAllActiveUsers();
+            await deactivateUser(userId, token)
+            const fetchedUsers = await getAllActiveUsers(token);
             setUsers(fetchedUsers);
             setFilteredUsers(fetchedUsers);
             setSnackbarInfo({
@@ -148,15 +148,14 @@ const EmployeeTable = () => {
     };
 
 
-    const handleCloseEdit = async (event, wasCancelled, updatedUser) => {
-        event.preventDefault();
+    const handleCloseEdit = async (wasCancelled, updatedUser) => {
         if (wasCancelled) {
             setOpenEditDialog(false);
             return;
         }
 
         if (updatedUser) {
-            const fetchedUsers = await getAllActiveUsers();
+            const fetchedUsers = await getAllActiveUsers(token);
             setUsers(fetchedUsers);
             setFilteredUsers(fetchedUsers);
             setSnackbarInfo({

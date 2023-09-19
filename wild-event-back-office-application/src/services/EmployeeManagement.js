@@ -49,14 +49,15 @@ const registerUser = async (userDTO) => {
   }
 };
 
-const updateUser = async (userId, userDTO) => {
+const updateUser = async (userId, userDTO, token) => {
   try {
     const response = await fetch(
       `${process.env.REACT_APP_UPDATE_USER}${userId}`,
       {
         method: "PUT",
         headers: {
-          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json"
         },
         body: JSON.stringify(userDTO),
       }
@@ -69,14 +70,14 @@ const updateUser = async (userId, userDTO) => {
   }
 };
 
-const deactivateUser = async (userId) => {
+const deactivateUser = async (userId, token) => {
   try {
     const response = await fetch(
       `${process.env.REACT_APP_DEACTIVATE_USER}${userId}`,
       {
         method: "PUT",
         headers: {
-          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
         },
       }
     );
