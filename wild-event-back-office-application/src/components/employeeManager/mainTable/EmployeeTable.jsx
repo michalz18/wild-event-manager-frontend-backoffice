@@ -133,9 +133,16 @@ const EmployeeTable = () => {
             return;
         }
         if (newUser) {
-            const fetchedUsers = await getAllActiveUsers(token);
-            setUsers(fetchedUsers);
-            setFilteredUsers(fetchedUsers);
+            setUsers(prevUsers => [...prevUsers, newUser]);
+            setFilteredUsers(prevFilteredUsers => {
+                const isUserMatchFilter = newUser.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
+                    (selectedRole === "" || newUser.roles.includes(selectedRole)) &&
+                    (selectedLocation === "" || newUser.locations.includes(selectedLocation));
+                if (isUserMatchFilter) {
+                    return [...prevFilteredUsers, newUser];
+                }
+                return prevFilteredUsers;
+            });
             setSnackbarInfo({
                 open: true,
                 message: 'User has been added!',
@@ -144,7 +151,7 @@ const EmployeeTable = () => {
         }
         setOpenAddDialog(false);
     };
-
+    
 
     const handleCloseEdit = async (wasCancelled, updatedUser) => {
         if (wasCancelled) {
