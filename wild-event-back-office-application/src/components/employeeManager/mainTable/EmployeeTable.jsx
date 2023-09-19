@@ -26,7 +26,6 @@ const EmployeeTable = () => {
     const [users, setUsers] = useState([]);
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(5);
-    const [filteredUsers, setFilteredUsers] = useState([]);
     const [selectedLocation, setSelectedLocation] = useState("");
     const [searchTerm, setSearchTerm] = useState("");
     const [allRoles, setAllRoles] = useState([]);
@@ -50,21 +49,10 @@ const EmployeeTable = () => {
         const fetchUsers = async () => {
             const fetchedUsers = await getAllActiveUsers(token);
             setUsers(fetchedUsers);
-            setFilteredUsers(fetchedUsers);
         };
 
         fetchUsers();
     }, [token]);
-
-    useEffect(() => {
-        const filtered = users.filter(user => {
-            return user.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
-                (selectedRole === "" || user.roles.includes(selectedRole)) &&
-                (selectedLocation === "" || user.locations.includes(selectedLocation))
-        });
-        setFilteredUsers(filtered);
-    }, [searchTerm, users, selectedRole, selectedLocation, token]);
-
 
     const handleSearch = (term) => {
         setSearchTerm(term);
@@ -92,7 +80,6 @@ const EmployeeTable = () => {
         try {
             await deactivateUser(userId, token)
             setUsers(prevUsers => prevUsers.filter(user => user.id !== userId));
-            setFilteredUsers(prevFilteredUsers => prevFilteredUsers.filter(user => user.id !== userId));
             setSnackbarInfo({
                 open: true,
                 message: 'User has been deactivated!',
@@ -133,16 +120,8 @@ const EmployeeTable = () => {
             return;
         }
         if (newUser) {
-            setUsers(prevUsers => [...prevUsers, newUser]);
-            setFilteredUsers(prevFilteredUsers => {
-                const isUserMatchFilter = newUser.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
-                    (selectedRole === "" || newUser.roles.includes(selectedRole)) &&
-                    (selectedLocation === "" || newUser.locations.includes(selectedLocation));
-                if (isUserMatchFilter) {
-                    return [...prevFilteredUsers, newUser];
-                }
-                return prevFilteredUsers;
-            });
+            const fetchedUsers = await getAllActiveUsers(token);
+            setUsers(fetchedUsers);
             setSnackbarInfo({
                 open: true,
                 message: 'User has been added!',
@@ -151,7 +130,7 @@ const EmployeeTable = () => {
         }
         setOpenAddDialog(false);
     };
-    
+
 
     const handleCloseEdit = async (wasCancelled, updatedUser) => {
         if (wasCancelled) {
@@ -162,7 +141,6 @@ const EmployeeTable = () => {
         if (updatedUser) {
             const fetchedUsers = await getAllActiveUsers(token);
             setUsers(fetchedUsers);
-            setFilteredUsers(fetchedUsers);
             setSnackbarInfo({
                 open: true,
                 message: 'User has been edited!',
@@ -227,8 +205,16 @@ const EmployeeTable = () => {
                     </TableHead>
                     <TableBody>
                         {(rowsPerPage > 0
-                            ? filteredUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                            : filteredUsers
+                            ? users.filter(user => {
+                                return user.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
+                                    (selectedRole === "" || user.roles.includes(selectedRole)) &&
+                                    (selectedLocation === "" || user.locations.includes(selectedLocation));
+                              }).slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                            : users.filter(user => {
+                                return user.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
+                                    (selectedRole === "" || user.roles.includes(selectedRole)) &&
+                                    (selectedLocation === "" || user.locations.includes(selectedLocation));
+                              })
                         ).map((user) => (
                             <TableRow key={user.id}>
                                 <TableCell component="th" scope="row">
