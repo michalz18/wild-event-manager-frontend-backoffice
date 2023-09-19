@@ -10,4 +10,5 @@ const itemList = [
   { text: "Map configuration", icon: <MapIcon />, path: "/map-config/map", requiredRole: 'MAP-CONFIGURATION' },
 ];
 
+
 export default itemList; 
