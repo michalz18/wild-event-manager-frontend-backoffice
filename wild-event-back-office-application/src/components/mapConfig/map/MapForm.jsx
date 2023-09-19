@@ -53,7 +53,6 @@ const MapForm = ({ mapLocations, location, coordinate, setCoordinate}) => {
       markerRef.current = new mapboxgl.Marker()
         .setLngLat([clickedCoordinate.longitude, clickedCoordinate.latitude])
         .addTo(map);
-    //  setCoordinateText({lat: e.lngLat.wrap().lat, lng: e.lngLat.wrap().lng})
     });
     return () => {
       map.remove();

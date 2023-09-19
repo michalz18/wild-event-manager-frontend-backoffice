@@ -15,17 +15,8 @@ const LocationDialog = ({mapLocations, open, location, handleClose, mapCoordinat
         longitude: mapLocations.coordinate.latitude
       });
 
-    // const setCoordinateText = (coor) => {
-    //     console.log(locationData)
-    //     setLocationData({
-    //       ...locationData,
-    //       longitude: coor.lng,
-    //       latitude: coor.lat,
-    //     });
-    //   };
 
     useEffect(() => {
-        console.log(coordinate)
         setLocationData({
                   ...locationData,
                   longitude: coordinate.latitude,
@@ -102,7 +93,7 @@ const LocationDialog = ({mapLocations, open, location, handleClose, mapCoordinat
                             type="number"
                             name="longitude"
                             value={locationData.longitude}
-                            onChange={handleInputChange} />
+                            InputProps={{ readOnly: true }} />
                     </FormControl>
                     <FormControl margin="normal">
                         <TextField autoFocus
@@ -111,7 +102,7 @@ const LocationDialog = ({mapLocations, open, location, handleClose, mapCoordinat
                             type="number"
                             name="latitude"
                             value={locationData.latitude}
-                            onChange={handleInputChange} />
+                            InputProps={{ readOnly: true }}/>
                     </FormControl>
                 </FormGroup>
             </Grid>
