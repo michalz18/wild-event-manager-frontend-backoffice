@@ -28,6 +28,7 @@ const Calendar = ({ isAdmin }) => {
     const [locationDB, setLocationDB] = useState([]);
     const [open, setOpen] = useState(false);
     const [eventToUpdate, setEventToUpdate] = useState({});
+    const [isTimeGridWeek, setIsTimeGridWeek] = useState({});
     const [isUpdateEvent, setIsUpdateEvent] = useState(false);
     const [pickedEvent, setPickedEvent] = useState({
         id: "",
@@ -108,7 +109,9 @@ const Calendar = ({ isAdmin }) => {
         setOpen(true);
         setIsUpdateEvent(false);
         setEventToUpdate(selected);
-
+        console.log("selected")
+        console.log(selected)
+        setIsTimeGridWeek(selected.view.type === "timeGridWeek")
         setPickedEvent({
             id: "",
             title: "",
@@ -328,7 +331,7 @@ const Calendar = ({ isAdmin }) => {
                     </FullCallendar>
                 </Box>
             </Container>
-            <EventForm open={open} userDB={userDB} locationDB={locationDB} handleEvent={handleEvent} handleDeleteEvent={handleDeleteEvent} handleModalClose={handleModalClose} isUpdateEvent={isUpdateEvent} pickedEvent={pickedEvent} >
+            <EventForm open={open} isTimeGridWeek={isTimeGridWeek} userDB={userDB} locationDB={locationDB} handleEvent={handleEvent} handleDeleteEvent={handleDeleteEvent} handleModalClose={handleModalClose} isUpdateEvent={isUpdateEvent} pickedEvent={pickedEvent} >
 
             </EventForm>
             <Snackbar open={snackbarInfo.open} autoHideDuration={3000} onClose={handleCloseSnackbar}>

@@ -8,7 +8,7 @@ import { addEvent, updateEvent } from "../../../services/EventService"
 
 
 
-const EventForm = ({ open, locationDB, handleModalClose, isUpdateEvent, pickedEvent, handleDeleteEvent, onEventAdded, userDB, handleEvent }) => {
+const EventForm = ({ open, locationDB, handleModalClose, isTimeGridWeek, isUpdateEvent, pickedEvent, handleDeleteEvent, onEventAdded, userDB, handleEvent }) => {
     const START_AT = 'start';
     const ENDS_AT = 'end';
 
@@ -50,6 +50,17 @@ const EventForm = ({ open, locationDB, handleModalClose, isUpdateEvent, pickedEv
                 },
             }))
         }
+        if (isTimeGridWeek) {
+            setEventData((prevData) => ({
+                ...prevData,
+                dateRange: {
+                    startsAt: pickedEvent.start.toString().split("+")[0],
+                    endsAt: pickedEvent.end.toString().split("+")[0],
+                },
+            }))
+        }
+
+        console.log(eventData)
         if (pickedEvent.allDay) {
             setEventData((prevData) => ({
                 ...prevData,
@@ -59,7 +70,16 @@ const EventForm = ({ open, locationDB, handleModalClose, isUpdateEvent, pickedEv
                 },
             }))
         }
-
+        if (pickedEvent.allDay) {
+            setEventData((prevData) => ({
+                ...prevData,
+                dateRange: {
+                    startsAt: `${pickedEvent.start}T00:00`,
+                    endsAt: dayjs(pickedEvent.start).add(1, 'day').format('YYYY-MM-DDTHH:mm:ss'),
+                },
+            }))
+        }
+        console.log(eventData)
     }, [pickedEvent, userDB, locationDB]);
 
     const handleDateChange = (newValue, flag) => {
@@ -78,7 +98,7 @@ const EventForm = ({ open, locationDB, handleModalClose, isUpdateEvent, pickedEv
         let id = null;
         eventAlreadyExist ? id = await updateEvent(eventData, pickedEvent.id) : id = await addEvent(eventData);
 
-    
+
         const formattedStart = dayjs(eventData.dateRange.startsAt).format("YYYY-MM-DDTHH:mm:ss");
         const formattedEnd = dayjs(eventData.dateRange.endsAt).format("YYYY-MM-DDTHH:mm:ss");
         setEventData((prevData) => ({
@@ -101,7 +121,7 @@ const EventForm = ({ open, locationDB, handleModalClose, isUpdateEvent, pickedEv
             [name]: value,
         });
     };
-        const getNameFromId = (selected) => {
+    const getNameFromId = (selected) => {
         const selectedNames = selected.map(id => {
             const user = userDB.find(user => user.id === id);
             return user ? user.name : "";
@@ -216,7 +236,7 @@ const EventForm = ({ open, locationDB, handleModalClose, isUpdateEvent, pickedEv
                     Submit
                 </Button>
             </DialogActions>}
-       
+
 
         </Dialog>
     );
