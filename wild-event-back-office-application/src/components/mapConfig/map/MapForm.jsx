@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 import mapboxgl from 'mapbox-gl';
 import './Map.css'
 
-const MapForm = ({ mapLocations, location}) => {
+const MapForm = ({ mapLocations, location, coordinate, setCoordinate}) => {
   
   const [mapData, setMap] = useState(mapLocations);
   const mapContainerRef = useRef(null);
@@ -10,10 +10,7 @@ const MapForm = ({ mapLocations, location}) => {
     latitude: mapData.coordinate.longitude,
     longitude: mapData.coordinate.latitude
   });
-  const [coordinate, setCoordinate] = useState({
-    latitude: mapData.coordinate.longitude,
-    longitude: mapData.coordinate.latitude
-  });
+  
   mapboxgl.accessToken = `${process.env.REACT_APP_API_KEY}`;
 
   const getCoordinate = () => {

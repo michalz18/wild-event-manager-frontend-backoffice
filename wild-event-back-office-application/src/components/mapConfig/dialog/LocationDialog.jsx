@@ -10,6 +10,10 @@ import MapForm from '../map/MapForm';
 const LocationDialog = ({mapLocations, open, location, handleClose, mapCoordinates }) => {
     
     const [locationData, setLocationData] = useState({})
+    const [coordinate, setCoordinate] = useState({
+        latitude: mapLocations.coordinate.longitude,
+        longitude: mapLocations.coordinate.latitude
+      });
 
     // const setCoordinateText = (coor) => {
     //     console.log(locationData)
@@ -19,6 +23,16 @@ const LocationDialog = ({mapLocations, open, location, handleClose, mapCoordinat
     //       latitude: coor.lat,
     //     });
     //   };
+
+    useEffect(() => {
+        console.log(coordinate)
+        setLocationData({
+                  ...locationData,
+                  longitude: coordinate.latitude,
+                  latitude: coordinate.longitude,
+                });
+        
+    }, [coordinate])
 
     useEffect(() => {
         if (location) {
@@ -103,7 +117,7 @@ const LocationDialog = ({mapLocations, open, location, handleClose, mapCoordinat
             </Grid>
             <Grid item xs={6}>  
                 <Box sx={{ width: '290px', height: '400px' }}>
-                    <MapForm mapLocations={mapLocations} location={location} locationData={locationData} setLocationData={setLocationData}></MapForm>
+                    <MapForm mapLocations={mapLocations} location={location} coordinate={coordinate} setCoordinate={(e) => setCoordinate(e)}></MapForm>
                 </Box>
             </Grid>
             </Grid>
