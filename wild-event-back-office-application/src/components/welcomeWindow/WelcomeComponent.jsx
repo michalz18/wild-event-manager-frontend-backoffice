@@ -1,24 +1,14 @@
-import React, { useState, useEffect } from "react"
+import React from "react"
 import { Paper, Typography } from "@mui/material"
+import { useUser } from "../../services/useUser"
 
 export const WelcomeWindow = ({ userId }) => {
-	const [userData, setUserData] = useState(null)
-
-	useEffect(() => {
-		// fetchUserData(userId).then((data) => setUserData(data));
-		// stałe dane
-		const sampleUserData = {
-			firstName: "Artur",
-			lastName: "Pokora",
-		}
-		setUserData(sampleUserData)
-	}, [userId])
+	const { user } = useUser()
 
 	return (
 		<Paper elevation={3} sx={{ padding: "20px", textAlign: "center" }}>
 			<Typography variant='h5' gutterBottom>
-				Welcome,{" "}
-				{userData ? `${userData.firstName} ${userData.lastName}` : "User"}
+				Welcome, {user.name}
 			</Typography>
 			<Typography variant='body1'>
 				Thank you for using our app. Enjoy your experience!

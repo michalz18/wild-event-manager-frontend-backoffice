@@ -1,54 +1,63 @@
-const getAllActiveUsers = async () => {
+const getAllActiveUsers = async (token) => {
   try {
-    const response = await fetch(`${process.env.REACT_APP_GET_ACTIVE_USERS}`);
+    const response = await fetch(`${process.env.REACT_APP_GET_ACTIVE_USERS}`, {
+      headers: {
+        "Authorization": `Bearer ${token}`
+      }
+    });
     if (!response.ok) {
       throw new Error("Failed to fetch active users!");
     }
     return await response.json();
   } catch (error) {
-    console.error("Cannot fetch active users!");
+    console.error("Cannot fetch active users:", error);
   }
 };
 
-const getAllLocations = async () => {
-  try {
-    const response = await fetch(`${process.env.REACT_APP_GET_LOCATIONS}`);
-    if (!response.ok) {
-        throw new Error("There is an issue with fetching locations!");
-    }
-    return await response.json();
-} catch (error) {
-    console.error("Cannot fetch locations:", error);
-}
-};
 
-const addUser = async (userDTO) => {
+const getAllLocations = async (token) => {
   try {
-    const response = await fetch(`${process.env.REACT_APP_ADD_USER}`, {
-      method: "POST",
+    const response = await fetch(`${process.env.REACT_APP_GET_LOCATIONS}`, {
       headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(userDTO),
+        'Authorization': `Bearer ${token}`
+      }
     });
     if (!response.ok) {
-      throw new Error("Failed to add user!");
+      throw new Error("There is an issue with fetching locations!");
     }
-
-   return await response.text();
+    return await response.json();
   } catch (error) {
-    console.error("Cannot add user:", error);
+    console.error("Cannot fetch locations:", error);
   }
 };
 
-const updateUser = async (userId, userDTO) => {
+const registerUser = async (userDTO) => {
+  const response = await fetch(`${process.env.REACT_APP_REGISTER_USER}`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(userDTO),
+  });
+
+  if (response.ok) {
+    const data = await response.json();
+    return data;
+  } else {
+    const message = await response.text();
+    throw new Error(message);
+  }
+};
+
+const updateUser = async (userId, userDTO, token) => {
   try {
     const response = await fetch(
       `${process.env.REACT_APP_UPDATE_USER}${userId}`,
       {
         method: "PUT",
         headers: {
-          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json"
         },
         body: JSON.stringify(userDTO),
       }
@@ -61,14 +70,14 @@ const updateUser = async (userId, userDTO) => {
   }
 };
 
-const deactivateUser = async (userId) => {
+const deactivateUser = async (userId, token) => {
   try {
     const response = await fetch(
       `${process.env.REACT_APP_DEACTIVATE_USER}${userId}`,
       {
         method: "PUT",
         headers: {
-          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
         },
       }
     );
@@ -80,4 +89,26 @@ const deactivateUser = async (userId) => {
   }
 };
 
-export { getAllActiveUsers, getAllLocations, addUser, updateUser, deactivateUser };
+const resetPassword = async (token, newPassword) => {
+  const response = await fetch(`${process.env.REACT_APP_RESET_PASSWORD}`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ token, newPassword }),
+  });
+
+  if (response.ok) {
+    const message = await response.text();
+    console.log("Password reset successful:", message);
+    return message;
+  } else {
+    const errorMessage = await response.text();
+    console.error("Cannot reset password:", errorMessage);
+    throw new Error(errorMessage);
+  }
+};
+
+
+
+export { getAllActiveUsers, getAllLocations, registerUser, updateUser, deactivateUser, resetPassword };

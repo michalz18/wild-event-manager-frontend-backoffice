@@ -1,122 +1,96 @@
-import React, { useState } from 'react';
-import { addUser } from '../../../services/EmployeeManagement';
-import { TextField, Dialog, DialogTitle, DialogContent, DialogActions, Button, FormControl, InputLabel, Select, MenuItem, FormHelperText } from '@mui/material';
+import React from 'react';
+import { useFormik } from 'formik';
+import * as Yup from 'yup';
+import { Dialog, DialogTitle, DialogContent, DialogActions, Button, FormControl, InputLabel, Select, MenuItem, FormHelperText, TextField, Typography } from '@mui/material';
+import { registerUser } from '../../../services/EmployeeManagement';
+import { useUser } from '../../../services/useUser';
+
+const validationSchema = Yup.object({
+  name: Yup.string()
+    .min(3, 'Name must be at least 3 characters')
+    .matches(/^[a-zA-Z\s]+$/, 'Only letters and spaces are allowed')
+    .required('Required'),
+  email: Yup.string()
+    .email('Invalid email format')
+    .required('Required'),
+  phone: Yup.string()
+    .matches(/^[\d]{9}$/, 'Phone number must have exactly 9 digits')
+    .required('Required'),
+  roleIds: Yup.array()
+    .min(1, 'At least one role must be assigned')
+    .required('Required'),
+  locationIds: Yup.array()
+    .required('Required')
+});
 
 const AddEmployeeDialog = ({ open, handleClose, allRoles, allLocations }) => {
-  const [formData, setFormData] = useState({ name: '', email: '', phone: '', roles: [], locations: [] });
-  const [errors, setErrors] = useState({});
+  const { user, token } = useUser();
 
-  const handleInputChange = (event) => {
-    const { name, value } = event.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
-    validateField(name, value);
-  };
-
-  const validateField = (name, value) => {
-    let newErrors = { ...errors };
-// incorporate formik or validator class. It shouldnt be that many if statement
-    if (name === "name") {
-      if (!value || value.length < 3 || !/^[a-zA-Z\s]+$/.test(value)) {
-        newErrors.name = 'Name should be at least 3 characters long and contain only letters and spaces';
-      } else {
-        delete newErrors.name;
+  const formik = useFormik({
+    initialValues: {
+      name: '',
+      email: '',
+      phone: '',
+      roleIds: [],
+      locationIds: []
+    },
+    validationSchema,
+    onSubmit: async (values, { resetForm }) => {
+      try {
+        await registerUser(values);
+        console.log("User registered");
+        console.log("User context:", { user, token });
+        handleClose(false, values);
+        resetForm();
+      } catch (error) {
+        console.error("Error during registration:", error);
       }
     }
-
-    if (name === "email") {
-      const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-      if (!emailRegex.test(value)) {
-        newErrors.email = 'Invalid email format';
-      } else {
-        delete newErrors.email;
-      }
-    }
-
-    if (name === "phone") {
-      if (!/^[\d]{9}$/.test(value)) {
-        newErrors.phone = 'Phone number must have exactly 9 digits';
-      } else {
-        delete newErrors.phone;
-      }
-    }
-
-    if (name === "roles") {
-      if (!value || value.length === 0) {
-        newErrors.roles = 'At least one role must be assigned';
-      } else {
-        delete newErrors.roles;
-      }
-    }
-
-    setErrors(newErrors);
-  };
-
-  const handleAdd = async () => {
-    if (Object.keys(errors).length !== 0) return;
-
-    const userDTO = {
-      name: formData.name,
-      email: formData.email,
-      phone: formData.phone,
-      roleIds: formData.roles,
-      locationIds: formData.locations,
-    };
-
-    await addUser(userDTO);
-    handleClose(false, userDTO);
-    setFormData({ name: '', email: '', phone: '', roles: [], locations: [] });
-  };
-
+  });
 
   return (
     <Dialog open={open} onClose={handleClose}>
-      <DialogTitle>Add New Employee</DialogTitle>
+      <DialogTitle>
+        <Typography variant="h6" component="div">
+          Add New Employee
+        </Typography>
+      </DialogTitle>
       <DialogContent>
-        <form>
+        <form onSubmit={formik.handleSubmit}>
           <TextField
-            error={!!errors.name}
-            helperText={errors.name}
+            fullWidth
             label="Name and Surname"
-            fullWidth
-            margin="normal"
-            variant="outlined"
             name="name"
-            value={formData.name}
-            onChange={handleInputChange}
+            value={formik.values.name}
+            onChange={formik.handleChange}
+            error={formik.touched.name && Boolean(formik.errors.name)}
+            helperText={formik.touched.name && formik.errors.name}
           />
           <TextField
-            error={!!errors.email}
-            helperText={errors.email}
-            label="Email"
             fullWidth
-            margin="normal"
-            variant="outlined"
+            label="Email Address"
             name="email"
-            value={formData.email}
-            onChange={handleInputChange}
+            value={formik.values.email}
+            onChange={formik.handleChange}
+            error={formik.touched.email && Boolean(formik.errors.email)}
+            helperText={formik.touched.email && formik.errors.email}
           />
           <TextField
-            error={!!errors.phone}
-            helperText={errors.phone}
-            label="Phone"
             fullWidth
-            margin="normal"
-            variant="outlined"
+            label="Phone Number"
             name="phone"
-            value={formData.phone}
-            onChange={handleInputChange}
+            value={formik.values.phone}
+            onChange={formik.handleChange}
+            error={formik.touched.phone && Boolean(formik.errors.phone)}
+            helperText={formik.touched.phone && formik.errors.phone}
           />
-
-          <FormControl fullWidth margin="normal" variant="outlined">
+          <FormControl fullWidth error={formik.touched.roleIds && Boolean(formik.errors.roleIds)}>
             <InputLabel>Roles</InputLabel>
             <Select
               multiple
-              name="roles"
-              value={formData.roles}
-              onChange={handleInputChange}
+              name="roleIds"
+              value={formik.values.roleIds}
+              onChange={formik.handleChange}
             >
               {allRoles.map((role) => (
                 <MenuItem key={role.id} value={role.id}>
@@ -124,15 +98,15 @@ const AddEmployeeDialog = ({ open, handleClose, allRoles, allLocations }) => {
                 </MenuItem>
               ))}
             </Select>
-            {errors.roles && <FormHelperText>{errors.roles}</FormHelperText>}
+            <FormHelperText>{formik.touched.roleIds && formik.errors.roleIds}</FormHelperText>
           </FormControl>
-          <FormControl fullWidth margin="normal" variant="outlined">
+          <FormControl fullWidth error={formik.touched.locationIds && Boolean(formik.errors.locationIds)}>
             <InputLabel>Locations</InputLabel>
             <Select
               multiple
-              name="locations"
-              value={formData.locations}
-              onChange={handleInputChange}
+              name="locationIds"
+              value={formik.values.locationIds}
+              onChange={formik.handleChange}
             >
               {allLocations.map((location) => (
                 <MenuItem key={location.id} value={location.id}>
@@ -140,19 +114,20 @@ const AddEmployeeDialog = ({ open, handleClose, allRoles, allLocations }) => {
                 </MenuItem>
               ))}
             </Select>
+            <FormHelperText>{formik.touched.locationIds && formik.errors.locationIds}</FormHelperText>
           </FormControl>
+          <DialogActions>
+            <Button onClick={() => { handleClose(true, null); formik.resetForm(); }} color="primary">
+              Cancel
+            </Button>
+            <Button type="submit" color="primary">
+              Add
+            </Button>
+          </DialogActions>
         </form>
       </DialogContent>
-      <DialogActions>
-        <Button onClick={() => handleClose(true, null)} color="primary">
-          Cancel
-        </Button>
-        <Button onClick={handleAdd} color="primary">
-          Add
-        </Button>
-      </DialogActions>
     </Dialog>
   );
-}
+};
 
 export default AddEmployeeDialog;
