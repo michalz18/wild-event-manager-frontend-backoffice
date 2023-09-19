@@ -8,9 +8,10 @@ import { addEvent, updateEvent } from "../../../services/EventService"
 
 
 
-const EventForm = ({ open, locationDB, handleModalClose, isUpdateEvent, pickedEvent, handleDeleteEvent, onEventAdded, userDB}) => {
+const EventForm = ({ open, locationDB, handleModalClose, isTimeGridWeek, isUpdateEvent, pickedEvent, handleDeleteEvent, onEventAdded, userDB, handleEvent }) => {
     const START_AT = 'start';
     const ENDS_AT = 'end';
+
     const [eventData, setEventData] = useState({
         title: "",
         description: "",
@@ -49,6 +50,17 @@ const EventForm = ({ open, locationDB, handleModalClose, isUpdateEvent, pickedEv
                 },
             }))
         }
+        if (isTimeGridWeek) {
+            setEventData((prevData) => ({
+                ...prevData,
+                dateRange: {
+                    startsAt: pickedEvent.start.toString().split("+")[0],
+                    endsAt: pickedEvent.end.toString().split("+")[0],
+                },
+            }))
+        }
+
+        console.log(eventData)
         if (pickedEvent.allDay) {
             setEventData((prevData) => ({
                 ...prevData,
@@ -58,13 +70,17 @@ const EventForm = ({ open, locationDB, handleModalClose, isUpdateEvent, pickedEv
                 },
             }))
         }
-      
-    }, [pickedEvent, userDB]);
-
-
-
-
-
+        if (pickedEvent.allDay) {
+            setEventData((prevData) => ({
+                ...prevData,
+                dateRange: {
+                    startsAt: `${pickedEvent.start}T00:00`,
+                    endsAt: dayjs(pickedEvent.start).add(1, 'day').format('YYYY-MM-DDTHH:mm:ss'),
+                },
+            }))
+        }
+        console.log(eventData)
+    }, [pickedEvent, userDB, locationDB]);
 
     const handleDateChange = (newValue, flag) => {
         const formattedValue = newValue.format("YYYY-MM-DDTHH:mm:ss");
@@ -79,9 +95,9 @@ const EventForm = ({ open, locationDB, handleModalClose, isUpdateEvent, pickedEv
 
     const handleSubmit = async (event, eventAlreadyExist) => {
         event.preventDefault();
-        // if (new Date(eventData.dateRange.startsAt) < new Date(eventData.dateRange.endsAt)) {
         let id = null;
         eventAlreadyExist ? id = await updateEvent(eventData, pickedEvent.id) : id = await addEvent(eventData);
+
 
         const formattedStart = dayjs(eventData.dateRange.startsAt).format("YYYY-MM-DDTHH:mm:ss");
         const formattedEnd = dayjs(eventData.dateRange.endsAt).format("YYYY-MM-DDTHH:mm:ss");
@@ -93,14 +109,10 @@ const EventForm = ({ open, locationDB, handleModalClose, isUpdateEvent, pickedEv
                 endsAt: formattedEnd
             }
         }));
-        console.log(eventData)
-        await onEventAdded(eventData, id);
+
+        await handleEvent(eventData, id);
         await handleModalClose();
 
-
-        // } else {
-        //     alert("Invalid dates. Make sure the start date is earlier than the end date.");
-        // }
     }
     const handleInputChange = (event) => {
         const { name, value } = event.target;
@@ -109,7 +121,6 @@ const EventForm = ({ open, locationDB, handleModalClose, isUpdateEvent, pickedEv
             [name]: value,
         });
     };
-
     const getNameFromId = (selected) => {
         const selectedNames = selected.map(id => {
             const user = userDB.find(user => user.id === id);
@@ -161,21 +172,22 @@ const EventForm = ({ open, locationDB, handleModalClose, isUpdateEvent, pickedEv
                         </LocalizationProvider>
                     </FormControl>
                     <FormControl margin="normal">
-                        <Autocomplete
-                            value={pickedEvent.location}
+                        <InputLabel>Locations</InputLabel>
+                        <Select
+                            label="Locations"
 
-                            disablePortal
-                            options={locationDB}
-                            getOptionLabel={(option) => option.title}
-                            renderInput={(params) => <TextField {...params} label="Locations" />}
-                            onChange={(event, value) => setEventData((prevData) => ({
-                                ...prevData,
-                                locationId: value ? value.id : null
-                            }))}
-                        />
+                            value={eventData.locationId || ""}
+                            name="locationId"
+                            onChange={handleInputChange}
+
+                        >
+                            {locationDB.map((location) => (
+                                <MenuItem key={location.id} value={location.id}>
+                                    {location.title}
+                                </MenuItem>
+                            ))}
+                        </Select>
                     </FormControl>
-
-
                     <FormControl margin="normal">
                         <InputLabel>Select Users</InputLabel>
                         <Select
@@ -194,29 +206,6 @@ const EventForm = ({ open, locationDB, handleModalClose, isUpdateEvent, pickedEv
                             ))}
                         </Select>
                     </FormControl>
-                    {/* <FormControl margin="normal">
-                        <InputLabel>Locations</InputLabel>
-                        <Select
-                            value={eventData.locationId}
-                            renderValue={getTitleFromId}
-
-                            onChange={(event) => {
-                                const selectedLocationId = event.target.value;
-                                setEventData((prevData) => ({
-                                    ...prevData,
-                                    locationId: selectedLocationId || null
-                                }));
-                            }}
-                        >
-                            {locationDB.map((location, index) => (
-                                <MenuItem  key={index} value={location.id}>
-                                    {location.title}
-                                </MenuItem>
-                            ))}
-                        </Select>
-                    </FormControl> */}
-
-
                     <FormControl margin="normal" >
                         <FormControlLabel control={<Checkbox onChange={(event) => setEventData((prevData) => ({
                             ...prevData,

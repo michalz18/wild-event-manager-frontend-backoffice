@@ -54,6 +54,8 @@ const updateEvent = async (event,id) => {
         if (!response.ok) {
             throw new Error("Problem occurred while updating the event!");
         }
+        return await response.json();
+
     } catch (error) {
         console.error("Event could not be updated: ", error);
     }
