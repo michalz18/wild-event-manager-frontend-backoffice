@@ -91,9 +91,8 @@ const EmployeeTable = () => {
     const handleDeactivateUser = async (userId) => {
         try {
             await deactivateUser(userId, token)
-            const fetchedUsers = await getAllActiveUsers(token);
-            setUsers(fetchedUsers);
-            setFilteredUsers(fetchedUsers);
+            setUsers(prevUsers => prevUsers.filter(user => user.id !== userId));
+            setFilteredUsers(prevFilteredUsers => prevFilteredUsers.filter(user => user.id !== userId));
             setSnackbarInfo({
                 open: true,
                 message: 'User has been deactivated!',
