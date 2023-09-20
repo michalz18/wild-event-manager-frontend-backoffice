@@ -69,6 +69,7 @@ console.log(mapLocations)
   }
   
   return <Box>
+  
         <TableContainer component={Paper}>
             <Table aria-label="simple table"> 
                 <TableHead>
@@ -100,14 +101,15 @@ console.log(mapLocations)
             </Table>
           </TableContainer>
           <LocationDialog 
+                mapLocations={mapLocations}
                 open={updateDialogOpen}
                 location={locationUpdate}
-                handleClose={finishUpdating}
-                mapCoordinates={{mapLatitude:mapLocations.coordinate.longitude , mapLongitude: mapLocations.coordinate.latitude}}
+                handleClose={() => finishUpdating()}
+                mapCoordinates={{mapLatitude: mapLocations.coordinate.latitude , mapLongitude: mapLocations.coordinate.longitude}}
           />
           <LocationDeleteDialog
                 open={deleteDialogOpen}
-                handleClose={finishUpdating}
+                handleClose={() => finishUpdating()}
                 handleConfirm={deleteLocationById}
           />
            <Snackbar open={snackbarInfo.open} autoHideDuration={3000} onClose={handleCloseSnackbar}>
