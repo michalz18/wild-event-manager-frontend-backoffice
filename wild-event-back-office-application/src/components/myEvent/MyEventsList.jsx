@@ -9,28 +9,29 @@ import {
 } from "@mui/material"
 import { getAllMyEvents } from "../../services/MyEventService"
 import { useMediaQuery } from "react-responsive"
-import Calendar from "./Calendar"
+import Calendar from "../../components/eventManager/calendar/Calendar"
+import { UserProvider } from "../../services/useUser"
 
 const MyEventList = () => {
 	const [events, setEvents] = useState([])
 	const [filteredEvents, setFilteredEvents] = useState([])
 	const isPhone = useMediaQuery({ maxWidth: 600 })
+	const { token, user } = UserProvider()
 
 	useEffect(() => {
-		fetchEvents()
-	}, [])
-
-	const fetchEvents = async () => {
-		try {
-			const data = await getAllMyEvents()
-			setEvents(data)
-			setFilteredEvents(data)
-		} catch (error) {
-			console.error("Error fetching events", error)
-			setEvents([])
-			setFilteredEvents([])
+		const fetchEvents = async () => {
+			try {
+				const data = await getAllMyEvents(user.id, token)
+				setEvents(data)
+				setFilteredEvents(data)
+			} catch (error) {
+				console.error("Error fetching events", error)
+				setEvents([])
+				setFilteredEvents([])
+			}
 		}
-	}
+		fetchEvents()
+	}, [token, user])
 
 	const handleDateFilterChange = event => {
 		const filterValue = event.target.value
@@ -55,7 +56,7 @@ const MyEventList = () => {
 						))}
 					</List>
 				) : (
-					<Calendar isAdmin={true} />
+					<Calendar isAdmin={false} />
 				)}
 			</Box>
 			{!isPhone && (
