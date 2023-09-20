@@ -32,64 +32,49 @@ const EmployeeTable = () => {
     const [selectedLocation, setSelectedLocation] = useState("");
     const [searchTerm, setSearchTerm] = useState("");
     const [selectedRole, setSelectedRole] = useState("");
-    const [userToEdit, setUserToEdit] = useState(null);
     const [dialogState, setDialogState] = useState({ add: false, edit: false, confirm: false });
-    const [userIdToDeactivate, setUserIdToDeactivate] = useState(null);
-    const [snackbarInfo, setSnackbarInfo] = useState({
-        open: false,
-        message: '',
-        severity: 'success'
-    });
+    const [pickedUser, setPickedUser] = useState(null);
+    const [snackbarInfo, setSnackbarInfo] = useState({ open: false, message: '', severity: 'success' });
     const { token } = useUser();
 
 
     useEffect(() => {
-        const fetchUsers = async () => {
-            const fetchedUsers = await getAllActiveUsers(token);
-            console.log(fetchedUsers)
-            setUsers(fetchedUsers);
+        const fetchData = async () => {
+            try {
+                const [fetchedUsers, roles, locations] = await Promise.all([
+                    getAllActiveUsers(token),
+                    getAllRoles(token),
+                    getAllLocations(token)
+                ]);
+
+                setUsers(fetchedUsers);
+                setAllRoles(roles);
+                setAllLocations(locations);
+            } catch (error) {
+                console.error("There is an error during fetch data:", error);
+            }
         };
 
-        fetchUsers();
+        fetchData();
     }, [token]);
 
-    useEffect(() => {
-        const fetchRoles = async () => {
-            const roles = await getAllRoles(token);
-            setAllRoles(roles);
-        };
-
-        fetchRoles();
-    }, [token]);
-
-    useEffect(() => {
-        const fetchLocations = async () => {
-            const locations = await getAllLocations(token);
-            setAllLocations(locations);
-        };
-
-        fetchLocations();
-    }, [token]);
-
-    const handleDeactivateUser = async (userId) => {
+    const handleDeactivateUser = async () => {
         try {
-            await deactivateUser(userId, token)
-            setUsers(prevUsers => prevUsers.filter(user => user.id !== userId));
+            await deactivateUser(pickedUser.id, token);
+            setUsers(prevUsers => prevUsers.filter(user => user.id !== pickedUser.id));
             setSnackbarInfo({
-                open: true,
-                message: 'User has been deactivated!',
-                severity: 'success'
+                open: true, message: 'User has been deactivated!', severity: 'success'
             });
         } catch (error) {
-            console.error("Could not deactivate user:", error)
+            console.error("Could not deactivate user:", error);
         }
         toggleDialog('confirm', false);
-    }
+    };
 
     const handleEditUser = async (userId) => {
         try {
             const user = users.find(u => u.id === userId);
-            setUserToEdit(user);
+            setPickedUser(user);
             toggleDialog('edit', true);
         } catch (error) {
             console.error("Could not update user:", error);
@@ -111,11 +96,7 @@ const EmployeeTable = () => {
                 locations
             }]);
 
-            setSnackbarInfo({
-                open: true,
-                message: 'User has been added!',
-                severity: 'success'
-            });
+            setSnackbarInfo({ open: true, message: 'User has been added!', severity: 'success' });
         }
         toggleDialog('add', false);
     };
@@ -141,11 +122,7 @@ const EmployeeTable = () => {
                 return user;
             }));
 
-            setSnackbarInfo({
-                open: true,
-                message: 'User has been edited!',
-                severity: 'info'
-            });
+            setSnackbarInfo({ open: true, message: 'User has been edited!', severity: 'info' });
         }
 
         toggleDialog('edit', false);
@@ -228,10 +205,12 @@ const EmployeeTable = () => {
                                 </TableCell>
                                 <TableCell align="center">
                                     <UserActionsMenu
-                                        onEdit={() => handleEditUser(user.id)}
+                                        onEdit={() => {
+                                            handleEditUser(user.id);
+                                        }}
                                         onDeactivate={() => {
+                                            setPickedUser(user);
                                             toggleDialog('confirm', true);
-                                            setUserIdToDeactivate(user.id);
                                         }}
                                     />
                                 </TableCell>
@@ -264,8 +243,8 @@ const EmployeeTable = () => {
                 Add New Employee
             </Button>
             <AddEmployeeDialog open={dialogState.add} handleClose={handleCloseAdd} allRoles={allRoles} allLocations={allLocations} />
-            <EditEmployeeDialog open={dialogState.edit} handleClose={handleCloseEdit} allRoles={allRoles} allLocations={allLocations} userToEdit={userToEdit} />
-            <ConfirmationDialog open={dialogState.confirm} handleClose={() => toggleDialog('confirm', false)} handleConfirm={() => handleDeactivateUser(userIdToDeactivate)} />
+            <ConfirmationDialog open={dialogState.confirm} handleClose={() => toggleDialog('confirm', false)} handleConfirm={handleDeactivateUser} />
+            <EditEmployeeDialog open={dialogState.edit} handleClose={handleCloseEdit} allRoles={allRoles} allLocations={allLocations} userToEdit={pickedUser} />
             <Snackbar open={snackbarInfo.open} autoHideDuration={3000} onClose={handleCloseSnackbar}>
                 <MuiAlert onClose={handleCloseSnackbar} severity={snackbarInfo.severity} elevation={6} variant="filled">
                     {snackbarInfo.message}
