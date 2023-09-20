@@ -87,7 +87,7 @@ const EmployeeTable = () => {
         } catch (error) {
             console.error("Could not deactivate user:", error)
         }
-        handleCloseDeactivateDialog();
+        setConfirmDialogOpen(false);
     }
 
     const handleEditUser = async (userId) => {
@@ -99,19 +99,6 @@ const EmployeeTable = () => {
             console.error("Could not update user:", error);
         }
     }
-
-    const handleChangePage = (event, newPage) => {
-        setPage(newPage);
-    };
-
-    const handleChangeRowsPerPage = (event) => {
-        setRowsPerPage(parseInt(event.target.value, 10));
-        setPage(0);
-    };
-
-    const handleClickOpen = () => {
-        setOpenAddDialog(true);
-    };
 
     const handleCloseAdd = async (wasCancelled, newUser) => {
         if (wasCancelled) {
@@ -136,8 +123,6 @@ const EmployeeTable = () => {
         }
         setOpenAddDialog(false);
     };
-
-
 
     const handleCloseEdit = async (wasCancelled, updatedUser) => {
         if (wasCancelled) {
@@ -168,16 +153,6 @@ const EmployeeTable = () => {
         }
 
         setOpenEditDialog(false);
-    };
-
-
-    const handleOpenDeactivateDialog = (userId) => {
-        setConfirmDialogOpen(true);
-        setUserIdToDeactivate(userId);
-    };
-
-    const handleCloseDeactivateDialog = () => {
-        setConfirmDialogOpen(false);
     };
 
     const handleCloseSnackbar = (event, reason) => {
@@ -251,7 +226,7 @@ const EmployeeTable = () => {
                                 <TableCell align="center">
                                     <UserActionsMenu
                                         onEdit={() => handleEditUser(user.id)}
-                                        onDeactivate={() => handleOpenDeactivateDialog(user.id)}
+                                        onDeactivate={() => setConfirmDialogOpen(true)}
                                     />
                                 </TableCell>
 
@@ -270,14 +245,17 @@ const EmployeeTable = () => {
                                     inputProps: { 'aria-label': 'rows per page' },
                                     native: true,
                                 }}
-                                onPageChange={handleChangePage}
-                                onRowsPerPageChange={handleChangeRowsPerPage}
+                                onPageChange={(event, newPage) => setPage(newPage)}
+                                onRowsPerPageChange={(event) => {
+                                    setRowsPerPage(parseInt(event.target.value, 10));
+                                    setPage(0);
+                                }}
                             />
                         </TableRow>
                     </TableFooter>
                 </Table>
             </TableContainer>
-            <Button variant="contained" color="primary" onClick={handleClickOpen}>
+            <Button variant="contained" color="primary" onClick={() => setOpenAddDialog(true)}>
                 Add New Employee
             </Button>
             <AddEmployeeDialog open={openAddDialog} handleClose={handleCloseAdd} allRoles={allRoles} allLocations={allLocations} />
@@ -290,7 +268,7 @@ const EmployeeTable = () => {
             />
             <ConfirmationDialog
                 open={confirmDialogOpen}
-                handleClose={handleCloseDeactivateDialog}
+                handleClose={() => setConfirmDialogOpen(false)}
                 handleConfirm={() => handleDeactivateUser(userIdToDeactivate)}
             />
             <Snackbar open={snackbarInfo.open} autoHideDuration={3000} onClose={handleCloseSnackbar}>
