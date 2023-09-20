@@ -30,17 +30,7 @@ const router = createBrowserRouter([
     errorElement: <ErrorPage />,
     children: [
       {
-        path: "/calendar",
-        element: <CalendarPage />,
-        errorElement: <ErrorPage />,
-      },
-      {
-        path: "/add-event",
-        element: <EventForm />,
-        errorElement: <ErrorPage />,
-      },
-      {
-        path: "/signup",
+        path: "/",
         element: <LoginForm />,
         errorElement: <ErrorPage />,
       },
@@ -52,40 +42,21 @@ const router = createBrowserRouter([
       {
         path: "/my-events/event",
         element: <MyEventPage />,
-        text: "My events",
-        errorElement: <ErrorPage />,
-      },
-      {
-        path: "/my-events/event/:id",
-        element: <Test />,
         errorElement: <ErrorPage />,
       },
       {
         path: "/event-management/event",
         element: <EventPage />,
-        text: "Event management",
-        errorElement: <ErrorPage />,
-      },
-      {
-        path: "/event-management/event/id",
-        element: <Test />,
-        errorElement: <ErrorPage />,
-      },
-      {
-        path: "/event-management/event/waiting",
-        element: <Test />,
         errorElement: <ErrorPage />,
       },
       {
         path: "/staff-management",
         element: <EmployeePage />,
-        text: "Employee management",
         errorElement: <ErrorPage />,
       },
       {
         path: "/map-config/map",
 				element: <MapPage/>,
-				text: "Map configuration",
 				errorElement: <ErrorPage />,
       },
       {
