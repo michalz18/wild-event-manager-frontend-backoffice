@@ -6,13 +6,16 @@ import { Button } from "@mui/material";
 import Marker from "./Marker"
 import './Map.css'
 import MapDialog from "../dialog/MapDialog";
+import { useUser } from "../../../services/useUser";
 
 const Map = ({mapLocations}) => {
+  const { token } = useUser();
   const [mapData, setMap] = useState(mapLocations);
   const [mapSave, setMapSave] = useState(mapData);
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
   const mapContainerRef = useRef(null);
-   mapboxgl.accessToken = `${process.env.REACT_APP_API_KEY}`;
+  mapboxgl.accessToken = `${process.env.REACT_APP_API_KEY}`;
+   
   
   useEffect(() => {
     if (mapData) {
@@ -49,7 +52,7 @@ const Map = ({mapLocations}) => {
           <MapDialog
                 open={confirmDialogOpen}
                 handleClose={() => setConfirmDialogOpen(false)}
-                handleConfirm={() => saveMap(mapSave)}
+                handleConfirm={() => saveMap(token, mapSave)}
           />
          </div>
   ;

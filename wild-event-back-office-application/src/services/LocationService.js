@@ -14,12 +14,13 @@ const getLocations = async (token) => {
     }
 }
 
-const submitLocation = async (location) => {
+const submitLocation = async (token, location) => {
     if (location.id) {
         try {
             const response = await fetch(`${process.env.REACT_APP_SUBMIT_LOCATION}`, {
                 method: "PATCH",
                 headers: {
+                    "Authorization": `Bearer ${token}`,
                     "Content-Type": "application/json"
                 },
                 body: JSON.stringify(location)
@@ -37,6 +38,7 @@ const submitLocation = async (location) => {
             const response = await fetch(`${process.env.REACT_APP_SUBMIT_LOCATION}`, {
                 method: "POST",
                 headers: {
+                    "Authorization": `Bearer ${token}`,
                     "Content-Type": "application/json"
                 },
                 body: JSON.stringify(location)
@@ -51,11 +53,12 @@ const submitLocation = async (location) => {
 
 }
 
-const deleteLocation = async (id) => {
+const deleteLocation = async (token, id) => {
     try {
         const response = await fetch(`${process.env.REACT_APP_DELETE_LOCATION}/${id}`, {
             method: "DELETE",
             headers: {
+                "Authorization": `Bearer ${token}`,
                 "Content-Type": "application/json"
             },
         });
