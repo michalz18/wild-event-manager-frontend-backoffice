@@ -56,8 +56,8 @@ const router = createBrowserRouter([
       },
       {
         path: "/map-config/map",
-        element: <MapUploader />,
-        errorElement: <ErrorPage />,
+				element: <MapPage/>,
+				errorElement: <ErrorPage />,
       },
       {
         path: "/reset-password/:token",

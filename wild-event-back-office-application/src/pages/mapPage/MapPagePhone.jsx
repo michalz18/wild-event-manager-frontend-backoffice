@@ -1,10 +1,11 @@
 import { PhoneLayout } from "../layout/PhoneLayout"
+import { MapConfig } from "../../components/mapConfig/MapConfig"
 
 export const MapPagePhone = () => {
 	return (
 		<>
 			<PhoneLayout>
-				<div>Map configuration - phon view</div>
+			<MapConfig></MapConfig>
 			</PhoneLayout>
 		</>
 	)
