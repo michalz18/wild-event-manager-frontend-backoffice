@@ -1,6 +1,10 @@
-const getAllEvents = async () => {
+const getAllEvents = async (token) => {
     try {
-        const response = await fetch(`${process.env.REACT_APP_GET_EVENT}`);
+        const response = await fetch(`${process.env.REACT_APP_GET_EVENT}`, {
+            headers: {
+                "Authorization": `Bearer ${token}`
+            }
+        });
         if (!response.ok) {
             throw new Error("Problem occured with fetching events!")
         }
@@ -9,12 +13,13 @@ const getAllEvents = async () => {
         console.error("Events cannot be downloaded!")
     }
 }
-const addEvent = async (eventData) => {
+const addEvent = async (eventData, token) => {
     try {
         const response = await fetch(`${process.env.REACT_APP_ADD_EVENT}`, {
             method: "POST",
             headers: {
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`
             },
             body: JSON.stringify(eventData)
         });
@@ -26,12 +31,13 @@ const addEvent = async (eventData) => {
         console.error("Event could not be added:", error);
     }
 }
-const deleteEvent = async (id) => {
+const deleteEvent = async (id, token) => {
     try {
         const response = await fetch(`${process.env.REACT_APP_DELETE_EVENT}/${id}`, {
             method: "DELETE",
             headers: {
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`
             },
         });
         if (!response.ok) {
@@ -42,12 +48,13 @@ const deleteEvent = async (id) => {
     }
 }
 
-const updateEvent = async (event,id) => {
+const updateEvent = async (event, id, token) => {
     try {
         const response = await fetch(`http://localhost:8080/event-management/event/${id}`, {
             method: "PATCH",
             headers: {
-                "Content-Type": "application/json" 
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`
             },
             body: JSON.stringify(event)
         });
@@ -61,12 +68,13 @@ const updateEvent = async (event,id) => {
     }
 }
 
-const updateDateEvent = async (eventDTO) => {
+const updateDateEvent = async (eventDTO, token) => {
     try {
         const response = await fetch(`http://localhost:8080/event-management/event`, {
             method: "PATCH",
             headers: {
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`
             },
             body: JSON.stringify(eventDTO)
         });
