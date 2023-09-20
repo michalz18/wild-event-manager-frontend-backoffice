@@ -10,10 +10,9 @@ import dayjs from 'dayjs';
 import EventForm from "../newEventForm/EventForm";
 import { getLocations } from "../../../services/LocationService"
 import { getUsers } from "../../../services/UserService"
-
 import Snackbar from '@mui/material/Snackbar';
-
 import MuiAlert from '@mui/material/Alert';
+import { useUser } from '../../../services/useUser';
 
 
 const Calendar = ({ isAdmin }) => {
@@ -22,7 +21,7 @@ const Calendar = ({ isAdmin }) => {
         message: '',
         severity: 'success'
     });
-
+    const { user, token } = useUser();
     const [userDB, setUserDB] = useState([]);
     const [events, setEvents] = useState([]);
     const [locationDB, setLocationDB] = useState([]);
@@ -41,7 +40,7 @@ const Calendar = ({ isAdmin }) => {
 
     const getEvents = async () => {
         try {
-            const data = await getAllEvents();
+            const data = await getAllEvents(token);
             setEvents(
                 data.map(eventDataFromDB => {
                     const startDate = new Date(eventDataFromDB.startsAt);
@@ -75,7 +74,7 @@ const Calendar = ({ isAdmin }) => {
     }
     const getAllLocations = async () => {
         try {
-            const data = await getLocations();
+            const data = await getLocations(token);
             setLocationDB(
                 data.map(locationDataFromDB => ({
                     id: locationDataFromDB.id,
@@ -88,7 +87,7 @@ const Calendar = ({ isAdmin }) => {
     }
     const getAllUsers = async () => {
         try {
-            const data = await getUsers();
+            const data = await getUsers(token);
             setUserDB(
                 data.map(userData => ({
                     id: userData.id,
@@ -180,7 +179,7 @@ const Calendar = ({ isAdmin }) => {
             const eventExistsInDatabase = events.some(event => event.id === dto.id);
 
             if (eventExistsInDatabase) {
-                await deleteEvent(dto.id);
+                await deleteEvent(dto.id,token);
                 setEvents(prevEvents => prevEvents.filter(event => event.id !== dto.id));
                 dto.selected.event.remove();
                 handleModalClose();
@@ -242,7 +241,7 @@ const Calendar = ({ isAdmin }) => {
             changeDate(id, dto.dateRange.startsAt, dto.dateRange.endsAt);
 
         }
-        updateDateEvent(dto);
+        updateDateEvent(dto,token);
 
 
 
@@ -282,7 +281,7 @@ const Calendar = ({ isAdmin }) => {
 
         setSnackbarInfo({
             open: true,
-            message: `User has been ${existingEvent ? "updated" : "added"}`,
+            message: `Event has been ${existingEvent ? "updated" : "added"}`,
             severity: 'success'
         });
 
