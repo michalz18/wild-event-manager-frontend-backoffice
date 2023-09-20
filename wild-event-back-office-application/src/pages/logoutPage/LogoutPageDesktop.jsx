@@ -1,4 +1,4 @@
-import { LogoutComponent } from "../../components/logout/LogoutComponent"
+import { LogoutComponent } from "../../components/logoutWindow/LogoutComponent"
 
 export const LogoutPageDesktop = () => {
 	return <LogoutComponent />

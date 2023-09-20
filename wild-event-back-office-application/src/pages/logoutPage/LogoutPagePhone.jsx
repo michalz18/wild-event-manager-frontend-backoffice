@@ -1,5 +1,5 @@
 import { PhoneLayout } from "../layout/PhoneLayout"
-import { LogoutComponent } from "../../components/logout/LogoutComponent"
+import { LogoutComponent } from "../../components/logoutWindow/LogoutComponent"
 
 export const LogoutPagePhone = () => {
 	return (

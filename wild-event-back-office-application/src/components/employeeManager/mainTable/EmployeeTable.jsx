@@ -33,10 +33,7 @@ const EmployeeTable = () => {
     const [selectedRole, setSelectedRole] = useState("");
     const [allLocations, setAllLocations] = useState([]);
     const [userToEdit, setUserToEdit] = useState(null);
-    // sprawdz czy jest pusty
-    const [openAddDialog, setOpenAddDialog] = useState(false);
-    const [openEditDialog, setOpenEditDialog] = useState(false);
-    const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
+    const [dialogState, setDialogState] = useState({ add: false, edit: false, confirm: false });
     const [userIdToDeactivate, setUserIdToDeactivate] = useState(null);
     const [snackbarInfo, setSnackbarInfo] = useState({
         open: false,
@@ -49,13 +46,12 @@ const EmployeeTable = () => {
     useEffect(() => {
         const fetchUsers = async () => {
             const fetchedUsers = await getAllActiveUsers(token);
+            console.log(fetchedUsers)
             setUsers(fetchedUsers);
         };
 
         fetchUsers();
     }, [token]);
-
-  
 
     useEffect(() => {
         const fetchRoles = async () => {
@@ -87,14 +83,14 @@ const EmployeeTable = () => {
         } catch (error) {
             console.error("Could not deactivate user:", error)
         }
-        setConfirmDialogOpen(false);
+        toggleDialog('confirm', false);
     }
 
     const handleEditUser = async (userId) => {
         try {
             const user = users.find(u => u.id === userId);
             setUserToEdit(user);
-            setOpenEditDialog(true);
+            toggleDialog('edit', true);
         } catch (error) {
             console.error("Could not update user:", error);
         }
@@ -102,7 +98,7 @@ const EmployeeTable = () => {
 
     const handleCloseAdd = async (wasCancelled, newUser) => {
         if (wasCancelled) {
-            setOpenAddDialog(false);
+            toggleDialog('add', false);
             return;
         }
         if (newUser) {
@@ -121,12 +117,12 @@ const EmployeeTable = () => {
                 severity: 'success'
             });
         }
-        setOpenAddDialog(false);
+        toggleDialog('add', false);
     };
 
     const handleCloseEdit = async (wasCancelled, updatedUser) => {
         if (wasCancelled) {
-            setOpenEditDialog(false);
+            toggleDialog('edit', false);
             return;
         }
 
@@ -152,7 +148,7 @@ const EmployeeTable = () => {
             });
         }
 
-        setOpenEditDialog(false);
+        toggleDialog('edit', false);
     };
 
     const handleCloseSnackbar = (event, reason) => {
@@ -163,6 +159,13 @@ const EmployeeTable = () => {
             ...prev,
             open: false
         }));
+    };
+
+    const toggleDialog = (type, isOpen) => {
+        setDialogState({
+            ...dialogState,
+            [type]: isOpen
+        });
     };
 
 
@@ -226,10 +229,12 @@ const EmployeeTable = () => {
                                 <TableCell align="center">
                                     <UserActionsMenu
                                         onEdit={() => handleEditUser(user.id)}
-                                        onDeactivate={() => setConfirmDialogOpen(true)}
+                                        onDeactivate={() => {
+                                            toggleDialog('confirm', true);
+                                            setUserIdToDeactivate(user.id);
+                                        }}
                                     />
                                 </TableCell>
-
                             </TableRow>
                         ))}
                     </TableBody>
@@ -255,22 +260,12 @@ const EmployeeTable = () => {
                     </TableFooter>
                 </Table>
             </TableContainer>
-            <Button variant="contained" color="primary" onClick={() => setOpenAddDialog(true)}>
+            <Button variant="contained" color="primary" onClick={() => toggleDialog('add', true)}>
                 Add New Employee
             </Button>
-            <AddEmployeeDialog open={openAddDialog} handleClose={handleCloseAdd} allRoles={allRoles} allLocations={allLocations} />
-            <EditEmployeeDialog
-                open={openEditDialog}
-                handleClose={handleCloseEdit}
-                allRoles={allRoles}
-                allLocations={allLocations}
-                userToEdit={userToEdit}
-            />
-            <ConfirmationDialog
-                open={confirmDialogOpen}
-                handleClose={() => setConfirmDialogOpen(false)}
-                handleConfirm={() => handleDeactivateUser(userIdToDeactivate)}
-            />
+            <AddEmployeeDialog open={dialogState.add} handleClose={handleCloseAdd} allRoles={allRoles} allLocations={allLocations} />
+            <EditEmployeeDialog open={dialogState.edit} handleClose={handleCloseEdit} allRoles={allRoles} allLocations={allLocations} userToEdit={userToEdit} />
+            <ConfirmationDialog open={dialogState.confirm} handleClose={() => toggleDialog('confirm', false)} handleConfirm={() => handleDeactivateUser(userIdToDeactivate)} />
             <Snackbar open={snackbarInfo.open} autoHideDuration={3000} onClose={handleCloseSnackbar}>
                 <MuiAlert onClose={handleCloseSnackbar} severity={snackbarInfo.severity} elevation={6} variant="filled">
                     {snackbarInfo.message}
