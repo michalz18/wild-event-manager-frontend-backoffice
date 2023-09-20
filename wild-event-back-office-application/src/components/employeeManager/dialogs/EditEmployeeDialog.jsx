@@ -1,16 +1,46 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
+import { useFormik } from 'formik';
+import * as Yup from 'yup';
+import { Dialog, DialogTitle, DialogContent, DialogActions, Button, FormControl, InputLabel, Select, MenuItem, TextField, FormHelperText } from '@mui/material';
+import { useUser } from '../../../services/useUser';
 import { updateUser } from '../../../services/EmployeeManagement';
-import { TextField, Dialog, DialogTitle, DialogContent, DialogActions, Button, FormControl, InputLabel, Select, MenuItem, FormHelperText } from '@mui/material';
+
+const validationSchema = Yup.object({
+    name: Yup.string()
+        .min(3, 'Name should be at least 3 characters long')
+        .matches(/^[a-zA-Z\s]+$/, 'Name should contain only letters and spaces')
+        .required('Required'),
+    email: Yup.string()
+        .email('Invalid email format')
+        .required('Required'),
+    phone: Yup.string()
+        .matches(/^[\d]{9}$/, 'Phone number must have exactly 9 digits')
+        .required('Required'),
+    roleIds: Yup.array()
+        .min(1, 'At least one role must be assigned')
+        .required('Required'),
+    locationIds: Yup.array()
+        .min(1, 'At least one location must be assigned')
+        .required('Required'),
+});
 
 const EditEmployeeDialog = ({ open, handleClose, allRoles, allLocations, userToEdit }) => {
-    const [formData, setFormData] = useState(userToEdit || {
-        name: "",
-        email: "",
-        phone: "",
-        roles: [],
-        locations: []
+    const { token } = useUser();
+
+    const formik = useFormik({
+        initialValues: {
+            name: '',
+            email: '',
+            phone: '',
+            roleIds: [],
+            locationIds: [],
+        },
+        validationSchema,
+        onSubmit: async (values) => {
+            await updateUser(userToEdit.id, values, token);
+            handleClose(false, values);
+        },
     });
-    const [errors, setErrors] = useState({});
 
     useEffect(() => {
         if (userToEdit) {
@@ -20,125 +50,52 @@ const EditEmployeeDialog = ({ open, handleClose, allRoles, allLocations, userToE
             const locationIds = userToEdit.locations.map(location =>
                 allLocations.find(l => l.title === location)?.id || ''
             );
-            setFormData({
+            formik.setValues({
                 ...userToEdit,
-                roles: roleIds,
-                locations: locationIds,
+                roleIds,  
+                locationIds,  
             });
         }
-    }, [userToEdit, allRoles, allLocations]);
-
-
-    const handleInputChange = (event) => {
-        const { name, value } = event.target;
-        setFormData({
-            ...formData,
-            [name]: value,
-        });
-        validateField(name, value);
-    };
-
-    const validateField = (name, value) => {
-        let newErrors = { ...errors };
-
-        if (name === "name") {
-            if (!value || value.length < 3 || !/^[a-zA-Z\s]+$/.test(value)) {
-                newErrors.name = 'Name should be at least 3 characters long and contain only letters and spaces';
-            } else {
-                delete newErrors.name;
-            }
-        }
-
-        if (name === "email") {
-            const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-            if (!emailRegex.test(value)) {
-                newErrors.email = 'Invalid email format';
-            } else {
-                delete newErrors.email;
-            }
-        }
-
-        if (name === "phone") {
-            if (!/^[\d]{9}$/.test(value)) {
-                newErrors.phone = 'Phone number must have exactly 9 digits';
-            } else {
-                delete newErrors.phone;
-            }
-        }
-
-        if (name === "roles") {
-            if (!value || value.length === 0) {
-                newErrors.roles = 'At least one role must be assigned';
-            } else {
-                delete newErrors.roles;
-            }
-        }
-
-        setErrors(newErrors);
-    };
-
-    const handleEdit = async () => {
-        if (Object.keys(errors).length !== 0) return;
-
-        const userDTO = {
-            name: formData.name,
-            email: formData.email,
-            phone: formData.phone,
-            roleIds: formData.roles,
-            locationIds: formData.locations,
-        };
-
-        await updateUser(userToEdit.id, userDTO);
-        handleClose(false, userDTO);
-    };
-
+    }, [userToEdit]);
 
     return (
         <Dialog open={open} onClose={handleClose}>
             <DialogTitle>Edit selected employee</DialogTitle>
             <DialogContent>
-                <form>
+                <form onSubmit={formik.handleSubmit}>
                     <TextField
-                        error={!!errors.name}
-                        helperText={errors.name}
                         label="Name and Surname"
                         fullWidth
                         margin="normal"
                         variant="outlined"
-                        name="name"
-                        value={formData.name}
-                        onChange={handleInputChange}
+                        {...formik.getFieldProps('name')}
+                        error={formik.touched.name && Boolean(formik.errors.name)}
+                        helperText={formik.touched.name && formik.errors.name}
                     />
                     <TextField
-                        error={!!errors.email}
-                        helperText={errors.email}
                         label="Email"
                         fullWidth
                         margin="normal"
                         variant="outlined"
-                        name="email"
-                        value={formData.email}
-                        onChange={handleInputChange}
+                        {...formik.getFieldProps('email')}
+                        error={formik.touched.email && Boolean(formik.errors.email)}
+                        helperText={formik.touched.email && formik.errors.email}
                     />
                     <TextField
-                        error={!!errors.phone}
-                        helperText={errors.phone}
                         label="Phone"
                         fullWidth
                         margin="normal"
                         variant="outlined"
-                        name="phone"
-                        value={formData.phone}
-                        onChange={handleInputChange}
+                        {...formik.getFieldProps('phone')}
+                        error={formik.touched.phone && Boolean(formik.errors.phone)}
+                        helperText={formik.touched.phone && formik.errors.phone}
                     />
-
-                    <FormControl fullWidth margin="normal" variant="outlined">
+                    <FormControl fullWidth margin="normal" variant="outlined" error={formik.touched.roleIds && Boolean(formik.errors.roleIds)}>
                         <InputLabel>Roles</InputLabel>
                         <Select
                             multiple
-                            name="roles"
-                            value={formData.roles}
-                            onChange={handleInputChange}
+                            name="roleIds"
+                            {...formik.getFieldProps('roleIds')}
                         >
                             {allRoles.map((role) => (
                                 <MenuItem key={role.id} value={role.id}>
@@ -146,15 +103,14 @@ const EditEmployeeDialog = ({ open, handleClose, allRoles, allLocations, userToE
                                 </MenuItem>
                             ))}
                         </Select>
-                        {errors.roles && <FormHelperText>{errors.roles}</FormHelperText>}
+                        {formik.touched.roleIds && <FormHelperText>{formik.errors.roleIds}</FormHelperText>}
                     </FormControl>
-                    <FormControl fullWidth margin="normal" variant="outlined">
+                    <FormControl fullWidth margin="normal" variant="outlined" error={formik.touched.locationIds && Boolean(formik.errors.locationIds)}>
                         <InputLabel>Locations</InputLabel>
                         <Select
                             multiple
-                            name="locations"
-                            value={formData.locations}
-                            onChange={handleInputChange}
+                            name="locationIds"
+                            {...formik.getFieldProps('locationIds')}
                         >
                             {allLocations.map((location) => (
                                 <MenuItem key={location.id} value={location.id}>
@@ -162,19 +118,20 @@ const EditEmployeeDialog = ({ open, handleClose, allRoles, allLocations, userToE
                                 </MenuItem>
                             ))}
                         </Select>
+                        {formik.touched.locationIds && <FormHelperText>{formik.errors.locationIds}</FormHelperText>}
                     </FormControl>
+                    <DialogActions>
+                        <Button onClick={() => handleClose(true, null)} color="primary">
+                            Cancel
+                        </Button>
+                        <Button type="submit" color="primary">
+                            Edit
+                        </Button>
+                    </DialogActions>
                 </form>
             </DialogContent>
-            <DialogActions>
-                <Button onClick={() => handleClose(true, null)} color="primary">
-                    Cancel
-                </Button>
-                <Button onClick={handleEdit} color="primary">
-                    Edit
-                </Button>
-            </DialogActions>
         </Dialog>
     );
-}
+};
 
 export default EditEmployeeDialog;

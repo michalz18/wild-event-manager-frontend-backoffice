@@ -1,6 +1,10 @@
-const getLocations = async () => {
+const getLocations = async (token) => {
     try {
-        const response = await fetch(`${process.env.REACT_APP_GET_LOCATIONS}`);
+        const response = await fetch(`${process.env.REACT_APP_GET_LOCATIONS}`, {
+            headers: {
+                "Authorization": `Bearer ${token}`
+            }
+        });
         if (!response.ok) {
             throw new Error("Problem occured with fetching locations!")
         }
@@ -20,7 +24,7 @@ const submitLocation = async (location) => {
                 },
                 body: JSON.stringify(location)
             });
-            
+
             if (!response.ok) {
                 throw new Error("Problem occurred while updating the location!");
             }
@@ -30,21 +34,21 @@ const submitLocation = async (location) => {
 
     } else {
         try {
-        const response = await fetch(`${process.env.REACT_APP_SUBMIT_LOCATION}`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(location)
-        });
-        if (!response.ok) {
-            throw new Error("Problem occurred while adding the location!");
-        }
+            const response = await fetch(`${process.env.REACT_APP_SUBMIT_LOCATION}`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(location)
+            });
+            if (!response.ok) {
+                throw new Error("Problem occurred while adding the location!");
+            }
         } catch (error) {
-        console.error("Location could not be added:", error);
+            console.error("Location could not be added:", error);
         }
     }
-    
+
 }
 
 const deleteLocation = async (id) => {

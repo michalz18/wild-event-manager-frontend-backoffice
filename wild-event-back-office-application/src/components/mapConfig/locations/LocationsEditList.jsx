@@ -53,6 +53,8 @@ const LocationsEditList = ({mapLocations, setLocations}) => {
     }));
 };
 
+console.log(mapLocations)
+
   const deleteLocationById = async () => {
     try {
         await deleteLocation(locationDeleteId)

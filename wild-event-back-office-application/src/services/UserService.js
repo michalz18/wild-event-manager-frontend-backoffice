@@ -1,6 +1,10 @@
-const getUsers = async () => {
+const getUsers = async (token) => {
     try {
-        const response = await fetch(`${process.env.REACT_APP_GET_USER}`);
+        const response = await fetch(`${process.env.REACT_APP_GET_USER}`, {
+            headers: {
+                "Authorization": `Bearer ${token}`
+            }
+        });
         if (!response.ok) {
             throw new Error("Problem occured with fetching users!")
         }
