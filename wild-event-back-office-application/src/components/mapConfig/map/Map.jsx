@@ -19,7 +19,7 @@ const Map = ({mapLocations}) => {
       const map = new mapboxgl.Map({
       container: mapContainerRef.current,
       style: 'mapbox://styles/mapbox/streets-v9',
-      center: [mapData.coordinate.latitude, mapData.coordinate.longitude],
+      center: [mapData.coordinate.longitude, mapData.coordinate.latitude],
       zoom: mapData.zoom,
       bearing: mapData.bearing
     }, []);
@@ -28,7 +28,7 @@ const Map = ({mapLocations}) => {
       ref.current = document.createElement('div');
       createRoot(ref.current).render(<Marker feature={location} index={index + 1}/>);
       new mapboxgl.Marker(ref.current)
-        .setLngLat([location.coordinateDTO.latitude, location.coordinateDTO.longitude])
+        .setLngLat([location.coordinateDTO.longitude, location.coordinateDTO.latitude])
         .addTo(map);
     });
     map.addControl(new mapboxgl.NavigationControl(), 'top-right');

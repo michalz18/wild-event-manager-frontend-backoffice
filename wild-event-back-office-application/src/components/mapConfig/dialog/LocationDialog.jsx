@@ -11,16 +11,16 @@ const LocationDialog = ({mapLocations, open, location, handleClose, mapCoordinat
     
     const [locationData, setLocationData] = useState({})
     const [coordinate, setCoordinate] = useState({
-        latitude: mapLocations.coordinate.longitude,
-        longitude: mapLocations.coordinate.latitude
+        latitude: mapLocations.coordinate.latitude,
+        longitude: mapLocations.coordinate.longitude
       });
 
 
     useEffect(() => {
         setLocationData({
                   ...locationData,
-                  longitude: coordinate.latitude,
-                  latitude: coordinate.longitude,
+                  longitude: coordinate.longitude,
+                  latitude: coordinate.latitude,
                 });
         
     }, [coordinate])
@@ -39,8 +39,8 @@ const LocationDialog = ({mapLocations, open, location, handleClose, mapCoordinat
                 id:null,
                 title:"",
                 description: "",
-                longitude: mapCoordinates.mapLatitude,
-                latitude: mapCoordinates.mapLongitude
+                longitude: mapCoordinates.mapLongitude,
+                latitude: mapCoordinates.mapLatitude
             })
         }
     }, [open]);
@@ -88,21 +88,21 @@ const LocationDialog = ({mapLocations, open, location, handleClose, mapCoordinat
                     </FormControl>
                     <FormControl margin="normal">
                         <TextField autoFocus
-                            label="Longitude"
-                            variant="outlined"
-                            type="number"
-                            name="longitude"
-                            value={locationData.longitude}
-                            InputProps={{ readOnly: true }} />
-                    </FormControl>
-                    <FormControl margin="normal">
-                        <TextField autoFocus
                             label="Latitude"
                             variant="outlined"
                             type="number"
                             name="latitude"
                             value={locationData.latitude}
                             InputProps={{ readOnly: true }}/>
+                    </FormControl>
+                    <FormControl margin="normal">
+                        <TextField autoFocus
+                            label="Longitude"
+                            variant="outlined"
+                            type="number"
+                            name="longitude"
+                            value={locationData.longitude}
+                            InputProps={{ readOnly: true }} />
                     </FormControl>
                 </FormGroup>
             </Grid>

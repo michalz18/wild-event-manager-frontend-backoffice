@@ -5,7 +5,7 @@
     left: 0;
     right: 0;
     width: 312px;
-    height: 672px;
+    height: 600px;
   }
 
   .map-form-container {
@@ -56,6 +56,7 @@
     font-size: 1vh;
     margin: 4px 2px;
     border-radius: 50%;
+    width: 28px
   }
   .mapboxgl-ctrl-bottom-right {
     display: none;

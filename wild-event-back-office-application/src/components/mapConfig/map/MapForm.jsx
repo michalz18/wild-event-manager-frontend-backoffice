@@ -7,8 +7,8 @@ const MapForm = ({ mapLocations, location, coordinate, setCoordinate}) => {
   const [mapData, setMap] = useState(mapLocations);
   const mapContainerRef = useRef(null);
   const [mapCenter, setMapCenter] = useState({
-    latitude: mapData.coordinate.longitude,
-    longitude: mapData.coordinate.latitude
+    latitude: mapData.coordinate.latitude,
+    longitude: mapData.coordinate.longitude
   });
   
   mapboxgl.accessToken = `${process.env.REACT_APP_API_KEY}`;
@@ -26,6 +26,17 @@ const MapForm = ({ mapLocations, location, coordinate, setCoordinate}) => {
 
   useEffect(() => {
     getCoordinate();
+  }, [])
+
+  useEffect(() => {
+    if (location) {
+        const coor = {
+          latitude: location.coordinateDTO.latitude,
+          longitude: location.coordinateDTO.longitude
+        };
+        setCoordinate(coor);
+        setMapCenter(coor);
+    }
     const map = new mapboxgl.Map({
       container: mapContainerRef.current,
       style: 'mapbox://styles/mapbox/streets-v9',
@@ -57,7 +68,7 @@ const MapForm = ({ mapLocations, location, coordinate, setCoordinate}) => {
     return () => {
       map.remove();
     };
-  }, [mapData]);
+  }, []);
 
   return (
     <div>

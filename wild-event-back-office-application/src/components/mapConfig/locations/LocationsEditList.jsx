@@ -102,12 +102,12 @@ const LocationsEditList = ({mapLocations, setLocations}) => {
                 mapLocations={mapLocations}
                 open={updateDialogOpen}
                 location={locationUpdate}
-                handleClose={finishUpdating}
+                handleClose={() => finishUpdating()}
                 mapCoordinates={{mapLatitude: mapLocations.coordinate.latitude , mapLongitude: mapLocations.coordinate.longitude}}
           />
           <LocationDeleteDialog
                 open={deleteDialogOpen}
-                handleClose={finishUpdating}
+                handleClose={() => finishUpdating()}
                 handleConfirm={deleteLocationById}
           />
            <Snackbar open={snackbarInfo.open} autoHideDuration={3000} onClose={handleCloseSnackbar}>

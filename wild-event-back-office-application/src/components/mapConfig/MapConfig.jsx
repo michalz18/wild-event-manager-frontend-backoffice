@@ -7,13 +7,13 @@ import LocationsEditList from "./locations/LocationsEditList";
 export const MapConfig = () => {
     const [mapLocations, setMapLocations] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
-    const [isUpdated, setIsUpdated] = useState(false);
 
     useEffect(() => {
         fetchData();
     }, []);
 
     const update = () => {
+        setIsLoading(true)
         fetchData();
     };
 
@@ -28,7 +28,7 @@ export const MapConfig = () => {
     };
 
     return (
-        <Box sx={{ mt: '200px', ml: '0px' }}>
+        <Box sx={{ mt: '240px', ml: '0px' }}>
             <Box>
                 {isLoading ? (
                     <Box>Loading...</Box>
@@ -40,7 +40,7 @@ export const MapConfig = () => {
                             </Box>
                         </Grid>
                         <Grid item xs={6}>
-                            <Box sx={{ width: '390px', height: '844px', marginTop: '30px' }}>
+                            <Box sx={{ width: '390px', height: '844px', marginTop: '0px' }}>
                                 <Map mapLocations={mapLocations}></Map>
                             </Box>
                            
