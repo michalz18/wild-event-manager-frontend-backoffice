@@ -3,47 +3,37 @@ import mapboxgl from 'mapbox-gl';
 import './Map.css'
 
 const MapForm = ({ mapLocations, location, coordinate, setCoordinate}) => {
-  
-  const [mapData, setMap] = useState(mapLocations);
+
+    const [isUpdating, setIsUpdating] = useState(true)
+
   const mapContainerRef = useRef(null);
-  const [mapCenter, setMapCenter] = useState({
-    latitude: mapData.coordinate.latitude,
-    longitude: mapData.coordinate.longitude
-  });
   
   mapboxgl.accessToken = `${process.env.REACT_APP_API_KEY}`;
 
-  const getCoordinate = () => {
-    if (location) {
-      const coor = {
-        latitude: location.coordinateDTO.latitude,
-        longitude: location.coordinateDTO.longitude
-      };
-      setCoordinate(coor);
-      setMapCenter(coor);
-    }
-  };
-
   useEffect(() => {
-    getCoordinate();
+    if (location) {
+        setCoordinate({
+            latitude: location.coordinateDTO.latitude,
+            longitude: location.coordinateDTO.longitude
+          })
+    } else {
+        setCoordinate({
+            latitude: mapLocations.coordinateDTO.mapLatitude,
+            longitude: mapLocations.coordinateDTO.mapLongitude
+          })
+    }
+    setIsUpdating(false)
   }, [])
 
   useEffect(() => {
-    if (location) {
-        const coor = {
-          latitude: location.coordinateDTO.latitude,
-          longitude: location.coordinateDTO.longitude
-        };
-        setCoordinate(coor);
-        setMapCenter(coor);
-    }
+    console.log(coordinate)
     const map = new mapboxgl.Map({
       container: mapContainerRef.current,
       style: 'mapbox://styles/mapbox/streets-v9',
-      center: [mapCenter.longitude, mapCenter.latitude],
-      zoom: mapData.zoom,
-      bearing: mapData.bearing
-    }, [location]);
+      center: [coordinate.longitude, coordinate.latitude],
+      zoom: mapLocations.zoom,
+      bearing: mapLocations.bearing
+    }, []);
 
     map.addControl(new mapboxgl.NavigationControl(), 'top-right');
     const markerRef = React.createRef();
@@ -68,7 +58,7 @@ const MapForm = ({ mapLocations, location, coordinate, setCoordinate}) => {
     return () => {
       map.remove();
     };
-  }, []);
+  }, [isUpdating]);
 
   return (
     <div>
