@@ -6,35 +6,22 @@ import FilterListIcon from '@mui/icons-material/FilterList';
 
 const LocationFilter = ({ allLocations, onLocationSelect }) => {
     const [anchorEl, setAnchorEl] = useState(null);
-// delete one line function
-    const handleClick = (event) => {
-        setAnchorEl(event.currentTarget);
-    };
-
-    const handleClose = () => {
-        setAnchorEl(null);
-    };
 
     const handleLocationSelect = (location) => {
-        // make ternery operator insted of if statement
-        if (location === "None") {
-            onLocationSelect("");
-        } else {
-            onLocationSelect(location);
-        }
-        handleClose();
+        onLocationSelect(location === "None" ? "" : location);
+        setAnchorEl(null);
     };
 
     return (
         <div>
-            <IconButton aria-label="filter" size="small" onClick={handleClick}>
+            <IconButton aria-label="filter" size="small" onClick={(event) => setAnchorEl(event.currentTarget)}>
                 <FilterListIcon fontSize="inherit" />
             </IconButton>
             <Menu
                 anchorEl={anchorEl}
                 keepMounted
                 open={!!anchorEl}
-                onClose={handleClose}
+                onClose={() => setAnchorEl(null)}
             >
                 <MenuItem key="none" onClick={() => handleLocationSelect("None")}>
                     None

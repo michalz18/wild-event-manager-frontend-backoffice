@@ -6,34 +6,22 @@ import FilterListIcon from '@mui/icons-material/FilterList';
 
 const RoleFilter = ({ allRoles, onRoleSelect }) => {
     const [anchorEl, setAnchorEl] = useState(null);
-// refactor like locationFilter
-    const handleClick = (event) => {
-        setAnchorEl(event.currentTarget);
-    };
-
-    const handleClose = () => {
-        setAnchorEl(null);
-    };
 
     const handleRoleSelect = (role) => {
-        if (role === "None") {
-            onRoleSelect("");
-        } else {
-            onRoleSelect(role);
-        }
-        handleClose();
+        onRoleSelect(role === "None" ? "" : role);
+        setAnchorEl(null);
     };
 
     return (
         <div>
-            <IconButton aria-label="filter" size="small" onClick={handleClick}>
+            <IconButton aria-label="filter" size="small" onClick={(event) => setAnchorEl(event.currentTarget)}>
                 <FilterListIcon fontSize="inherit" />
             </IconButton>
             <Menu
                 anchorEl={anchorEl}
                 keepMounted
                 open={!!anchorEl}
-                onClose={handleClose}
+                onClose={() => setAnchorEl(null)}
             >
                 <MenuItem key="none" onClick={() => handleRoleSelect("None")}>
                     None

@@ -25,13 +25,13 @@ import { mapRoleIdsToNames, mapLocationIdsToTitles } from "./UserMappers";
 
 const EmployeeTable = () => {
     const [users, setUsers] = useState([]);
+    const [allRoles, setAllRoles] = useState([]);
+    const [allLocations, setAllLocations] = useState([]);
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(5);
     const [selectedLocation, setSelectedLocation] = useState("");
     const [searchTerm, setSearchTerm] = useState("");
-    const [allRoles, setAllRoles] = useState([]);
     const [selectedRole, setSelectedRole] = useState("");
-    const [allLocations, setAllLocations] = useState([]);
     const [userToEdit, setUserToEdit] = useState(null);
     const [dialogState, setDialogState] = useState({ add: false, edit: false, confirm: false });
     const [userIdToDeactivate, setUserIdToDeactivate] = useState(null);
