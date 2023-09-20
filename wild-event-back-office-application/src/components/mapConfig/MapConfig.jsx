@@ -3,10 +3,12 @@ import { Box, Grid } from "@mui/material"
 import { getMap, saveMap } from "../../services/MapService";
 import Map from './map/Map'
 import LocationsEditList from "./locations/LocationsEditList";
+import { useUser } from "../../services/useUser";
 
 export const MapConfig = () => {
     const [mapLocations, setMapLocations] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
+    const { token } = useUser();
 
     useEffect(() => {
         fetchData();
@@ -19,7 +21,7 @@ export const MapConfig = () => {
 
     const fetchData = async () => {
         try {
-            const map = await getMap();
+            const map = await getMap(token);
             setMapLocations(map);
         } catch (error) {
             console.error("Error fetching map", error);

@@ -14,7 +14,6 @@ import {
 import { UserProvider } from "./services/useUser";
 import { DarkModeProvider } from "./components/darkMode/DarkModeProvider";
 import { CalendarPage } from "./pages/CalendarPage";
-import { MapUploader } from "./pages/MapUploader";
 import EventForm from "./components/eventManager/newEventForm/EventForm";
 
 const router = createBrowserRouter([
