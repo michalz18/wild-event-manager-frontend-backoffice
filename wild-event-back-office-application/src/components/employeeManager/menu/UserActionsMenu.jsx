@@ -6,28 +6,20 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 const UserActionsMenu = ({ onEdit, onDeactivate }) => {
   const [anchorEl, setAnchorEl] = useState(null);
 
-  const handleMenuOpen = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleMenuClose = () => {
-    setAnchorEl(null);
-  };
-
   return (
     <div>
-      <MoreVertIcon onClick={handleMenuOpen} style={{ cursor: 'pointer' }} />
+      <MoreVertIcon onClick={(event) => setAnchorEl(event.currentTarget)} style={{ cursor: 'pointer' }} />
       <Menu
         anchorEl={anchorEl}
         open={!!anchorEl}
-        onClose={handleMenuClose}
+        onClose={() => setAnchorEl(null)}
       >
         <MenuItem onClick={() => {
-          handleMenuClose();
+          setAnchorEl(null);
           onEdit();
         }}>Edit</MenuItem>
         <MenuItem onClick={() => {
-          handleMenuClose();
+          setAnchorEl(null);
           onDeactivate();
         }}>Deactivate</MenuItem>
       </Menu>

@@ -21,159 +21,111 @@ import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
 import { Button } from '@mui/material';
 import { useUser } from '../../../services/useUser';
+import { mapRoleIdsToNames, mapLocationIdsToTitles } from "./UserMappers";
 
 const EmployeeTable = () => {
     const [users, setUsers] = useState([]);
+    const [allRoles, setAllRoles] = useState([]);
+    const [allLocations, setAllLocations] = useState([]);
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(5);
-    const [filteredUsers, setFilteredUsers] = useState([]);
     const [selectedLocation, setSelectedLocation] = useState("");
     const [searchTerm, setSearchTerm] = useState("");
-    const [allRoles, setAllRoles] = useState([]);
     const [selectedRole, setSelectedRole] = useState("");
-    const [allLocations, setAllLocations] = useState([]);
-    const [userToEdit, setUserToEdit] = useState(null);
-    // sprawdz czy jest pusty
-    const [openAddDialog, setOpenAddDialog] = useState(false);
-    const [openEditDialog, setOpenEditDialog] = useState(false);
-    const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
-    const [userIdToDeactivate, setUserIdToDeactivate] = useState(null);
-    const [snackbarInfo, setSnackbarInfo] = useState({
-        open: false,
-        message: '',
-        severity: 'success'
-    });
+    const [dialogState, setDialogState] = useState({ add: false, edit: false, confirm: false });
+    const [pickedUser, setPickedUser] = useState(null);
+    const [snackbarInfo, setSnackbarInfo] = useState({ open: false, message: '', severity: 'success' });
     const { token } = useUser();
 
 
     useEffect(() => {
-        const fetchUsers = async () => {
-            const fetchedUsers = await getAllActiveUsers(token);
-            setUsers(fetchedUsers);
-            setFilteredUsers(fetchedUsers);
+        const fetchData = async () => {
+            try {
+                const [fetchedUsers, roles, locations] = await Promise.all([
+                    getAllActiveUsers(token),
+                    getAllRoles(token),
+                    getAllLocations(token)
+                ]);
+
+                setUsers(fetchedUsers);
+                setAllRoles(roles);
+                setAllLocations(locations);
+            } catch (error) {
+                console.error("There is an error during fetch data:", error);
+            }
         };
 
-        fetchUsers();
+        fetchData();
     }, [token]);
 
-    useEffect(() => {
-        const filtered = users.filter(user => {
-            return user.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
-                (selectedRole === "" || user.roles.includes(selectedRole)) &&
-                (selectedLocation === "" || user.locations.includes(selectedLocation))
-        });
-        setFilteredUsers(filtered);
-    }, [searchTerm, users, selectedRole, selectedLocation, token]);
-
-
-    const handleSearch = (term) => {
-        setSearchTerm(term);
-    };
-
-    useEffect(() => {
-        const fetchRoles = async () => {
-            const roles = await getAllRoles(token);
-            setAllRoles(roles);
-        };
-
-        fetchRoles();
-    }, [token]);
-
-    useEffect(() => {
-        const fetchLocations = async () => {
-            const locations = await getAllLocations(token);
-            setAllLocations(locations);
-        };
-
-        fetchLocations();
-    }, [token]);
-
-    const handleDeactivateUser = async (userId) => {
+    const handleDeactivateUser = async () => {
         try {
-            await deactivateUser(userId, token)
-            const fetchedUsers = await getAllActiveUsers(token);
-            setUsers(fetchedUsers);
-            setFilteredUsers(fetchedUsers);
+            await deactivateUser(pickedUser.id, token);
+            setUsers(prevUsers => prevUsers.filter(user => user.id !== pickedUser.id));
             setSnackbarInfo({
-                open: true,
-                message: 'User has been deactivated!',
-                severity: 'success'
+                open: true, message: 'User has been deactivated!', severity: 'success'
             });
         } catch (error) {
-            console.error("Could not deactivate user:", error)
+            console.error("Could not deactivate user:", error);
         }
-        handleCloseDeactivateDialog();
-    }
+        toggleDialog('confirm', false);
+    };
 
     const handleEditUser = async (userId) => {
         try {
             const user = users.find(u => u.id === userId);
-            setUserToEdit(user);
-            setOpenEditDialog(true);
+            setPickedUser(user);
+            toggleDialog('edit', true);
         } catch (error) {
             console.error("Could not update user:", error);
         }
     }
 
-    const handleChangePage = (event, newPage) => {
-        setPage(newPage);
-    };
-
-    const handleChangeRowsPerPage = (event) => {
-        setRowsPerPage(parseInt(event.target.value, 10));
-        setPage(0);
-    };
-
-    const handleClickOpen = () => {
-        setOpenAddDialog(true);
-    };
-
     const handleCloseAdd = async (wasCancelled, newUser) => {
         if (wasCancelled) {
-            setOpenAddDialog(false);
+            toggleDialog('add', false);
             return;
         }
         if (newUser) {
-            const fetchedUsers = await getAllActiveUsers(token);
-            setUsers(fetchedUsers);
-            setFilteredUsers(fetchedUsers);
-            setSnackbarInfo({
-                open: true,
-                message: 'User has been added!',
-                severity: 'success'
-            });
-        }
-        setOpenAddDialog(false);
-    };
+            const roles = mapRoleIdsToNames(newUser.roleIds, allRoles);
+            const locations = mapLocationIdsToTitles(newUser.locationIds, allLocations);
 
+            setUsers(prevUsers => [...prevUsers, {
+                ...newUser,
+                roles,
+                locations
+            }]);
+
+            setSnackbarInfo({ open: true, message: 'User has been added!', severity: 'success' });
+        }
+        toggleDialog('add', false);
+    };
 
     const handleCloseEdit = async (wasCancelled, updatedUser) => {
         if (wasCancelled) {
-            setOpenEditDialog(false);
+            toggleDialog('edit', false);
             return;
         }
 
         if (updatedUser) {
-            const fetchedUsers = await getAllActiveUsers(token);
-            setUsers(fetchedUsers);
-            setFilteredUsers(fetchedUsers);
-            setSnackbarInfo({
-                open: true,
-                message: 'User has been edited!',
-                severity: 'info'
-            });
+            const roles = mapRoleIdsToNames(updatedUser.roleIds, allRoles);
+            const locations = mapLocationIdsToTitles(updatedUser.locationIds, allLocations);
+
+            setUsers(prevUsers => prevUsers.map(user => {
+                if (user.id === updatedUser.id) {
+                    return {
+                        ...updatedUser,
+                        roles,
+                        locations
+                    };
+                }
+                return user;
+            }));
+
+            setSnackbarInfo({ open: true, message: 'User has been edited!', severity: 'info' });
         }
 
-        setOpenEditDialog(false);
-    };
-
-    const handleOpenDeactivateDialog = (userId) => {
-        setConfirmDialogOpen(true);
-        setUserIdToDeactivate(userId);
-    };
-
-    const handleCloseDeactivateDialog = () => {
-        setConfirmDialogOpen(false);
+        toggleDialog('edit', false);
     };
 
     const handleCloseSnackbar = (event, reason) => {
@@ -186,10 +138,17 @@ const EmployeeTable = () => {
         }));
     };
 
+    const toggleDialog = (type, isOpen) => {
+        setDialogState({
+            ...dialogState,
+            [type]: isOpen
+        });
+    };
+
 
     return (
         <div>
-            <SearchBar onSearch={handleSearch} />
+            <SearchBar setSearchTerm={setSearchTerm} />
             <TableContainer component={Paper}>
                 <Table aria-label="simple table">
                     <TableHead>
@@ -221,8 +180,16 @@ const EmployeeTable = () => {
                     </TableHead>
                     <TableBody>
                         {(rowsPerPage > 0
-                            ? filteredUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                            : filteredUsers
+                            ? users.filter(user => {
+                                return user.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
+                                    (selectedRole === "" || user.roles.includes(selectedRole)) &&
+                                    (selectedLocation === "" || user.locations.includes(selectedLocation));
+                            }).slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                            : users.filter(user => {
+                                return user.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
+                                    (selectedRole === "" || user.roles.includes(selectedRole)) &&
+                                    (selectedLocation === "" || user.locations.includes(selectedLocation));
+                            })
                         ).map((user) => (
                             <TableRow key={user.id}>
                                 <TableCell component="th" scope="row">
@@ -238,11 +205,15 @@ const EmployeeTable = () => {
                                 </TableCell>
                                 <TableCell align="center">
                                     <UserActionsMenu
-                                        onEdit={() => handleEditUser(user.id)}
-                                        onDeactivate={() => handleOpenDeactivateDialog(user.id)}
+                                        onEdit={() => {
+                                            handleEditUser(user.id);
+                                        }}
+                                        onDeactivate={() => {
+                                            setPickedUser(user);
+                                            toggleDialog('confirm', true);
+                                        }}
                                     />
                                 </TableCell>
-
                             </TableRow>
                         ))}
                     </TableBody>
@@ -258,29 +229,22 @@ const EmployeeTable = () => {
                                     inputProps: { 'aria-label': 'rows per page' },
                                     native: true,
                                 }}
-                                onPageChange={handleChangePage}
-                                onRowsPerPageChange={handleChangeRowsPerPage}
+                                onPageChange={(event, newPage) => setPage(newPage)}
+                                onRowsPerPageChange={(event) => {
+                                    setRowsPerPage(parseInt(event.target.value, 10));
+                                    setPage(0);
+                                }}
                             />
                         </TableRow>
                     </TableFooter>
                 </Table>
             </TableContainer>
-            <Button variant="contained" color="primary" onClick={handleClickOpen}>
+            <Button variant="contained" color="primary" onClick={() => toggleDialog('add', true)}>
                 Add New Employee
             </Button>
-            <AddEmployeeDialog open={openAddDialog} handleClose={handleCloseAdd} allRoles={allRoles} allLocations={allLocations} />
-            <EditEmployeeDialog
-                open={openEditDialog}
-                handleClose={handleCloseEdit}
-                allRoles={allRoles}
-                allLocations={allLocations}
-                userToEdit={userToEdit}
-            />
-            <ConfirmationDialog
-                open={confirmDialogOpen}
-                handleClose={handleCloseDeactivateDialog}
-                handleConfirm={() => handleDeactivateUser(userIdToDeactivate)}
-            />
+            <AddEmployeeDialog open={dialogState.add} handleClose={handleCloseAdd} allRoles={allRoles} allLocations={allLocations} />
+            <ConfirmationDialog open={dialogState.confirm} handleClose={() => toggleDialog('confirm', false)} handleConfirm={handleDeactivateUser} />
+            <EditEmployeeDialog open={dialogState.edit} handleClose={handleCloseEdit} allRoles={allRoles} allLocations={allLocations} userToEdit={pickedUser} />
             <Snackbar open={snackbarInfo.open} autoHideDuration={3000} onClose={handleCloseSnackbar}>
                 <MuiAlert onClose={handleCloseSnackbar} severity={snackbarInfo.severity} elevation={6} variant="filled">
                     {snackbarInfo.message}
