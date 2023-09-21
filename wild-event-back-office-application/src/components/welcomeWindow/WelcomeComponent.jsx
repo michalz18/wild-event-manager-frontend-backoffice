@@ -3,7 +3,7 @@ import { Paper, Typography } from "@mui/material"
 import { useUser } from "../../services/useUser"
 
 export const WelcomeWindow = ({ userId }) => {
-	const { user } = useUser()
+	const { user } = useUser(); 
 
 	return (
 		<Paper elevation={3} sx={{ padding: "20px", textAlign: "center" }}>

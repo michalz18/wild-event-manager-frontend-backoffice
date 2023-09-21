@@ -12,21 +12,24 @@ export const useUser = () => {
 
 export const UserProvider = ({ children }) => {
   const initialToken = sessionStorage.getItem('token');
-  
-  const [user, setUser] = useState(null);
+  const initialUser = JSON.parse(sessionStorage.getItem('user') || '{}');
+
+  const [user, setUser] = useState(initialUser);
   const [token, setToken] = useState(initialToken);
 
   const login = (userData, userToken) => {
     setUser(userData);
     setToken(userToken);
     sessionStorage.setItem('token', userToken);
-    console.log(userData);
+    const { token, ...restUserData } = userData;
+    sessionStorage.setItem('user', JSON.stringify(restUserData));
   };
 
   const logout = () => {
     setUser(null);
     setToken(null);
-    sessionStorage.removeItem('token'); 
+    sessionStorage.removeItem('token');
+    sessionStorage.removeItem('user');
   };
 
   return (
@@ -35,4 +38,3 @@ export const UserProvider = ({ children }) => {
     </UserContext.Provider>
   );
 };
-
