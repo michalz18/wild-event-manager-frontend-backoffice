@@ -13,6 +13,7 @@ import { getUsers } from "../../../services/UserService"
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
 import { useUser } from '../../../services/useUser';
+import { getAllMyEvents } from "../../../services/MyEventService";
 
 
 const Calendar = ({ isAdmin }) => {
@@ -40,7 +41,7 @@ const Calendar = ({ isAdmin }) => {
 
     const getEvents = async () => {
         try {
-            const data = await getAllEvents(token);
+            const data = isAdmin ? await getAllEvents(token) : await getAllMyEvents(token);
             setEvents(
                 data.map(eventDataFromDB => {
                     const startDate = new Date(eventDataFromDB.startsAt);
@@ -99,6 +100,11 @@ const Calendar = ({ isAdmin }) => {
         }
     }
     useEffect(() => {
+        if (user) {
+            console.log("User ID:", user.id);
+        } else {
+            console.log("User is not defined yet");
+        }
         getEvents();
         getAllLocations();
         getAllUsers();

@@ -1,14 +1,15 @@
 const processResponse = async response => {
+	console.log(response);
 	if (!response.ok) {
 		throw new Error("An error occurred while fetching data")
 	}
 	return await response.json()
 }
 
-export const getAllMyEvents = async (token, userId) => {
+export const getAllMyEvents = async (token) => {
 	try {
 		const response = await fetch(
-			`${process.env.REACT_APP_GET_MY_EVENT}?userId=${userId}`,
+			`${process.env.REACT_APP_GET_MY_EVENT}`,
 			{
 				headers: {
 					Authorization: `Bearer ${token}`,
