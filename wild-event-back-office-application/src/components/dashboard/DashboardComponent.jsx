@@ -15,6 +15,7 @@ import {
 
 import LogoutIcon from "@mui/icons-material/Logout"
 import itemList from "./DashboardElements"
+import { useUser } from "../../services/useUser"
 
 
 export const DashboardComponent = () => {
@@ -31,10 +32,10 @@ export const DashboardComponent = () => {
 			? maxFontSizeLg
 			: minFontSize
 
-	const navigate = useNavigate()
-	const loggedUser = JSON.parse(sessionStorage.getItem('user'));
+	const navigate = useNavigate();
+	const { user } = useUser();
 	
-	const filteredItems = itemList.filter(item => (loggedUser.roles || []).map(role => role.name).includes(item.requiredRole));
+	const filteredItems = itemList.filter(item => (user.roles).map(role => role.name).includes(item.requiredRole));
 	
 
 	return (
