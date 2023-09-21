@@ -39,12 +39,12 @@ const router = createBrowserRouter([
         errorElement: <ErrorPage />,
       },
       {
-        path: "/my-events/event",
+        path: "/my-events",
         element: <MyEventPage />,
         errorElement: <ErrorPage />,
       },
       {
-        path: "/event-management/event",
+        path: "/event-management",
         element: <EventPage />,
         errorElement: <ErrorPage />,
       },
@@ -54,7 +54,7 @@ const router = createBrowserRouter([
         errorElement: <ErrorPage />,
       },
       {
-        path: "/map-config/map",
+        path: "/map-config",
 				element: <MapPage/>,
 				errorElement: <ErrorPage />,
       },

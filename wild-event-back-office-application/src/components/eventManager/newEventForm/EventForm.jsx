@@ -38,12 +38,11 @@ const EventForm = ({
     userDB,
     handleEvent,
 }) => {
-    const [error, setError] = React.useState(null);
 
     const [isDataLoaded, setIsDataLoaded] = useState(false);
     const STARTS_AT = 'startsAt';
     const ENDS_AT = 'endsAt';
-    const { user, token } = useUser();
+    const { token } = useUser();
     const today = dayjs();
     const tomorrow = dayjs().add(1, 'day');
 
@@ -77,7 +76,6 @@ const EventForm = ({
         handleModalClose();
         formik.resetForm();
     }
-    console.log(formik)
     useEffect(() => {
         formik.resetForm();
         if (pickedEvent && pickedEvent.organizers && userDB) {
@@ -178,12 +176,12 @@ const EventForm = ({
                                         disablePast={true}
                                         slotProps={{
                                             textField: {
-                                                helperText:  formik.errors.dateRange?.startsAt 
+                                                helperText: formik.errors.dateRange?.startsAt
                                             },
                                         }}
                                         spacing={0.5}
                                         defaultValue={
-                                           formik.values.dateRange?.startsAt
+                                            formik.values.dateRange?.startsAt
                                         }
                                         name="dateRange.startsAt"
                                         className='dateRange.startsAt'
@@ -192,12 +190,10 @@ const EventForm = ({
                                         onChange={(newValue) => handleDateChange(newValue, STARTS_AT)}
                                         onBlur={formik.handleBlur}
                                         error={!!formik.touched.dateRange?.startsAt && !!formik.errors.dateRange?.startsAt}
-                                        onError={(newError) => setError(newError)}
-
                                     />
 
                                 </LocalizationProvider>
-                               
+
                             </FormControl>
 
                             <FormControl margin="normal">
@@ -208,7 +204,7 @@ const EventForm = ({
                                         className='dateRange.endsAt'
                                         slotProps={{
                                             textField: {
-                                                helperText:  formik.errors.dateRange?.endsAt
+                                                helperText: formik.errors.dateRange?.endsAt
                                             },
                                         }}
                                         disablePast={true}
@@ -225,7 +221,7 @@ const EventForm = ({
                                         error={!!formik.touched.dateRange?.endsAt && !!formik.errors.dateRange?.endsAt}
                                     />
                                 </LocalizationProvider>
-                               
+
                             </FormControl>
 
 

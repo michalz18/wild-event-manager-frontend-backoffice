@@ -46,7 +46,6 @@ const LocationDialog = ({mapLocations, open, location, handleClose }) => {
     }, [open]);
 
     const handleInputChange = (event) => {
-        console.log(locationData)
         const { name, value } = event.target;
         setLocationData({
             ...locationData,
