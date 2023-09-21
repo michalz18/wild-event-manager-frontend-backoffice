@@ -4,13 +4,14 @@ import './Map.css'
 
 const MapForm = ({ mapLocations, location, coordinate, setCoordinate}) => {
 
-    const [isUpdating, setIsUpdating] = useState(true)
+  const [isUpdating, setIsUpdating] = useState(true)
 
   const mapContainerRef = useRef(null);
   
   mapboxgl.accessToken = `${process.env.REACT_APP_API_KEY}`;
 
   useEffect(() => {
+    console.log(mapLocations)
     if (location) {
         setCoordinate({
             latitude: location.coordinateDTO.latitude,
@@ -18,15 +19,14 @@ const MapForm = ({ mapLocations, location, coordinate, setCoordinate}) => {
           })
     } else {
         setCoordinate({
-            latitude: mapLocations.coordinateDTO.mapLatitude,
-            longitude: mapLocations.coordinateDTO.mapLongitude
+            latitude: mapLocations.coordinate.latitude,
+            longitude: mapLocations.coordinate.longitude
           })
     }
     setIsUpdating(false)
   }, [])
 
   useEffect(() => {
-    console.log(coordinate)
     const map = new mapboxgl.Map({
       container: mapContainerRef.current,
       style: 'mapbox://styles/mapbox/streets-v9',

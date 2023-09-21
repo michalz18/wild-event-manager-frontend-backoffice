@@ -2,7 +2,6 @@ import React from "react"
 import { useNavigate } from "react-router-dom"
 import { Box, Paper, Typography, Button } from "@mui/material"
 import { useUser } from "../../services/useUser"
-//package logoutWindow and class LogoutComponent should be logout/logout.jsx
 
 export const LogoutComponent = () => {
 	const { logout } = useUser()
@@ -12,10 +11,10 @@ export const LogoutComponent = () => {
 		navigate(-1)
 	}
 
-	const handleLogoutClick = () => {
-		logout()
-		navigate("/")
-	}
+  const handleLogoutClick = () =>{
+	logout();
+    navigate("/")
+  }
 
 	return (
 		<Box

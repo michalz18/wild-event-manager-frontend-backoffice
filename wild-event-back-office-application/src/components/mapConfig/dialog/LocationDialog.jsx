@@ -5,10 +5,10 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogTitle from '@mui/material/DialogTitle';
 import { submitLocation } from '../../../services/LocationService';
 import MapForm from '../map/MapForm';
+import { useUser } from "../../../services/useUser";
 
-
-const LocationDialog = ({mapLocations, open, location, handleClose, mapCoordinates }) => {
-    
+const LocationDialog = ({mapLocations, open, location, handleClose }) => {
+    const { token } = useUser();
     const [locationData, setLocationData] = useState({})
     const [coordinate, setCoordinate] = useState({
         latitude: mapLocations.coordinate.latitude,
@@ -39,14 +39,13 @@ const LocationDialog = ({mapLocations, open, location, handleClose, mapCoordinat
                 id:null,
                 title:"",
                 description: "",
-                longitude: mapCoordinates.mapLongitude,
-                latitude: mapCoordinates.mapLatitude
+                longitude: mapLocations.coordinate.longitude,
+                latitude: mapLocations.coordinate.latitude
             })
         }
     }, [open]);
 
     const handleInputChange = (event) => {
-        console.log(locationData)
         const { name, value } = event.target;
         setLocationData({
             ...locationData,
@@ -57,7 +56,7 @@ const LocationDialog = ({mapLocations, open, location, handleClose, mapCoordinat
 
     const handleSubmit = async (event) => {
         event.preventDefault();
-        await submitLocation(locationData);
+        await submitLocation(token, locationData);
         await handleClose();
     }
 

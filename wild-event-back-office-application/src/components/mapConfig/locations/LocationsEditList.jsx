@@ -13,8 +13,10 @@ import LocationDeleteDialog from "../dialog/LocationDeleteDialog";
 import MuiAlert from '@mui/material/Alert';
 import { deleteLocation } from "../../../services/LocationService";
 import Snackbar from '@mui/material/Snackbar';
+import { useUser } from "../../../services/useUser";
 
 const LocationsEditList = ({mapLocations, setLocations}) => {
+  const { token } = useUser();
   const [updateDialogOpen, setUpdateDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [locationUpdate, setLocationUpdate] = useState(null);
@@ -53,11 +55,9 @@ const LocationsEditList = ({mapLocations, setLocations}) => {
     }));
 };
 
-console.log(mapLocations)
-
   const deleteLocationById = async () => {
     try {
-        await deleteLocation(locationDeleteId)
+        await deleteLocation(token, locationDeleteId)
         setSnackbarInfo({
             open: true,
             message: 'Location has been deleted!',
@@ -105,7 +105,6 @@ console.log(mapLocations)
                 open={updateDialogOpen}
                 location={locationUpdate}
                 handleClose={() => finishUpdating()}
-                mapCoordinates={{mapLatitude: mapLocations.coordinate.latitude , mapLongitude: mapLocations.coordinate.longitude}}
           />
           <LocationDeleteDialog
                 open={deleteDialogOpen}

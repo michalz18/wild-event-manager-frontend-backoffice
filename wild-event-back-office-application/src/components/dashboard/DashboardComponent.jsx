@@ -17,6 +17,7 @@ import LogoutIcon from "@mui/icons-material/Logout"
 import itemList from "./DashboardElements";
 import { useUser } from "../../services/useUser";
 
+
 export const DashboardComponent = () => {
 	const isMd = useMediaQuery(theme => theme.breakpoints.up("md"))
 	const isLg = useMediaQuery(theme => theme.breakpoints.up("lg"))
@@ -26,17 +27,7 @@ export const DashboardComponent = () => {
 	const maxFontSizeMd = 30
 	const maxFontSizeLg = 30
 	const fontSizeScale = isMd
-	? maxFontSizeMd
-	: isLg
-	? maxFontSizeLg
-	: minFontSize
-	
-	const navigate = useNavigate()
-	const { user } = useUser();
-	
-	// const filteredItems = itemList.filter(item => user.roles.includes(item.requiredRole));
-	
-	console.log(user);
+	const filteredItems = itemList.filter(item => (user.roles).map(role => role.name).includes(item.requiredRole));
 
 	return (
 		<>
