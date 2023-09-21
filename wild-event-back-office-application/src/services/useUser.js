@@ -20,6 +20,7 @@ export const UserProvider = ({ children }) => {
     setUser(userData);
     setToken(userToken);
     sessionStorage.setItem('token', userToken);
+    sessionStorage.setItem('user', JSON.stringify(userData)); 
     console.log(userData);
   };
 
@@ -27,6 +28,7 @@ export const UserProvider = ({ children }) => {
     setUser(null);
     setToken(null);
     sessionStorage.removeItem('token'); 
+    sessionStorage.removeItem('user');
   };
 
   return (
