@@ -4,6 +4,7 @@ import { getMap, saveMap } from "../../services/MapService";
 import Map from './map/Map'
 import LocationsEditList from "./locations/LocationsEditList";
 import { useUser } from "../../services/useUser";
+import CircularProgress from '@mui/material/CircularProgress';
 
 export const MapConfig = () => {
     const [mapLocations, setMapLocations] = useState([]);
@@ -33,7 +34,9 @@ export const MapConfig = () => {
         <Box sx={{ mt: '240px', ml: '0px' }}>
             <Box>
                 {isLoading ? (
-                    <Box>Loading...</Box>
+                    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+                        <CircularProgress />
+                    </div>
                 ) : (
                     <Grid container spacing={2}>
                         <Grid item xs={6}>
@@ -45,7 +48,7 @@ export const MapConfig = () => {
                             <Box sx={{ width: '390px', height: '844px', marginTop: '0px' }}>
                                 <Map mapLocations={mapLocations}></Map>
                             </Box>
-                           
+
                         </Grid>
                     </Grid>
                 )}

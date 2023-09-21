@@ -13,7 +13,7 @@ export const LogoutComponent = () => {
 
   const handleLogoutClick = () =>{
 	logout();
-    navigate("/")
+    navigate("/signup")
   }
 
 	return (

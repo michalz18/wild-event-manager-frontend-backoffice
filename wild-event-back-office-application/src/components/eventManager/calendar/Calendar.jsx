@@ -114,6 +114,8 @@ const Calendar = ({ isAdmin }) => {
         setOpen(true);
         setIsUpdateEvent(false);
         setEventToUpdate(selected);
+        console.log("selected")
+        console.log(selected)
         setIsTimeGridWeek(selected.view.type === "timeGridWeek")
         setPickedEvent({
             id: "",

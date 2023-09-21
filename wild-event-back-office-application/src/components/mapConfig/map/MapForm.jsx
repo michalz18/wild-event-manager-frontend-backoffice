@@ -27,6 +27,7 @@ const MapForm = ({ mapLocations, location, coordinate, setCoordinate}) => {
   }, [])
 
   useEffect(() => {
+    console.log(coordinate)
     const map = new mapboxgl.Map({
       container: mapContainerRef.current,
       style: 'mapbox://styles/mapbox/streets-v9',
