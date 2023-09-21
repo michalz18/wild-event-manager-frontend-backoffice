@@ -105,7 +105,6 @@ const LocationsEditList = ({mapLocations, setLocations}) => {
                 open={updateDialogOpen}
                 location={locationUpdate}
                 handleClose={() => finishUpdating()}
-                mapCoordinates={{mapLatitude: mapLocations.coordinate.latitude , mapLongitude: mapLocations.coordinate.longitude}}
           />
           <LocationDeleteDialog
                 open={deleteDialogOpen}
