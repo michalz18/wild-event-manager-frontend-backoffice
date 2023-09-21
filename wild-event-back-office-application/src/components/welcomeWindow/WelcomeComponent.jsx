@@ -1,14 +1,13 @@
 import React from "react"
 import { Paper, Typography } from "@mui/material"
-import { useUser } from "../../services/useUser"
 
 export const WelcomeWindow = ({ userId }) => {
-	const { user } = useUser()
+	const loggedUser = JSON.parse(sessionStorage.getItem('user'));
 
 	return (
 		<Paper elevation={3} sx={{ padding: "20px", textAlign: "center" }}>
 			<Typography variant='h5' gutterBottom>
-				Welcome, {user.name}
+				Welcome, {loggedUser.name}
 			</Typography>
 			<Typography variant='body1'>
 				Thank you for using our app. Enjoy your experience!

@@ -15,7 +15,7 @@ import {
 
 import LogoutIcon from "@mui/icons-material/Logout"
 import itemList from "./DashboardElements"
-import { useUser } from "../../services/useUser"
+
 
 export const DashboardComponent = () => {
 	const isMd = useMediaQuery(theme => theme.breakpoints.up("md"))
@@ -32,10 +32,11 @@ export const DashboardComponent = () => {
 			: minFontSize
 
 	const navigate = useNavigate()
-	const { user } = useUser();
+	const loggedUser = JSON.parse(sessionStorage.getItem('user'));
 	
-	const filteredItems = itemList.filter(item => user?.roles?.map(role => role.name).includes(item.requiredRole));
-	console.log(user)
+	const filteredItems = itemList.filter(item => (loggedUser.roles || []).map(role => role.name).includes(item.requiredRole));
+	
+
 	return (
 		<>
 			<Drawer
@@ -51,7 +52,7 @@ export const DashboardComponent = () => {
 				<Toolbar />
 				<Box sx={{ overflow: "auto" }}>
 					<List>
-						{itemList.map(item => (
+						{filteredItems.map(item => (
 							<ListItem key={item.text} disablePadding>
 								<ListItemButton onClick={() => navigate(item.path)}>
 									<ListItemIcon>{item.icon}</ListItemIcon>
