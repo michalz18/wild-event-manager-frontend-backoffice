@@ -22,7 +22,7 @@ const Calendar = ({ isAdmin }) => {
         message: '',
         severity: 'success'
     });
-    const { user, token } = useUser();
+    const { token } = useUser();
     const [userDB, setUserDB] = useState([]);
     const [events, setEvents] = useState([]);
     const [locationDB, setLocationDB] = useState([]);
@@ -100,11 +100,6 @@ const Calendar = ({ isAdmin }) => {
         }
     }
     useEffect(() => {
-        if (user) {
-            console.log("User ID:", user.id);
-        } else {
-            console.log("User is not defined yet");
-        }
         getEvents();
         getAllLocations();
         getAllUsers();
@@ -114,8 +109,6 @@ const Calendar = ({ isAdmin }) => {
         setOpen(true);
         setIsUpdateEvent(false);
         setEventToUpdate(selected);
-        console.log("selected")
-        console.log(selected)
         setIsTimeGridWeek(selected.view.type === "timeGridWeek")
         setPickedEvent({
             id: "",
@@ -185,18 +178,18 @@ const Calendar = ({ isAdmin }) => {
             const eventExistsInDatabase = events.some(event => event.id === dto.id);
 
             if (eventExistsInDatabase) {
-                await deleteEvent(dto.id,token);
+                await deleteEvent(dto.id, token);
                 setEvents(prevEvents => prevEvents.filter(event => event.id !== dto.id));
                 dto.selected.event.remove();
                 handleModalClose();
 
                 setSnackbarInfo({
                     open: true,
-                    message: `User has been deleted`,
+                    message: `Event has been deleted`,
                     severity: 'success'
                 });
             } else {
-                console.log("This event doesn't exist in the database.");
+                console.error("This event doesn't exist in the database.");
 
             }
         } catch (error) {
@@ -247,7 +240,7 @@ const Calendar = ({ isAdmin }) => {
             changeDate(id, dto.dateRange.startsAt, dto.dateRange.endsAt);
 
         }
-        updateDateEvent(dto,token);
+        updateDateEvent(dto, token);
 
 
 
@@ -316,12 +309,16 @@ const Calendar = ({ isAdmin }) => {
                             interactionPlugin,
                             listPlugin
                         ]}
+
                         headerToolbar={{
                             left: "prev,next",
                             center: "title",
                             right: "dayGridMonth,timeGridWeek,timeGridDay,listMonth"
                         }}
                         initialView="dayGridMonth"
+                        validRange={{
+                            start: new Date(),
+                        }}
                         editable={isAdmin}
                         selectable={isAdmin}
                         select={handleDateClick}
@@ -335,7 +332,7 @@ const Calendar = ({ isAdmin }) => {
                     >
                     </FullCallendar>
                 </Box>
-            </Container>
+            </Container >
             <EventForm open={open} isTimeGridWeek={isTimeGridWeek} userDB={userDB} locationDB={locationDB} handleEvent={handleEvent} handleDeleteEvent={handleDeleteEvent} handleModalClose={handleModalClose} isUpdateEvent={isUpdateEvent} pickedEvent={pickedEvent} >
 
             </EventForm>
