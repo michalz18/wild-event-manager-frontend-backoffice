@@ -23,7 +23,7 @@ import {
   DialogTitle
 } from '@mui/material';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-import backgroundImage from '../../assets/logo.png';
+import backgroundImage from '../../assets/logo.jpg';
 
 const defaultTheme = createTheme();
 

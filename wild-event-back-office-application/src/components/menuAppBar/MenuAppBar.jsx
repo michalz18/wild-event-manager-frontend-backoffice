@@ -13,16 +13,25 @@ import FormGroup from '@mui/material/FormGroup';
 import MenuItem from '@mui/material/MenuItem';
 import Menu from '@mui/material/Menu';
 import itemList from '../dashboard/DashboardElements';
+import { useUser } from "../../services/useUser";
 
 export const MenuAppBar = () => {
   const [auth, setAuth] = useState(true);
   const [anchorEl, setAnchorEl] = useState(null);
   const [openItems, setOpenItems] = useState({});
   const navigate = useNavigate();
+  const { user } = useUser();
 
   const handleChange = (event) => {
-    setAuth(event.target.checked);
+    // setAuth(event.target.checked);
+    if (auth) {
+      navigate('/logout');  // Jeśli jesteś zalogowany, przeniesie Cię do strony wylogowania.
+    } else {
+      navigate('/');  // Jeśli nie jesteś zalogowany, przeniesie Cię do strony logowania.
+    }
+    setAuth(event.target.checked);  // Zaktualizuj stan auth na podstawie włącznika.
   };
+  
 
   const handleMenu = (event) => {
     setAnchorEl(event.currentTarget);
@@ -68,8 +77,17 @@ export const MenuAppBar = () => {
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            Elephant
+            WildEvent manager
           </Typography>
+          <Typography
+						variant='h6'
+						sx={{
+							flexGrow: 1,
+							textAlign: "center",
+							textTransform: "uppercase",
+						}}>
+						{user.name}
+					</Typography>
           {auth && (
             <div>
               <IconButton

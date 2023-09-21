@@ -5,17 +5,17 @@ import { useUser } from "../../services/useUser"
 //package logoutWindow and class LogoutComponent should be logout/logout.jsx
 
 export const LogoutComponent = () => {
-	const { logout } = useUser();
+	const { logout } = useUser()
 	const navigate = useNavigate()
 
 	const handleCancelClick = () => {
 		navigate(-1)
 	}
 
-  const handleLogoutClick = () =>{
-	logout();
-    navigate("/signup")
-  }
+	const handleLogoutClick = () => {
+		logout()
+		navigate("/")
+	}
 
 	return (
 		<Box
@@ -34,12 +34,19 @@ export const LogoutComponent = () => {
 					You will be logged out of the application.
 				</Typography>
 				<Box sx={{ marginTop: "20px" }}>
-						<Button variant='outlined' color='primary' onClick={handleCancelClick}>
-							Cancel
-						</Button>
-						<Button variant='contained' color='primary' onClick={handleLogoutClick} sx={{ marginLeft: "10px"}}>
-							Logout
-						</Button>
+					<Button
+						variant='outlined'
+						color='primary'
+						onClick={handleCancelClick}>
+						Cancel
+					</Button>
+					<Button
+						variant='contained'
+						color='primary'
+						onClick={handleLogoutClick}
+						sx={{ marginLeft: "10px" }}>
+						Logout
+					</Button>
 				</Box>
 			</Paper>
 		</Box>
