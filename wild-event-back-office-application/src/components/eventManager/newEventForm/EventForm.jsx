@@ -7,7 +7,6 @@ import {
     FormGroup,
     FormControl,
     InputLabel,
-    Input,
     Button,
     TextField,
     Select,
@@ -77,7 +76,6 @@ const EventForm = ({
         handleModalClose();
         formik.resetForm();
     }
-    console.log(formik)
     useEffect(() => {
         formik.resetForm();
         if (pickedEvent && pickedEvent.organizers && userDB) {

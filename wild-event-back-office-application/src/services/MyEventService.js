@@ -1,5 +1,4 @@
 const processResponse = async response => {
-	console.log(response);
 	if (!response.ok) {
 		throw new Error("An error occurred while fetching data")
 	}

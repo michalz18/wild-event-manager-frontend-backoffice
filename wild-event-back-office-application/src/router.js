@@ -1,5 +1,4 @@
 import { Outlet, createBrowserRouter } from "react-router-dom";
-import Test from "./test";
 import ErrorPage from "./pages/ErrorPage";
 import LoginForm from "./components/loginForm/LoginForm";
 import ResetPasswordForm from "./components/resetPasswordForm/ResetPasswordForm";
@@ -13,8 +12,6 @@ import {
 } from "./pages/index";
 import { UserProvider } from "./services/useUser";
 import { DarkModeProvider } from "./components/darkMode/DarkModeProvider";
-import { CalendarPage } from "./pages/CalendarPage";
-import EventForm from "./components/eventManager/newEventForm/EventForm";
 
 const router = createBrowserRouter([
   {
