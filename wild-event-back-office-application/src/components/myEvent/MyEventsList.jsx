@@ -3,10 +3,10 @@ import { getAllMyEvents } from "../../services/MyEventService"
 import Calendar from "../../components/eventManager/calendar/Calendar"
 import { useUser } from "../../services/useUser"
 
-const MyEventList = () => {
+const MyEventList = ({isMobileView}) => {
 	const [events, setEvents] = useState([])
 	const [filteredEvents, setFilteredEvents] = useState([])
-	const { token, user } = useUser()
+	const { token } = useUser()
 
 	useEffect(() => {
 		const fetchEvents = async () => {
@@ -21,11 +21,11 @@ const MyEventList = () => {
 			}
 		}
 		fetchEvents()
-	}, [token, user])
+	}, [token])
 
 
 	return (
-		<Calendar isAdmin={false} />
+		isMobileView ? <Calendar isAdmin={false} isMobileView={true}/> : <Calendar isAdmin={false} />
 	)
 }
 

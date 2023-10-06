@@ -20,10 +20,9 @@ import {
   Dialog,
   DialogActions,
   DialogContent,
-  DialogTitle
 } from '@mui/material';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-import backgroundImage from '../../assets/logo.jpg';
+import backgroundImage from '../../assets/logo2.jpg';
 
 const defaultTheme = createTheme();
 

@@ -7,15 +7,6 @@ export const LogoutComponent = () => {
 	const { logout } = useUser()
 	const navigate = useNavigate()
 
-	const handleCancelClick = () => {
-		navigate(-1)
-	}
-
-  const handleLogoutClick = () =>{
-	logout();
-    navigate("/signup")
-  }
-
 	return (
 		<Box
 			sx={{
@@ -36,13 +27,16 @@ export const LogoutComponent = () => {
 					<Button
 						variant='outlined'
 						color='primary'
-						onClick={handleCancelClick}>
+						onClick={() => navigate(-1)}>
 						Cancel
 					</Button>
 					<Button
 						variant='contained'
 						color='primary'
-						onClick={handleLogoutClick}
+						onClick={() => {
+							logout()
+							navigate("/")
+						}}
 						sx={{ marginLeft: "10px" }}>
 						Logout
 					</Button>

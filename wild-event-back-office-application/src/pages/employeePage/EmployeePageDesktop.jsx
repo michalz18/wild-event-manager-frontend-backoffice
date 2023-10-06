@@ -5,7 +5,7 @@ export const EmployeePageDesktop = () => {
 	return (
 		<>
 			<DesktopLayout>
-				<EmployeeTable></EmployeeTable>
+				<EmployeeTable />
 				</DesktopLayout>
 		</>
 	)
