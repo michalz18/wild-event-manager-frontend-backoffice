@@ -320,18 +320,6 @@ const Calendar = ({ isAdmin, isMobileView }) => {
 						ref={calendarRef}
 						timeZone='local'
 						height={window.innerWidth <= 600 ? "60vh" : "70vh"}
-						// plugins={[
-						// 	dayGridPlugin,
-						// 	timeGridPlugin,
-						// 	interactionPlugin,
-						// 	listPlugin,
-						// ]}
-						// headerToolbar={{
-						// 	left: "prev,next",
-						// 	center: "title",
-						// 	right: "dayGridMonth,timeGridWeek,timeGridDay,listMonth",
-						// }}
-						// initialView='dayGridMonth'
 						plugins={plugins}
 						headerToolbar={headerToolbar}
 						initialView={initialViewMode}

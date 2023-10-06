@@ -61,14 +61,12 @@ const EventForm = ({
         },
         validationSchema: basicSchema,
         onSubmit: async (values) => {
-            console.log(values);
             let id = null;
             isUpdateEvent
                 ? (id = await updateEvent(values, pickedEvent.id, token))
                 : (id = await addEvent(values, token));
             await handleEvent(values, id);
             await handleModalClose();
-            console.log(values)
             formik.resetForm()
         },
     });
