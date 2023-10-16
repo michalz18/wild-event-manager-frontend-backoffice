@@ -9,7 +9,7 @@
 Here you can find other repositories for this project: 
 
  1. [Backend](https://github.com/michalz18/wild-event-manager-backend)
- 2. [Clients app]((https://github.com/michalz18/wild-event-manager-frontend-client)
+ 2. [Clients app](https://github.com/michalz18/wild-event-manager-frontend-client)
 
 ## 🌟 Project aim
 
